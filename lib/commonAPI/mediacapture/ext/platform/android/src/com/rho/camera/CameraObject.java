@@ -25,7 +25,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -46,25 +45,16 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rho.camera.ICameraSingleton;
 
 public class CameraObject extends CameraBase implements ICamera{
     private static final String TAG = CameraObject.class.getSimpleName();
-    private Map<String, String> mActualPropertyMap;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
-
-    void setActualPropertyMap(Map<String, String> props) { 
-        mActualPropertyMap = props; 
-    }
-
-    Map<String, String> getActualPropertyMap() { 
-        return mActualPropertyMap; 
-    }
 
     private Camera mCamera = null;
     private int mCameraUsers;   
-    public static String userFilePath = null;
     private File storageDir = null;
-        private List<Camera.Size> mSupportedPictureSizes;
+    private List<Camera.Size> mSupportedPictureSizes;
 
     public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
     public static boolean CURRENT_FULL_SCREEN_MODE;
@@ -135,12 +125,12 @@ public class CameraObject extends CameraBase implements ICamera{
         super(id);
 
         getPropertiesMap().put("ChoosePicture_Key", "");
-        getPropertiesMap().put("compressionFormat", "jpg");
-        getPropertiesMap().put("outputFormat", "image");
-        getPropertiesMap().put("colorModel", "rgb");
-        getPropertiesMap().put("useRealBitmapResize", "true");
-        getPropertiesMap().put("useRotationBitmapByEXIF", "true");
-        getPropertiesMap().put("saveToDeviceGallery", "false");
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_COMPRESSION_FORMAT, ICameraSingleton.COMPRESSION_FORMAT_JPG);
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_OUTPUT_FORMAT, ICameraSingleton.OUTPUT_FORMAT_IMAGE);
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_COLOR_MODEL, ICameraSingleton.COLOR_MODEL_RGB);
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE, "true");
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF, "true");
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_SAVE_TO_DEVICE_GALLERY, "false");
 
         storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
         createRhoCacheFolder();
@@ -149,13 +139,13 @@ public class CameraObject extends CameraBase implements ICamera{
         android.hardware.Camera.getCameraInfo(getCameraIndex(), info);
         switch (info.facing) {
         case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
-            getPropertiesMap().put("cameraType", "back");
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_CAMERA_TYPE, ICameraSingleton.CAMERA_TYPE_BACK);
             break;
         case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
-            getPropertiesMap().put("cameraType", "front");
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_CAMERA_TYPE, ICameraSingleton.CAMERA_TYPE_FRONT);
             break;
         default:
-            getPropertiesMap().put("cameraType", "unknown");
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_CAMERA_TYPE, "unknown");
             break;
         }
 
@@ -173,17 +163,17 @@ public class CameraObject extends CameraBase implements ICamera{
                 }
             }
 
-            getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
-            getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_MAX_WIDTH, String.valueOf(maxSize.getWidth()));
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_MAX_HEIGHT, String.valueOf(maxSize.getHeight()));
         }
         else {
             Logger.E(TAG, "Application has no permission to Camera access !!!");
-            getPropertiesMap().put("maxWidth", String.valueOf(0));
-            getPropertiesMap().put("maxHeight", String.valueOf(0));
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_MAX_WIDTH, String.valueOf(0));
+            getPropertiesMap().put(ICameraSingleton.PROPERTY_MAX_HEIGHT, String.valueOf(0));
         }
 
-        getPropertiesMap().put("desiredWidth", "0");
-        getPropertiesMap().put("desiredHeight", "0");
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_DESIRED_WIDTH, "0");
+        getPropertiesMap().put(ICameraSingleton.PROPERTY_DESIRED_HEIGHT, "0");
     }
 
     public void createRhoCacheFolder(){
@@ -193,7 +183,7 @@ public class CameraObject extends CameraBase implements ICamera{
     
     @Override
     public void setCompressionFormat(String compressionFormat, IMethodResult result) {
-        if (!compressionFormat.equalsIgnoreCase("jpg")) {
+        if (!compressionFormat.equalsIgnoreCase(ICameraSingleton.COMPRESSION_FORMAT_JPG)) {
             Logger.E(TAG, "Android does not support the compression format: " + compressionFormat);
             result.setError("Android does not support the compression format: " + compressionFormat);
         }
@@ -213,8 +203,8 @@ public class CameraObject extends CameraBase implements ICamera{
         if (!hasPermission()) {
             Logger.E(TAG, "Application has no permission to Camera access !!!");
             HashMap<String, Object> inResultMap = new HashMap<String,Object>();
-            inResultMap.put("message", "No CAMERA permission !");
-            inResultMap.put("status", "error");
+            inResultMap.put(ICameraSingleton.HK_MESSAGE, "No CAMERA permission !");
+            inResultMap.put(ICameraSingleton.HK_STATUS, ICameraSingleton.STATUS_ERROR);
             result.set(inResultMap);
             return;
         }
@@ -227,21 +217,20 @@ public class CameraObject extends CameraBase implements ICamera{
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
             actualPropertyMap.putAll(propertyMap);
-            setActualPropertyMap(actualPropertyMap);
 
-            String outputFormat = actualPropertyMap.get("outputFormat");
+            String outputFormat = actualPropertyMap.get(ICameraSingleton.PROPERTY_OUTPUT_FORMAT);
 
             String fileDir = storageDir.getAbsolutePath();
-            String fileName = actualPropertyMap.get("fileName");
+            String fileName = actualPropertyMap.get(ICameraSingleton.PROPERTY_FILE_NAME);
             if (fileName == null || fileName.isEmpty()){
                fileName = "IMG_" + dateFormat.format(new Date(System.currentTimeMillis()));
             }
             String filePath = fileDir + "/" + fileName + ".jpg";
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (outputFormat.equalsIgnoreCase("image")) {
+            if (outputFormat.equalsIgnoreCase(ICameraSingleton.OUTPUT_FORMAT_IMAGE)) {
                 ContentValues values = new ContentValues();
-                if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
+                if (!Boolean.parseBoolean(propertyMap.get(ICameraSingleton.PROPERTY_SAVE_TO_DEVICE_GALLERY))) {
                     values.put( MediaStore.Images.ImageColumns.DATA, filePath);
                     Logger.T(TAG, "Output filePath: " + filePath);
                 }
@@ -262,10 +251,10 @@ public class CameraObject extends CameraBase implements ICamera{
                     actualPropertyMap.put("captureUriFilePath", photoFile.getAbsolutePath());
                 }
 
-                propertyMap.put("dataURI", "");
+                propertyMap.put(ICameraSingleton.OUTPUT_FORMAT_DATAURI, "");
                 
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            } else if (outputFormat.equalsIgnoreCase("dataUri")) {}
+            } else if (outputFormat.equalsIgnoreCase(ICameraSingleton.OUTPUT_FORMAT_DATAURI)) {}
 
 
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
@@ -284,8 +273,8 @@ public class CameraObject extends CameraBase implements ICamera{
         List<Object> res = new ArrayList<Object>();
         for(Camera.Size size: mSupportedPictureSizes) {
             Map<String, Integer> resSize = new HashMap<String, Integer>();
-            resSize.put("width", Integer.valueOf(size.width));
-            resSize.put("height", Integer.valueOf(size.height));
+            resSize.put(ICameraSingleton.HK_WIDTH, Integer.valueOf(size.width));
+            resSize.put(ICameraSingleton.HK_HEIGHT, Integer.valueOf(size.height));
             res.add(resSize);
         }
         result.set(res);
@@ -308,10 +297,10 @@ public class CameraObject extends CameraBase implements ICamera{
     }
 
     protected ISize getDesiredSize() {
-        String strDesiredWidth = getActualPropertyMap().get("desiredWidth");
-        String strDesiredHeight = getActualPropertyMap().get("desiredHeight");
+        String strDesiredWidth = getPropertiesMap().get(ICameraSingleton.PROPERTY_DESIRED_WIDTH);
+        String strDesiredHeight = getPropertiesMap().get(ICameraSingleton.PROPERTY_DESIRED_HEIGHT);
 
-        if (Boolean.parseBoolean(getActualPropertyMap().get("useRealBitmapResize"))) {
+        if (Boolean.parseBoolean(getPropertiesMap().get(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE))) {
             return null;
         }
 
@@ -377,19 +366,19 @@ public class CameraObject extends CameraBase implements ICamera{
     }
 
     protected String getFlashMode() {
-        String flashParam = getActualPropertyMap().get("flashMode");
+        String flashParam = getPropertiesMap().get(ICameraSingleton.PROPERTY_FLASH_MODE);
         String flashMode = Camera.Parameters.FLASH_MODE_AUTO;
         if (flashParam != null) {
-            if (flashParam.equals("on")) {
+            if (flashParam.equals(ICameraSingleton.FLASH_ON)) {
                 flashMode = Camera.Parameters.FLASH_MODE_ON;
             } else
-                if (flashParam.equals("off")) {
+                if (flashParam.equals(ICameraSingleton.FLASH_OFF)) {
                     flashMode = Camera.Parameters.FLASH_MODE_OFF;
                 } else
-                    if (flashParam.equals("redEye")) {
+                    if (flashParam.equals(ICameraSingleton.FLASH_RED_EYE)) {
                         flashMode = Camera.Parameters.FLASH_MODE_RED_EYE;
                     } else
-                        if (flashParam.equals("torch")) {
+                        if (flashParam.equals(ICameraSingleton.FLASH_TORCH)) {
                             flashMode = Camera.Parameters.FLASH_MODE_TORCH;
                         }
         }
@@ -398,10 +387,10 @@ public class CameraObject extends CameraBase implements ICamera{
     }
 
     protected String getColorMode() {
-        String colorParam = getActualPropertyMap().get("colorModel");
+        String colorParam = getPropertiesMap().get(ICameraSingleton.PROPERTY_COLOR_MODEL);
         String colorMode = Camera.Parameters.EFFECT_NONE;
         if (colorParam != null) {
-            if (colorParam.equals("grayscale")) {
+            if (colorParam.equals(ICameraSingleton.COLOR_MODEL_GRAYSCALE)) {
                 colorMode = Camera.Parameters.EFFECT_MONO;
             }
         }
@@ -423,208 +412,91 @@ public class CameraObject extends CameraBase implements ICamera{
             mCameraUsers--;
             if (mCameraUsers == 0) {
                 getCamera().release();
+
             }
         }
     }
 
 
-
-    @Override
-    public void getCameraType(IMethodResult result){
-        //TODO!!!
-    }
-
-    @Override
-    public void getMaxWidth(IMethodResult result){
-        //TODO!!!
-    }
-
-    @Override
-    public void getMaxHeight(IMethodResult result){
-        //TODO!!!
-    }
-
-    @Override
-    public void getDesiredWidth(IMethodResult result){
-        //TODO
-    }
-    @Override
-    public void setDesiredWidth(int desiredWidth, IMethodResult result){
-        //TODO
-    }
-    @Override
-    public void getDesiredHeight(IMethodResult result){
-        //TODO
-    }
-    @Override
-    public void setDesiredHeight(int desiredHeight, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getFileName(IMethodResult result){
-        //TODO
-    }
-    @Override
-    public void setFileName(String fileName, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getCompressionFormat(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getOutputFormat(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setOutputFormat(String outputFormat, IMethodResult result){
-        //TODO
-    }
-
-    
-    @Override
-    public void getColorModel(IMethodResult result){
-        //TODO
-    }
-    
-    @Override
-    public void setColorModel(String colorModel, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getFlashMode(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setFlashMode(String flashMode, IMethodResult result){
-        //TODO
-    }
-
-
-    @Override
-    public void getSaveToDeviceGallery(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setSaveToDeviceGallery(boolean saveToDeviceGallery, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getCaptureSound(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setCaptureSound(String captureSound, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getUseRealBitmapResize(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setUseRealBitmapResize(boolean useRealBitmapResize, IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void getUseRotationBitmapByEXIF(IMethodResult result){
-        //TODO
-    }
-
-    @Override
-    public void setUseRotationBitmapByEXIF(boolean useRotationBitmapByEXIF, IMethodResult result){
-        //TODO
-    }
-
-
-
     /* Here comes the stubs */
+
+    void notSupported(IMethodResult result){
+        result.setError("Not supported");
+    }
 
     @Override
     public void capture(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void showPreview(Map<String, String> propertyMap, IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void hidePreview(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void getEnableEditing(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setEnableEditing(boolean enableEditing, IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void getPreviewWidth(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setPreviewWidth(int previewWidth, IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void getPreviewHeight(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setPreviewHeight(int previewHeight, IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
-
     
     @Override
     public void getAimMode(IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setAimMode(String aimMode, IMethodResult result){
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void getPreviewLeft(IMethodResult result) {
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setPreviewLeft(int previewLeft, IMethodResult result) {
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void getPreviewTop(IMethodResult result) {
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     @Override
     public void setPreviewTop(int previewTop, IMethodResult result) {
-        //NOT SUPPORTED
+        notSupported(result);
     }
 
     

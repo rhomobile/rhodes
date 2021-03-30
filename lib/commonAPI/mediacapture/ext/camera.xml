@@ -325,7 +325,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_format" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
                         </PARAM>
                     </PARAMS>

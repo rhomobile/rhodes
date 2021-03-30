@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -41,6 +43,7 @@ import android.content.pm.PackageManager;
 import android.Manifest;
 import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
+import android.media.MediaPlayer;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
@@ -52,6 +55,7 @@ import com.rhomobile.rhodes.extmanager.IRhoListener;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rho.camera.ICameraSingleton;
 
 public class CameraRhoListener extends AbstractRhoListener implements IRhoListener {
 
@@ -174,6 +178,24 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 	}
 
 
+    private void playMusic(String musicPath) {
+        MediaPlayer mp = new MediaPlayer();
+        try {
+            mp.setDataSource(RhoFileApi.openFd(musicPath));
+            mp.prepare();
+            mp.start();
+            Thread.sleep(3000);
+            mp.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(mp != null){
+            mp.release();
+            mp = null;
+        }
+    }
+
 	@Override
 	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
 		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
@@ -187,14 +209,25 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: [" + getActualPropertyMap() + "]");
 		boolean fromGallery = (getActualPropertyMap().get("fromGallery") == "true");
+
+		if (!fromGallery && getActualPropertyMap().containsKey(ICameraSingleton.PROPERTY_CAPTURE_SOUND)){
+            Runnable music= new Runnable(){
+                public void run() {
+                    playMusic(getActualPropertyMap().get(ICameraSingleton.PROPERTY_CAPTURE_SOUND));
+                }
+            };
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.submit(music);
+        }
+
 		try {
 			if (resultCode == Activity.RESULT_OK){
 				Logger.T(TAG, "resultCode == Activity.RESULT_OK");
 				getActualPropertyMap().put("default_camera_key_path", "");
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
 				rename = "IMG_" + dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
-				if(propertyMap.containsKey("fileName")){
-					rename = propertyMap.get("fileName") + ".jpg";
+				if(propertyMap.containsKey(ICameraSingleton.PROPERTY_FILE_NAME)){
+					rename = propertyMap.get(ICameraSingleton.PROPERTY_FILE_NAME) + ".jpg";
 				}
 
 				BitmapFactory.Options options_only_size = new BitmapFactory.Options();
@@ -242,7 +275,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 						e1.printStackTrace();
 					}
 
-					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+					if (!getActualPropertyMap().containsKey(ICameraSingleton.PROPERTY_FILE_NAME) && getActualPropertyMap().get("ChoosePicture_Key") == null){
 						File file = new File(curUri.getPath());
 						renameFile(file);
 					}
@@ -260,7 +293,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					Logger.T(TAG, "captureUri != null");
 					curUri = captureUri;
 
-					if (getActualPropertyMap().get("dataURI") == null) {
+					if (getActualPropertyMap().get(ICameraSingleton.OUTPUT_FORMAT_DATAURI) == null) {
 						Logger.T(TAG, "getActualPropertyMap().get(dataURI) == null");
 						Logger.T(TAG, "curUri [" + curUri + "]");
 
@@ -310,7 +343,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 							File fileToDelete = new File(imgPath);
 							imgPath = copyImg(imgPath);
 
-							if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
+							if (!Boolean.parseBoolean(propertyMap.get(ICameraSingleton.PROPERTY_SAVE_TO_DEVICE_GALLERY))) {
 								deleteFile(fileToDelete);
 						    }
 
@@ -338,13 +371,13 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					String dataDir = RhodesActivity.safeGetInstance().getApplicationInfo().dataDir;
 					dataDir = dataDir + curPath.substring(curPath.lastIndexOf("/") );
 
-					if(getActualPropertyMap().get("fileName") == null)
+					if(getActualPropertyMap().get(ICameraSingleton.PROPERTY_FILE_NAME) == null)
 					{
-						getActualPropertyMap().put("fileName", dataDir);
+						getActualPropertyMap().put(ICameraSingleton.PROPERTY_FILE_NAME, dataDir);
 					}
 
-					targetPath = getActualPropertyMap().get("fileName");
-					if (!getActualPropertyMap().get("fileName").contains(".jpg")){
+					targetPath = getActualPropertyMap().get(ICameraSingleton.PROPERTY_FILE_NAME);
+					if (!getActualPropertyMap().get(ICameraSingleton.PROPERTY_FILE_NAME).contains(".jpg")){
 						targetPath = targetPath + ".jpg";
 					}
 
@@ -403,7 +436,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		try {
 			BitmapFactory.decodeStream(new FileInputStream(f), null, options_only_size);
-			if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+			if (!getActualPropertyMap().containsKey(ICameraSingleton.PROPERTY_FILE_NAME) && getActualPropertyMap().get("ChoosePicture_Key") == null){
 				renameFile(f);
 			}
 		} catch (FileNotFoundException e) {
@@ -452,7 +485,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 	private void applyPostCaptureTransforms(BitmapFactory.Options options_only_size) {
 		int rotate_angle = 0;
 
-		String strExifRotation = getActualPropertyMap().get("useRotationBitmapByEXIF");
+		String strExifRotation = getActualPropertyMap().get(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF);
 		if ((strExifRotation != null) && (Boolean.parseBoolean(strExifRotation))) {
 			// detect original exif rotation
 			String bitmapPath = imgPath;
@@ -482,7 +515,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		}
 
 
-		String useRealBitmapResize = getActualPropertyMap().get("useRealBitmapResize");
+		String useRealBitmapResize = getActualPropertyMap().get(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE);
 		if ((useRealBitmapResize != null) && (Boolean.parseBoolean(useRealBitmapResize))) {
 			Logger.T(TAG, "$$$ real resize start $$$");
 			try {
@@ -498,11 +531,11 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 				int idesiredWidth = 0;
 				int idesiredHeight = 0;
-				if (getActualPropertyMap().get("desiredWidth") != null) {
-					idesiredWidth = Integer.valueOf(getActualPropertyMap().get("desiredWidth"));
+				if (getActualPropertyMap().get(ICameraSingleton.PROPERTY_DESIRED_WIDTH) != null) {
+					idesiredWidth = Integer.valueOf(getActualPropertyMap().get(ICameraSingleton.PROPERTY_DESIRED_WIDTH));
 				}
-				if (getActualPropertyMap().get("desiredHeight") != null) {
-					idesiredHeight = Integer.valueOf(getActualPropertyMap().get("desiredHeight"));
+				if (getActualPropertyMap().get(ICameraSingleton.PROPERTY_DESIRED_HEIGHT) != null) {
+					idesiredHeight = Integer.valueOf(getActualPropertyMap().get(ICameraSingleton.PROPERTY_DESIRED_HEIGHT));
 				}
 				Logger.T(TAG, " FILE [" + bitmapPath + "]	 orig[" + picChoosen_imagewidth + "x" + picChoosen_imageheight +
 					"] scaleto [" + idesiredHeight + "x" + idesiredHeight + "]");
@@ -569,8 +602,8 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		}
 
 		// Grayscale
-		String strColorMode = getActualPropertyMap().get("colorModel");
-		if ((strColorMode != null) && (strColorMode.equalsIgnoreCase("grayscale")) ) {
+		String strColorMode = getActualPropertyMap().get(ICameraSingleton.PROPERTY_COLOR_MODEL);
+		if ((strColorMode != null) && (strColorMode.equalsIgnoreCase(ICameraSingleton.COLOR_MODEL_GRAYSCALE)) ) {
 			Logger.T(TAG, "$$$ recolor to grayscale start $$$");
 
 			try {
@@ -671,30 +704,30 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		protected Void doInBackground(Void... params) {
 
 			if(resCode == -1){
-				if (intent != null && intent.hasExtra("error")) {
-					inResultMap.put("message", (String) intent.getStringExtra("error"));
+				if (intent != null && intent.hasExtra(ICameraSingleton.STATUS_ERROR)) {
+					inResultMap.put(ICameraSingleton.HK_MESSAGE, (String) intent.getStringExtra("error"));
 					if(intent.getStringExtra("error").contains("\\"))
-					inResultMap.put("message", "File path is invalid.");
-					inResultMap.put("status", "error");
+					inResultMap.put(ICameraSingleton.HK_MESSAGE, "File path is invalid.");
+					inResultMap.put(ICameraSingleton.HK_STATUS, ICameraSingleton.STATUS_ERROR);
 				}
 				else{
-					inResultMap.put("status","ok");
+					inResultMap.put(ICameraSingleton.HK_STATUS, ICameraSingleton.STATUS_OK);
 					if((getActualPropertyMap().get("default_camera_key_path") != null) && (getActualPropertyMap().get("default_camera_key_path") != "")){
-						inResultMap.put("imageUri",  imgPath);
-						inResultMap.put("imageFormat",   "jpg");
+						inResultMap.put(ICameraSingleton.HK_IMAGE_URI,  imgPath);
+						inResultMap.put(ICameraSingleton.HK_IMAGE_FORMAT,   ICameraSingleton.COMPRESSION_FORMAT_JPG);
 					}else{
-						inResultMap.put("imageUri",  curUri.toString());
-						inResultMap.put("imageFormat",   "jpg");
+						inResultMap.put(ICameraSingleton.HK_IMAGE_URI,  curUri.toString());
+						inResultMap.put(ICameraSingleton.HK_IMAGE_FORMAT,   ICameraSingleton.COMPRESSION_FORMAT_JPG);
 					}
 				
 					if(picChoosen_imagewidth > 0){
-						inResultMap.put("imageWidth",  String.valueOf(picChoosen_imagewidth));
-						inResultMap.put("imageHeight",  String.valueOf(picChoosen_imageheight));
+						inResultMap.put(ICameraSingleton.HK_IMAGE_WIDTH,  String.valueOf(picChoosen_imagewidth));
+						inResultMap.put(ICameraSingleton.HK_IMAGE_HEIGHT,  String.valueOf(picChoosen_imageheight));
 					}
 					else{
 						if (intent != null && intent.getExtras() != null) {
-							inResultMap.put("imageWidth",  String.valueOf(intent.getExtras().get("IMAGE_WIDTH")));
-							inResultMap.put("imageHeight",  String.valueOf(intent.getExtras().get("IMAGE_HEIGHT")));
+							inResultMap.put(ICameraSingleton.HK_IMAGE_WIDTH,  String.valueOf(intent.getExtras().get("IMAGE_WIDTH")));
+							inResultMap.put(ICameraSingleton.HK_IMAGE_HEIGHT,  String.valueOf(intent.getExtras().get("IMAGE_HEIGHT")));
 						}else{
 							if (intent == null){
 								Logger.W(TAG, "Can't extract image size from intent (null intent)");
@@ -707,14 +740,14 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 			}else if(resCode == 0){
 
-				inResultMap.put("message", "User canceled operation.");
+				inResultMap.put(ICameraSingleton.HK_MESSAGE, "User canceled operation.");
 				if (intent != null && intent.hasExtra("error")) {
-					inResultMap.put("message", (String) intent.getStringExtra("error"));
+					inResultMap.put(ICameraSingleton.HK_MESSAGE, (String) intent.getStringExtra("error"));
 					if(intent.getStringExtra("error").contains("\\"))
-					inResultMap.put("message", "File path is invalid.");
-					inResultMap.put("status", "error");
+					inResultMap.put(ICameraSingleton.HK_MESSAGE, "File path is invalid.");
+					inResultMap.put(ICameraSingleton.HK_STATUS, ICameraSingleton.STATUS_ERROR);
 				} else {
-					inResultMap.put("status", "cancel");
+					inResultMap.put(ICameraSingleton.HK_STATUS, ICameraSingleton.STATUS_CANCELLED);
 				}
 			}
 			return null;

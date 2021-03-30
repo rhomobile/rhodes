@@ -86,10 +86,10 @@ public class CameraSingleton implements ICameraSingleton {
     @Override
     public void getCameraByType(String cameraType, IMethodResult result) {
         int cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
-        if (cameraType.equalsIgnoreCase("front")) {
+        if (cameraType.equalsIgnoreCase(ICameraSingleton.CAMERA_TYPE_FRONT)) {
             Logger.T(TAG, "Requesting front camera.");
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
-        } else if (cameraType.equalsIgnoreCase("back")) {
+        } else if (cameraType.equalsIgnoreCase(ICameraSingleton.CAMERA_TYPE_BACK)) {
             Logger.T(TAG, "Requesting back camera.");
             cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
         } else {
@@ -116,19 +116,19 @@ public class CameraSingleton implements ICameraSingleton {
     	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
 
-        if(propertyMap.get("useRealBitmapResize") == null) {
-            propertyMap.put("useRealBitmapResize", "true");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE) == null) {
+            propertyMap.put(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE, "true");
         }
-        if(propertyMap.get("useRotationBitmapByEXIF") == null) {
-            propertyMap.put("useRotationBitmapByEXIF", "true");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF) == null) {
+            propertyMap.put(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF, "true");
         }
 
         Intent intent = null;
         String outputFormat = null;
-        if(propertyMap.get("outputFormat") == null){
-            propertyMap.put("outputFormat", "image");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_OUTPUT_FORMAT) == null){
+            propertyMap.put(ICameraSingleton.PROPERTY_OUTPUT_FORMAT, ICameraSingleton.OUTPUT_FORMAT_IMAGE);
         }
-        outputFormat = propertyMap.get("outputFormat");
+        outputFormat = propertyMap.get(ICameraSingleton.PROPERTY_OUTPUT_FORMAT);
 
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
@@ -157,14 +157,14 @@ public class CameraSingleton implements ICameraSingleton {
 
         propertyMap.put("fromGallery", "true");
         String fileName = null;
-        if(!propertyMap.containsKey("fileName")){
+        if(!propertyMap.containsKey(ICameraSingleton.PROPERTY_FILE_NAME)){
             fileName = "/sdcard/DCIM/Camera/";
         }
         else{
-            fileName = propertyMap.get("fileName");
+            fileName = propertyMap.get(ICameraSingleton.PROPERTY_FILE_NAME);
         }
         if (fileName != null && fileName.length() > 0) {
-            if (outputFormat.equalsIgnoreCase("image")) {
+            if (outputFormat.equalsIgnoreCase(ICameraSingleton.OUTPUT_FORMAT_IMAGE)) {
                 String tmpPath = getTemporaryLoc(fileName);
                 if (tmpPath == null) {
                     throw new RuntimeException("Failed to access shared temporary folder");
@@ -328,7 +328,6 @@ public class CameraSingleton implements ICameraSingleton {
     public void copyImageToDeviceGallery(String pathToImage, IMethodResult result) {
         copyImageFileToDeviceGallery(pathToImage);
     }
-
 
 
     public void copyImageToDeviceGalleryOld(String pathToImage, IMethodResult result) {
