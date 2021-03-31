@@ -329,3 +329,5 @@ platform/shared/qt/rhodes/resources/rho.png
 
 lib/extensions/fcm-push/ext/iphone/Frameworks/*
 lib/extensions/fcm-push/ext/iphone/Frameworks/Frameworks.zip
+
+**/com/rho/barcode/EngineChooser.java
