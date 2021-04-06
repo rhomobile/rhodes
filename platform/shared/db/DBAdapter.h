@@ -93,18 +93,18 @@ public:
 
     CDBAdapter(const char* szDBPartition, boolean bNoRubyLock) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
         m_mxRuby(bNoRubyLock), m_bUIWaitDB(false), m_nTransactionCounter(0) {
-            rhoInitSQLitePageSize(4096);
             if (usingDeprecatedPageSize()){
                 rhoInitSQLitePageSize(1024);
-            }
-            
+            }else{
+                rhoInitSQLitePageSize(4096);
+            }            
         }
     ~CDBAdapter(void){}
     bool usingDeprecatedPageSize(){
         const char* depEncrypt = get_app_build_config_item("use_deprecated_encryption");
         return (depEncrypt && strcmp(depEncrypt, "1") == 0);
     }
-
+    int checkoutRealPageSize(String &strDbPath, bool isExist, bool isEncrypted);
     void open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState);
     void close(boolean bCloseRubyMutex = true);
     sqlite3* getDbHandle(){ return m_dbHandle; }
