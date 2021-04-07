@@ -55,7 +55,7 @@ public:
 
     const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
     {
-        return nullptr;
+        return NULL;
     }
 
     virtual IRhoCrypt* createRhoCrypt();

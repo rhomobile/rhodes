@@ -42,8 +42,11 @@
 #endif //RHO_NO_RUBY
 
 #include <sstream>
-
-
+#ifdef WINCE
+#include <errno.h>
+#include <stdio.h>
+#define strerror(n) _T("some error")
+#endif
 #undef DEBUG_SQL_TRACE
 
 int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
@@ -983,7 +986,7 @@ String CDBAdapter::tauDecryptTextFile(const String fullPath){
     char* decrypedFileBuff = new char [encrytedFileSize*2];
     
     size_t loaded = fread(encryptedFileBuff, 1, encrytedFileSize, fp);
-    if (loaded < encrytedFileSize) {
+    if ((int)loaded < encrytedFileSize) {
         if (ferror(fp) ) {
             RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)0, strerror(errno));
         } else if ( feof(fp) ) {
@@ -1001,8 +1004,11 @@ String CDBAdapter::tauDecryptTextFile(const String fullPath){
     delete[] encryptedFileBuff;
     String result = String(const_cast< const char * > (decrypedFileBuff), decrytedFileSize);
     delete[] decrypedFileBuff;
-
+    #ifndef WINCE
     return std::move(result);
+    #else
+    return result;
+    #endif
 }
 
 void CDBAdapter::createSchema()

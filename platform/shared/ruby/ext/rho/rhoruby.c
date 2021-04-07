@@ -193,14 +193,16 @@ void Init_transcoders() {
 
 void RhoRubyStart()
 {
-#ifndef RHO_RUBY_COMPILER
-    s_ruby_gc_lock = rho_mutex_create();
-#endif
-    const char* szRoot = rho_native_rhopath();
 //RHO
+    const char* szRoot = rho_native_rhopath();
 #if defined(_WIN32)
     char* av[] = { "" };
 #endif
+
+#ifndef RHO_RUBY_COMPILER
+    s_ruby_gc_lock = rho_mutex_create();
+#endif
+//RHO
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -218,9 +220,10 @@ void RhoRubyStart()
     ruby_init();
 
     Init_IO();
+#ifndef WINCE
     Init_wait();
     Init_nonblock();
-
+#endif
     Init_encdb();
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_transcode();
@@ -271,9 +274,9 @@ void RhoRubyStart()
     Init_socket(); //+
     Init_RhoEvent();
     Init_Calendar();
-        
+    #ifndef WINCE
     Init_date_core();
-
+    #endif
     Init_Extensions();
 
 #else // OS_WP8 is set
@@ -287,8 +290,9 @@ void RhoRubyStart()
 
 	Init_socket();
 	Init_stringio();
-        
+    #ifndef WINCE
     Init_date_core();
+    #endif
 
 	Init_Extensions();
 #endif //OS_WP8
@@ -1040,12 +1044,16 @@ void rho_ruby_holdValue(VALUE val)
 
 void rho_ruby_releaseValue(VALUE val)
 {
-    rho_ruby_gc_lock();
-
-    VALUE ary_ary = GET_VM()->mark_object_ary;
-
-    int bucket = RARRAY_LEN(ary_ary)-1;
+    //RHO
+    VALUE ary_ary;
+    int bucket;
     int done = 0;
+    
+    rho_ruby_gc_lock();
+    ary_ary = GET_VM()->mark_object_ary;
+    bucket = RARRAY_LEN(ary_ary)-1;
+    //RHO
+
     for ( ; bucket >= 0; bucket-- ) {
         VALUE ary = rb_ary_at( ary_ary, INT2NUM(bucket) );
 

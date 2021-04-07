@@ -63,9 +63,9 @@ end
 
 module WM
   def self.config
+    $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
     unless $sdk
       #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
       #value = ENV['rho_wm_sdk']
       #$sdk = value if value
       $sdk = "MC3000c50b (ARMV4I)"
@@ -84,7 +84,7 @@ module WM
     $detoolappflag = $js_application == true ? "js" : "ruby"
     $tmp_dir = File.join($bindir, "tmp")
 
-    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
+    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)" or $sdk == "Windows Mobile 6.5 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
     else
         $targetdir = $bindir + "/target/#{$sdk}"
@@ -589,7 +589,14 @@ def build_cab
   
   Jake.run3("cscript #{args.join(' ')}", dir)
 
+begin
   Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
+rescue Exception => e
+  puts e
+  puts "Make sure that  [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem] NtfsDisable8dot3NameCreation is set to 0"
+  exit 1
+end
+  
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
@@ -627,7 +634,7 @@ end
 namespace "config" do
   task :set_wince_platform do
     $current_platform = "wm" unless $current_platform
-    $sdk = "MC3000c50b (ARMV4I)"
+    $sdk = "MC3000c50b (ARMV4I)" unless $sdk
   end
 
   task :set_wm_platform do
@@ -666,7 +673,7 @@ namespace "build" do
         $current_platform = "wm"
       elsif ( args.sdk == 'WinCE' ) 
         $current_platform = "wm"
-        $sdk = "MC3000c50b (ARMV4I)"
+        $sdk = "MC3000c50b (ARMV4I)" unless $sdk
       else
         throw "You must pass in sdk(Win32, WM, WinCE)"
       end
