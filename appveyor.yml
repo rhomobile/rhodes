@@ -2,20 +2,7 @@ version: '{branch}.{build}'
 platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
-  GITHUB_APPVEYOR_TOKEN:
-    secure: 7Vs1V9MjrPNKV9vHNkNN07BJjaAs1WEF/F9Mb+dQLGSwnFK9lpstnJvGyawWFkdJ
   matrix:
-    #- wm_kitchensinkJS:
-    #  APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #  QTDIR: C:\Qt\5.6\msvc2013
-    #  testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
-    #  test_app_folder: C:\TAU\kitchensinkJS\
-    #  build_command: "device:wm:production"
-    #  app_name: KitchensinkJS
-    #  target_os: wm
-    #  target_artefact_path: C:\TAU\kitchensinkJS\bin\target\wm\
-    #  target_os_wm: wm
-      
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
@@ -107,6 +94,8 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       #target_artefact_file_name: framework_spec-setup.exe
 
+
+
     - win32_kitchensinkJS:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
@@ -147,17 +136,6 @@ build: off
 install:
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
-
-  - md C:\TAU\downloads
-  - cd C:\TAU\downloads
-
-  - cd C:\
-  - dir
-  #- curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
-  #- msiexec /a MotorolaSDK.msi /passive
-  #- timeout 100
-
-
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
@@ -166,36 +144,9 @@ install:
 #  - bundler --version
   
 before_test:
-   
-  #- IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet
-
-  #- IF DEFINED target_os_wm curl -fsS -o aip.zip http://files.tau-technologies.com/wince/aip.zip
-  #- IF DEFINED target_os_wm 7z x aip.zip -y
-  #- IF DEFINED target_os_wm timeout 10  
-  
-  #- IF DEFINED target_os_wm curl -fsS -o 30XXC50BxxPS010403.exe http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe
-  #- IF DEFINED target_os_wm "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "C:\TAU\downloads\30XXC50BxxPS010403.exe" /UiAutomation /Configuration "Default"
-  #- IF DEFINED target_os_wm timeout 10
-  
-  #- IF DEFINED target_os_wm curl -fsS -o EMDK-C-020701.exe http://files.tau-technologies.com/wince/EMDK-C-020701.exe
-  #- IF DEFINED target_os_wm "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "EMDK-C-020701.exe" /UiAutomation /Configuration "Default"
-  #- IF DEFINED target_os_wm timeout 10
-
-
-
-  #- IF DEFINED target_os_wm curl -fsS -o EMDK.msi http://files.tau-technologies.com/wince/rebuild/EMDK.msi
-  #- IF DEFINED target_os_wm EMDK.msi /passive
-  #- IF DEFINED target_os_wm timeout 10
-  
-  #- IF DEFINED target_os_wm curl -fsS -o SDK.msi http://files.tau-technologies.com/wince/rebuild/SDK.msi
-  #- IF DEFINED target_os_wm SDK.msi /passive
-  #- IF DEFINED target_os_wm timeout 10
-  
   - ruby -v
   - gem -v
   - bundle -v
-
-  - cd C:\TAU\rhodes
   - cp rhobuild.yml.example rhobuild.yml
   - ruby C:\TAU\rhodes\lib\build\buildgem.rb
   - set /P BUILD_VERSION=<version
@@ -207,17 +158,12 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
-  - git clone https://%GITHUB_APPVEYOR_TOKEN%:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
-  - cd C:\TAU\rho-tau-extensions
-  - rake gem
-  - set /P BUILD_VERSION_RHOTAU=<version
-  - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
+  #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
   - cd C:\TAU\
-  - rmdir /Q /S downloads
   - rmdir /Q /S rhodes
   - rmdir /Q /S rhoconnect-client
-  - rmdir /Q /S rho-tau-extensions
 
 test_script:
   - git clone -b master %testable_application_repository% %test_app_folder%
