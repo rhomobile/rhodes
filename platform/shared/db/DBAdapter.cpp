@@ -216,27 +216,28 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
 int CDBAdapter::checkoutRealPageSize(String &strDbPath, bool isExist, bool isEncrypted){
     uint16_t pageSize = 0;
     if (isExist){
-        FILE * fp = fopen(strDbPath.c_str(),"rb");
+        FILE * fp = fopen(strDbPath.c_str(), "rb");
         if (fp != NULL){
             const int offset = 16;
             fseek(fp, 0, SEEK_END);
-            int encrytedFileSize = ftell(fp);
+            int fileSize = ftell(fp);
             
-            if (encrytedFileSize > 2){
-                const int bufferSize = 1024;
-                unsigned char* originFileBuff = new unsigned char[bufferSize];
-                if (isEncrypted){
-                    fseek(fp, offset, SEEK_SET);
-                    fread(originFileBuff, 1, ((encrytedFileSize - offset) > bufferSize ? bufferSize : (encrytedFileSize - offset)), fp);
+            static const int bufferSize = 32; //AES 256 key size in bytes
 
+            if (fileSize > (bufferSize + offset)){
+                unsigned char* originFileBuff = new unsigned char[bufferSize];
+                fseek(fp, offset, SEEK_SET);
+                fread(originFileBuff, 1, bufferSize, fp);
+                if (isEncrypted){
                     if ( getCrypt() ){
-                        bool b = getCrypt()->db_decrypt(m_strDbPartition.c_str(), bufferSize, originFileBuff);
-                    }
-                                                      
+                        if (getCrypt()->db_decrypt(m_strDbPartition.c_str(), bufferSize, originFileBuff) == 0){
+                            return 0;
+                        }
+                    } else{
+                        return 0;
+                    }                                                     
                     pageSize = ((originFileBuff[0] << 8) | originFileBuff[1]);
                 }else{
-                    fseek(fp, offset, SEEK_SET);
-                    fread(originFileBuff, 1, 2, fp);
                     pageSize = ((originFileBuff[0] << 8) | originFileBuff[1]);
                 }
                 
@@ -244,7 +245,7 @@ int CDBAdapter::checkoutRealPageSize(String &strDbPath, bool isExist, bool isEnc
                 delete[] originFileBuff;
                 
             }else{
-                RAWTRACE1("ERROR: CDBAdapter::checkoutPageSize file size is %d", encrytedFileSize);
+                RAWTRACE1("ERROR: CDBAdapter::checkoutPageSize file size is %d", fileSize);
             }
 
             fclose(fp);
