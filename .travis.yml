@@ -20,7 +20,7 @@ script:
 #- rvm gemset create rhodes
 #- rvm gemset use rhodes
 
-- bundle install
+#- bundle install
 - gem list
 
 #TODO: build RhoRuby executable for host platform
