@@ -17,10 +17,10 @@ script:
 - cd $TRAVIS_BUILD_DIR
 #- rvm gemset create rho_build_gem
 #- rvm gemset use rho_build_gem
-#- rvm gemset create rhodes
-#- rvm gemset use rhodes
+- rvm gemset create rhodes
+- rvm gemset use rhodes
 
-#- bundle install
+- bundle install
 - gem list
 
 #TODO: build RhoRuby executable for host platform
@@ -122,6 +122,7 @@ before_cache:
   - gem uninstall rho-tau-extensions -a -x --force
   - gem uninstall rhoconnect-client -a -x --force
   - gem uninstall rhodes -a -x --force
+  - gem uninstall bundler -a -x --force
 
 android:
   components:
