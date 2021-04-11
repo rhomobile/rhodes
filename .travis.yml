@@ -17,8 +17,8 @@ script:
 - cd $TRAVIS_BUILD_DIR
 #- rvm gemset create rho_build_gem
 #- rvm gemset use rho_build_gem
-- rvm gemset create rhodes
-- rvm gemset use rhodes
+#- rvm gemset create rhodes
+#- rvm gemset use rhodes
 
 - bundle install
 - gem list
@@ -119,9 +119,9 @@ cache:
   - /home/travis/.rvm/    
 
 before_cache:
-  - gem uninstall rhodes -a -x --force
-  - gem uninstall rhoconnect-client -a -x --force
   - gem uninstall rho-tau-extensions -a -x --force
+  - gem uninstall rhoconnect-client -a -x --force
+  - gem uninstall rhodes -a -x --force
 
 android:
   components:
@@ -190,7 +190,6 @@ matrix:
     osx_image: xcode11.4
     env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
-
   - language: objective-c
     os: osx
     osx_image: xcode12
@@ -253,6 +252,15 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.3.8" ANDROID_ABIS="arm,x86,aarch64"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="27" NDK_NUMBER="21"  RHO_RUBY="ruby-2.6.5" ANDROID_ABIS="arm,x86,aarch64"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="30" NDK_NUMBER="21"  RHO_RUBY="ruby-2.7.1" ANDROID_ABIS="arm,x86,aarch64"
+
 
   - language: android
     os: linux
