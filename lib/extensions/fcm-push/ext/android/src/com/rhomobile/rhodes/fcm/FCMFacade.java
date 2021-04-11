@@ -126,7 +126,7 @@ public final class FCMFacade {
             Logger.T(TAG, "FCM: registation of application");
             clientToken = "";
             clientToken = FirebaseInstanceId.getInstance().getToken();
-            if ((clientToken != "")&&(clientToken != null)){
+            if ((clientToken != "") && (clientToken != null)){
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
                 Logger.T(TAG, "FCM: registation successfully");
             }else{
@@ -134,7 +134,7 @@ public final class FCMFacade {
                 Logger.T(TAG, "FCM: can't get token, try to refresh later");
             }
         }catch(Exception exc){
-            Logger.T(TAG, "FCM: can't handle registation");
+            Logger.T(TAG, "FCM: can't handle registation " + exc.toString() );
         }
         Logger.T(TAG, "FCM: token = " + clientToken);
     }
