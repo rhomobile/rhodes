@@ -64,9 +64,14 @@ public:
         return m_pSsl;
     }
 
+    void registerNetRequestBuilder( const string& name, INetRequestBulder& builder );
+    void setDefaultNetRequestBuilder( const string& name );
+
 private:    
     CMutex m_sslMutex;
     common::CAutoPtr<net::ISSL> m_pSsl;    
+
+    map<const string&, INetRequestBuilder& builder>;
 };
 
 } // namespace common
