@@ -78,7 +78,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Timer_extension();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_UWP) || defined(OS_WINCE) || defined(OS_SAILFISH) || defined(OS_LINUX) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
+#if defined(OS_ANDROID) || defined(OS_UWP) || defined(OS_WINCE) || defined(OS_SAILFISH) || defined(OS_LINUX) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_WINDOWS_DESKTOP)
     Init_Config_extension();
 #endif
 }
