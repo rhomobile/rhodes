@@ -3152,6 +3152,20 @@ namespace "build" do
 
       copy_generated_sources_and_binaries
 
+      #cocoapods support
+      podfile_app_path = File.join($app_path, "Podfile")
+      if File.exists?(podfile_app_path)
+          podfile_project_path = File.join($app_path, 'project','iphone', 'Podfile')
+          cp podfile_app_path,podfile_project_path
+
+          chdir File.join($app_path, 'project','iphone')
+
+          puts "We found Podfile in app's root and copy them to iphone project folder. Now we run 'pod install' to generate workspace, etc."
+          Jake.run('pod', ['install'])
+
+          chdir $app_path
+      end
+
       print_timestamp('build:iphone:make_xcode_project FINISH')
 
     end
@@ -3171,7 +3185,8 @@ namespace "build" do
       print_timestamp('build:iphone:rhodes START')
       appname = generate_appname
       appname_fixed = generate_appname_fixed
-      appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
+      appname_camel = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1)
+      appname_project = appname_camel + ".xcodeproj"
 
       #saved_name = ''
       #saved_version = ''
@@ -3229,10 +3244,10 @@ namespace "build" do
       #chdir $config["build"]["iphonepath"]
       chdir File.join($app_path, "project","iphone")
 
-      args = ['build', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
+      simulator = $sdk =~ /iphonesimulator/
 
       additional_string = ''
-      if $sdk =~ /iphonesimulator/
+      if simulator
       #   args << '-arch'
       #   args << 'i386'
         additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
@@ -3244,6 +3259,22 @@ namespace "build" do
       if $enable_bitcode
           additional_string = additional_string + ' OTHER_CFLAGS="-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL"'
       end
+
+      #support cocoapods - check for workspave
+      workspace_path = File.join($app_path, "project", "iphone", appname_camel+".xcworkspace")
+      if File.exists?(workspace_path)
+          #we should build workspace instead of project !
+
+          build_path = File.join($app_path, "project", "iphone", '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos"))
+
+          args = ['build', '-workspace', appname_camel + ".xcworkspace", '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
+          additional_string = additional_string + " BUILT_PRODUCTS_DIR="+ build_path+" CONFIGURATION_BUILD_DIR="+build_path
+      else
+          args = ['build', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
+      end
+
+
+
 
       ret = 0
 

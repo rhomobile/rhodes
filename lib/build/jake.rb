@@ -547,6 +547,7 @@ class Jake
       if options[:nowait]
         retval = IO.popen(argv)
       else
+        puts "$$$ RUN COMMAND = "+argv.to_s  
         IO.popen(argv) do |f|
           while line = f.gets
             if block_given?
