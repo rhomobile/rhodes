@@ -3268,7 +3268,7 @@ namespace "build" do
           build_path = File.join($app_path, "project", "iphone", '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos"))
 
           args = ['build', '-workspace', appname_camel + ".xcworkspace", '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
-          additional_string = additional_string + " BUILT_PRODUCTS_DIR="+ build_path+" CONFIGURATION_BUILD_DIR="+build_path
+          additional_string = additional_string + " BUILT_PRODUCTS_DIR="+ build_path
       else
           args = ['build', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
       end
