@@ -255,6 +255,7 @@ matrix:
     os: linux
     env: RHO_TARGET="android"    RHO_APP="rhodes_fcm_test" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  SKIP_TESTS=1
 
+
 #  - language: android
 #    os: linux
 #    env: RHO_TARGET="android"    RHO_APP="todo-nodejs" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_TAU_EXTENSIONS="yes" SKIP_TESTS=1 ANDROID_ABIS="arm"
