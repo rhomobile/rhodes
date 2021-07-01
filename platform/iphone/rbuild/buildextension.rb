@@ -100,6 +100,7 @@ class IPhoneBuild
 
         # copy result to $targetdir
         FileUtils.cp result_lib,target_lib
+        FileUtils.cp result_lib,File.join($app_path, "project", "iphone", 'ExtLibs', 'lib'+ext_lib_name+'.a')
 
         puts "Build \""+ext_name+"\" extension : result library filepath ["+target_lib+"]"
 

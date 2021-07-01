@@ -882,6 +882,23 @@ def update_xcode_project_files_by_extensions
         replaces["<PLACEHOLDER FOR RESOURCES 04>"] << ("            "+uid1+" /* "+item+" in Resources */,")
     end
 
+    if ($ldflags_array != nil)
+        $ldflags_array.each do |libfile|
+            uid1 = "AC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+            uid2 = "BC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+            frameworks_index = frameworks_index + 1
+
+            libfilename = File.basename(libfile)
+
+            replaces["<PLACEHOLDER FOR FRAMEWORKS 01>"] << ("        "+uid1+" /* "+libfilename+" in Frameworks */ = {isa = PBXBuildFile; fileRef = "+uid2+" /* "+libfilename+" */; };")
+            replaces["<PLACEHOLDER FOR FRAMEWORKS 02>"] << ("        "+uid2+" /* "+libfilename+" */ = {isa = PBXFileReference; lastKnownFileType = "+"archive.ar"+"; name = "+libfilename+"; path = "+libfilename+"; sourceTree = \"<group>\"; };")
+            replaces["<PLACEHOLDER FOR FRAMEWORKS 03>"] << ("        "+uid1+" /* "+libfilename+" */,")
+            replaces["<PLACEHOLDER FOR FRAMEWORKS 04>"] << ("            "+uid2+" /* "+libfilename+" */,")
+        end
+    end
+
+
+
     IPhoneBuild.log Logger::DEBUG, "  ***** process XCode file START"
     File.new(fname,"r").read.each_line do |line|
        lines_instead_of_line = []
@@ -2342,6 +2359,7 @@ namespace "build" do
 
       result_lib = result_lib_folder + '/lib'+xcodetarget+'.a'
       target_lib = targetdir + '/lib'+xcodetarget+'.a'
+      lib_in_root = File.join($app_path, "project", "iphone", 'ExtLibs', 'lib'+xcodetarget+'.a')
 
       puts "BEGIN build xcode extension : ["+extpath+"]"
       puts "      result_lib : ["+result_lib+"]"
@@ -2407,6 +2425,7 @@ namespace "build" do
       end
 
       cp result_lib,target_lib
+      cp result_lib,lib_in_root
 
       Dir.chdir currentdir
       puts "END build xcode extension : ["+extpath+"]"
@@ -2765,8 +2784,9 @@ namespace "build" do
       if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
          target_dir = ENV["TARGET_TEMP_DIR"]
       else
-         target_dir = File.join($app_path, "/project/iphone") + "/build/rhorunner.build/#{$configuration}-" +
-            ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+         #target_dir = File.join($app_path, "/project/iphone") + "/build/rhorunner.build/#{$configuration}-" +
+         #    ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+         target_dir = File.join($app_path, "/project/iphone/ExtLibs")
       end
 
       build_extension_libs($sdk, target_dir)
@@ -3146,6 +3166,8 @@ namespace "build" do
       rm_rf File.join('project','iphone','toremoved')
       rm_rf File.join('project','iphone','toremovef')
 
+      mkdir_p File.join('project', 'iphone', 'ExtLibs')
+
       update_xcode_project_files_by_capabilities
       update_xcode_project_files_by_extensions
       update_xcodeproject_for_bitcode
@@ -3262,13 +3284,22 @@ namespace "build" do
 
       #support cocoapods - check for workspave
       workspace_path = File.join($app_path, "project", "iphone", appname_camel+".xcworkspace")
+
+      copy_from_derived = false
+
       if File.exists?(workspace_path)
           #we should build workspace instead of project !
 
           build_path = File.join($app_path, "project", "iphone", '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos"))
+          temp_path = File.join($app_path, "project", "iphone", "/build/rhorunner.build")
+          derived_path = File.join($app_path, "project", "iphone", "/build/deriveddata")
 
-          args = ['build', '-workspace', appname_camel + ".xcworkspace", '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
-          additional_string = additional_string + " BUILT_PRODUCTS_DIR="+ build_path
+          rhorunner_app_in_derived = File.join(derived_path, "Build", "Products", $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos"), "rhorunner.app")
+
+          copy_from_derived = true
+
+          args = ['build', '-workspace', appname_camel + ".xcworkspace", '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-quiet', '-derivedDataPath', "\""+derived_path+"\""]
+          #additional_string = additional_string + " BUILT_PRODUCTS_DIR="+ build_path+" CONFIGURATION_BUILD_DIR="+build_path+" PROJECT_TEMP_DIR="+temp_path+" BUILD_DIR="+build_path+" BUILD_ROOT="+build_path
       else
           args = ['build', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
       end
@@ -3280,6 +3311,11 @@ namespace "build" do
 
       if !$skip_build_rhodes_main
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir, :string_for_add_to_command_line => additional_string})
+
+        if copy_from_derived
+            mkdir_p build_path
+            cp_r rhorunner_app_in_derived, File.join(build_path, "rhorunner.app")
+        end
       end
 
 

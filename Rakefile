@@ -2368,6 +2368,7 @@ def clear_linker_settings
     #    ENV["EXTENSIONS_LDFLAGS"] = ""
 
     $ldflags = ""
+    $ldflags_array = []
   end
 
 end
@@ -2392,11 +2393,13 @@ def add_linker_library(libraryname)
     tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
       ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
   end
-  $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
+  #$ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
+  $ldflags_array << "#{tmpdir}/#{libraryname}"
 end
 
 def add_inker_library_absolute(fulllibraryfilepath)
     $ldflags << fulllibraryfilepath + "\n" unless $ldflags.nil?
+    #$ldflags_array << fulllibraryfilepath
 end
 
 def set_linker_flags

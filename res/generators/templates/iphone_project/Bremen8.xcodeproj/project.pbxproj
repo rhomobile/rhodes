@@ -528,6 +528,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+					"$(SRCROOT)/ExtLibs",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				ONLY_ACTIVE_ARCH = YES;
@@ -580,6 +581,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+					"$(SRCROOT)/ExtLibs",
 					"$(SRCROOT)/build/Release-iphoneos",
 				);
 				ONLY_ACTIVE_ARCH = NO;
@@ -650,6 +652,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+					"$(SRCROOT)/ExtLibs",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
 				ONLY_ACTIVE_ARCH = NO;
