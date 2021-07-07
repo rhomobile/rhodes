@@ -26,7 +26,7 @@ post_install do |installer|
                 # modify OTHER_LDFLAGS
                 config_line = build_settings['OTHER_LDFLAGS']
                 if (config_line != nil)
-                    config_line = config_line.gsub("$(inherited) -ObjC ","")
+                    config_line = config_line.gsub("$(inherited) ","")
                     build_settings['OTHER_LDFLAGS'] = config_line
                     puts "updated OTHER_LDFLAGS = "+config_line
                 end
