@@ -27,12 +27,12 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 #../../../lib/extensions/fcntl/ext/fcntl.pro \
 #../../../lib/extensions/openssl/ext/openssl.pro \
 #../../../lib/extensions/bigdecimal/ext/bigdecimal.pro \
-../../../lib/extensions/zlib/ext/zlib.pro \#\
-../../../../RMS-Testing/auto/feature_def/auto_common_spec/extensions/genPropBag/ext/platform/qt/genPropBag.pro \
+../../../lib/extensions/zlib/ext/zlib.pro #\#\
+#../../../../RMS-Testing/auto/feature_def/auto_common_spec/extensions/genPropBag/ext/platform/qt/genPropBag.pro \
 #../../../lib/extensions/serialport/ext/serialport.pro \
-../../../lib/commonAPI/signature/ext/platform/qt/Signature.pro \
-../../../lib/commonAPI/mediacapture/ext/platform/qt/Mediacapture.pro \
-../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
+#../../../lib/commonAPI/signature/ext/platform/qt/Signature.pro \
+#../../../lib/commonAPI/mediacapture/ext/platform/qt/Mediacapture.pro \
+#../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
 
 unix:!macx {
     SUBDIRS += curl
