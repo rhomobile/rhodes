@@ -34,7 +34,7 @@
 namespace rho {
 namespace common {
 
-class CRhoClassFactory : public IRhoClassFactory
+class CRhoClassFactory : public CBaseRhoClassFactory
 {
 public:
     virtual ~CRhoClassFactory(void){}

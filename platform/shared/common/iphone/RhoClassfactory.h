@@ -42,7 +42,7 @@
 namespace rho {
 namespace common {
 
-class CRhoClassFactory : public common::IRhoClassFactory
+class CRhoClassFactory : public common::CBaseRhoClassFactory
 {
 public:
     net::INetRequestImpl* createNetRequestImpl()
