@@ -27,7 +27,6 @@
 #include <net/CURLNetRequest.h>
 #include <common/PosixThreadImpl.h>
 
-#include "rhodes/JNINetRequest.h"
 #include "rhodes/RhoClassFactory.h"
 #include "rhodes/sslimpl.h"
 #include "rhodes/rhocryptimpl.h"
@@ -44,6 +43,26 @@ namespace rho
 namespace common
 {
 
+class CURLNetRequestBuilder : public net::INetRequestBuilder
+{
+public:
+    net::INetRequestImpl* build()
+    {
+        LOG(TRACE) + "Building CURL Network request";
+        return new net::CURLNetRequest();
+    }
+
+};
+
+CURLNetRequestBuilder g_AndroidDefaultNetRequestBuilder;
+
+CRhoClassFactory::CRhoClassFactory()
+{
+    LOG(TRACE) + "Initializing default network stack";
+    registerNetRequestBuilder( "android_default_net_request_builder", &g_AndroidDefaultNetRequestBuilder );
+}
+
+/*
 net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
 {
     bool prop_exists = rho_conf_is_property_exists("android_net_curl");
@@ -55,6 +74,7 @@ net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
     else
         return new net::JNINetRequest();
 }
+*/
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
 {

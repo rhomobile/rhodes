@@ -7,7 +7,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/MemoryInfoCollector.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NavBar.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/NetRequest.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/PushContract.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java

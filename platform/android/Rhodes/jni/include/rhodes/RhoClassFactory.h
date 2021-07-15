@@ -45,14 +45,15 @@ namespace rho
 namespace common
 {
 
-class CRhoClassFactory : public IRhoClassFactory
+class CRhoClassFactory : public CBaseRhoClassFactory
 {
 public:
-    net::INetRequestImpl* createNetRequestImpl();
+    //net::INetRequestImpl* createNetRequestImpl();
     IRhoThreadImpl *createThreadImpl();
     IRhoCrypt* createRhoCrypt();
     const ISecurityTokenGenerator* createSecurityTokenGenerator() override;
 
+    CRhoClassFactory();
 
     net::ISSL* createSSLEngine()
     {
@@ -63,15 +64,10 @@ public:
         }
         return m_pSsl;
     }
-
-    void registerNetRequestBuilder( const string& name, INetRequestBulder& builder );
-    void setDefaultNetRequestBuilder( const string& name );
-
+    
 private:    
     CMutex m_sslMutex;
     common::CAutoPtr<net::ISSL> m_pSsl;    
-
-    map<const string&, INetRequestBuilder& builder>;
 };
 
 } // namespace common
