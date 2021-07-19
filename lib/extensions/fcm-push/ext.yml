@@ -1,13 +1,13 @@
 entry: Init_FCMPush_extension
 iphone:
   javaentry: com.applepush.ApplePush
-  frameworks_list: ext/iphone/frameworks.txt
   resources_list: ext/iphone/resources.txt
-  frameworks_path: ext/iphone/Frameworks
   resources_path: ext/iphone/Resources
+#  frameworks_list: ext/iphone/frameworks.txt
+#  frameworks_path: ext/iphone/Frameworks
 android:
   exttype: rakefile
-  manifest_changes: 
+  manifest_changes:
   - ext/android/AndroidManifest.rb
   - ext/android/ApplicationManifestAdds.erb
   library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]

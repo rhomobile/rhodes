@@ -3,30 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AC380131206025C9005A40FF /* Firebase.h in Headers */ = {isa = PBXBuildFile; fileRef = AC380127206025C9005A40FF /* Firebase.h */; };
-		FA7E1A3D2458D1AA00639F10 /* FirebaseRemoteConfig.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2A2458D1AA00639F10 /* FirebaseRemoteConfig.xcframework */; };
-		FA7E1A3E2458D1AA00639F10 /* GTMSessionFetcher.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2B2458D1AA00639F10 /* GTMSessionFetcher.xcframework */; };
-		FA7E1A3F2458D1AA00639F10 /* FirebaseABTesting.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2C2458D1AA00639F10 /* FirebaseABTesting.xcframework */; };
-		FA7E1A402458D1AA00639F10 /* FirebaseMessaging.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2D2458D1AA00639F10 /* FirebaseMessaging.xcframework */; };
-		FA7E1A412458D1AA00639F10 /* FirebaseInstallations.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2E2458D1AA00639F10 /* FirebaseInstallations.xcframework */; };
-		FA7E1A422458D1AA00639F10 /* nanopb.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A2F2458D1AA00639F10 /* nanopb.xcframework */; };
-		FA7E1A432458D1AA00639F10 /* GoogleDataTransport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A302458D1AA00639F10 /* GoogleDataTransport.xcframework */; };
-		FA7E1A442458D1AA00639F10 /* GoogleDataTransportCCTSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A312458D1AA00639F10 /* GoogleDataTransportCCTSupport.xcframework */; };
-		FA7E1A452458D1AA00639F10 /* FirebaseCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A322458D1AA00639F10 /* FirebaseCore.xcframework */; };
-		FA7E1A462458D1AA00639F10 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A332458D1AA00639F10 /* FirebaseAnalytics.framework */; };
-		FA7E1A472458D1AA00639F10 /* FirebaseCoreDiagnostics.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A342458D1AA00639F10 /* FirebaseCoreDiagnostics.xcframework */; };
-		FA7E1A482458D1AA00639F10 /* GoogleToolboxForMac.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A352458D1AA00639F10 /* GoogleToolboxForMac.xcframework */; };
-		FA7E1A492458D1AA00639F10 /* FirebaseInstanceID.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A362458D1AA00639F10 /* FirebaseInstanceID.xcframework */; };
-		FA7E1A4A2458D1AA00639F10 /* GoogleUtilities.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A372458D1AA00639F10 /* GoogleUtilities.xcframework */; };
-		FA7E1A4B2458D1AA00639F10 /* FirebasePerformance.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A382458D1AA00639F10 /* FirebasePerformance.framework */; };
-		FA7E1A4C2458D1AA00639F10 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A392458D1AA00639F10 /* FIRAnalyticsConnector.framework */; };
-		FA7E1A4D2458D1AA00639F10 /* Protobuf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A3A2458D1AA00639F10 /* Protobuf.xcframework */; };
-		FA7E1A4E2458D1AA00639F10 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A3B2458D1AA00639F10 /* GoogleAppMeasurement.framework */; };
-		FA7E1A4F2458D1AA00639F10 /* PromisesObjC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7E1A3C2458D1AA00639F10 /* PromisesObjC.xcframework */; };
+		B1618C73C1AFDF2D84EDF1B3 /* libPods-fcm-push.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */; };
 		FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* applePush_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
@@ -38,27 +19,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4CDA3BB94718F541853D0BC4 /* Pods-fcm-push.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fcm-push.debug.xcconfig"; path = "Target Support Files/Pods-fcm-push/Pods-fcm-push.debug.xcconfig"; sourceTree = "<group>"; };
+		96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fcm-push.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AC380127206025C9005A40FF /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
-		FA7E1A2A2458D1AA00639F10 /* FirebaseRemoteConfig.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseRemoteConfig.xcframework; path = Frameworks/FirebaseRemoteConfig.xcframework; sourceTree = "<group>"; };
-		FA7E1A2B2458D1AA00639F10 /* GTMSessionFetcher.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GTMSessionFetcher.xcframework; path = Frameworks/GTMSessionFetcher.xcframework; sourceTree = "<group>"; };
-		FA7E1A2C2458D1AA00639F10 /* FirebaseABTesting.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseABTesting.xcframework; path = Frameworks/FirebaseABTesting.xcframework; sourceTree = "<group>"; };
-		FA7E1A2D2458D1AA00639F10 /* FirebaseMessaging.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseMessaging.xcframework; path = Frameworks/FirebaseMessaging.xcframework; sourceTree = "<group>"; };
-		FA7E1A2E2458D1AA00639F10 /* FirebaseInstallations.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseInstallations.xcframework; path = Frameworks/FirebaseInstallations.xcframework; sourceTree = "<group>"; };
-		FA7E1A2F2458D1AA00639F10 /* nanopb.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = nanopb.xcframework; path = Frameworks/nanopb.xcframework; sourceTree = "<group>"; };
-		FA7E1A302458D1AA00639F10 /* GoogleDataTransport.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleDataTransport.xcframework; path = Frameworks/GoogleDataTransport.xcframework; sourceTree = "<group>"; };
-		FA7E1A312458D1AA00639F10 /* GoogleDataTransportCCTSupport.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleDataTransportCCTSupport.xcframework; path = Frameworks/GoogleDataTransportCCTSupport.xcframework; sourceTree = "<group>"; };
-		FA7E1A322458D1AA00639F10 /* FirebaseCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseCore.xcframework; path = Frameworks/FirebaseCore.xcframework; sourceTree = "<group>"; };
-		FA7E1A332458D1AA00639F10 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
-		FA7E1A342458D1AA00639F10 /* FirebaseCoreDiagnostics.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseCoreDiagnostics.xcframework; path = Frameworks/FirebaseCoreDiagnostics.xcframework; sourceTree = "<group>"; };
-		FA7E1A352458D1AA00639F10 /* GoogleToolboxForMac.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleToolboxForMac.xcframework; path = Frameworks/GoogleToolboxForMac.xcframework; sourceTree = "<group>"; };
-		FA7E1A362458D1AA00639F10 /* FirebaseInstanceID.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FirebaseInstanceID.xcframework; path = Frameworks/FirebaseInstanceID.xcframework; sourceTree = "<group>"; };
-		FA7E1A372458D1AA00639F10 /* GoogleUtilities.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleUtilities.xcframework; path = Frameworks/GoogleUtilities.xcframework; sourceTree = "<group>"; };
-		FA7E1A382458D1AA00639F10 /* FirebasePerformance.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebasePerformance.framework; path = Frameworks/FirebasePerformance.framework; sourceTree = "<group>"; };
-		FA7E1A392458D1AA00639F10 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = Frameworks/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
-		FA7E1A3A2458D1AA00639F10 /* Protobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Protobuf.xcframework; path = Frameworks/Protobuf.xcframework; sourceTree = "<group>"; };
-		FA7E1A3B2458D1AA00639F10 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Frameworks/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
-		FA7E1A3C2458D1AA00639F10 /* PromisesObjC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PromisesObjC.xcframework; path = Frameworks/PromisesObjC.xcframework; sourceTree = "<group>"; };
+		C4D0AD1B4A0521913C12576B /* Pods-fcm-push.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fcm-push.release.xcconfig"; path = "Target Support Files/Pods-fcm-push/Pods-fcm-push.release.xcconfig"; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libfcm-push.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfcm-push.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FACF84CD18C7DC0C00871A64 /* applepushclient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepushclient.mm; path = impl/applepushclient.mm; sourceTree = "<group>"; };
 		FACF84CE18C7DC0C00871A64 /* applepushclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applepushclient.h; path = impl/applepushclient.h; sourceTree = "<group>"; };
@@ -75,26 +39,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
-				FA7E1A492458D1AA00639F10 /* FirebaseInstanceID.xcframework in Frameworks */,
-				FA7E1A4E2458D1AA00639F10 /* GoogleAppMeasurement.framework in Frameworks */,
-				FA7E1A4F2458D1AA00639F10 /* PromisesObjC.xcframework in Frameworks */,
-				FA7E1A452458D1AA00639F10 /* FirebaseCore.xcframework in Frameworks */,
-				FA7E1A402458D1AA00639F10 /* FirebaseMessaging.xcframework in Frameworks */,
-				FA7E1A3E2458D1AA00639F10 /* GTMSessionFetcher.xcframework in Frameworks */,
-				FA7E1A3D2458D1AA00639F10 /* FirebaseRemoteConfig.xcframework in Frameworks */,
-				FA7E1A412458D1AA00639F10 /* FirebaseInstallations.xcframework in Frameworks */,
-				FA7E1A482458D1AA00639F10 /* GoogleToolboxForMac.xcframework in Frameworks */,
-				FA7E1A3F2458D1AA00639F10 /* FirebaseABTesting.xcframework in Frameworks */,
-				FA7E1A432458D1AA00639F10 /* GoogleDataTransport.xcframework in Frameworks */,
-				FA7E1A462458D1AA00639F10 /* FirebaseAnalytics.framework in Frameworks */,
-				FA7E1A4D2458D1AA00639F10 /* Protobuf.xcframework in Frameworks */,
-				FA7E1A4A2458D1AA00639F10 /* GoogleUtilities.xcframework in Frameworks */,
 				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
-				FA7E1A4C2458D1AA00639F10 /* FIRAnalyticsConnector.framework in Frameworks */,
-				FA7E1A422458D1AA00639F10 /* nanopb.xcframework in Frameworks */,
-				FA7E1A472458D1AA00639F10 /* FirebaseCoreDiagnostics.xcframework in Frameworks */,
-				FA7E1A442458D1AA00639F10 /* GoogleDataTransportCCTSupport.xcframework in Frameworks */,
-				FA7E1A4B2458D1AA00639F10 /* FirebasePerformance.framework in Frameworks */,
+				B1618C73C1AFDF2D84EDF1B3 /* libPods-fcm-push.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,14 +55,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0867D691FE84028FC02AAC07 /* applePush */ = {
+		0867D691FE84028FC02AAC07 = {
 			isa = PBXGroup;
 			children = (
-				AC380127206025C9005A40FF /* Firebase.h */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				3E59C99CC72EE3EE872FB6ED /* Pods */,
 			);
 			name = applePush;
 			sourceTree = "<group>";
@@ -124,27 +70,9 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA7E1A392458D1AA00639F10 /* FIRAnalyticsConnector.framework */,
-				FA7E1A2C2458D1AA00639F10 /* FirebaseABTesting.xcframework */,
-				FA7E1A332458D1AA00639F10 /* FirebaseAnalytics.framework */,
-				FA7E1A322458D1AA00639F10 /* FirebaseCore.xcframework */,
-				FA7E1A342458D1AA00639F10 /* FirebaseCoreDiagnostics.xcframework */,
-				FA7E1A2E2458D1AA00639F10 /* FirebaseInstallations.xcframework */,
-				FA7E1A362458D1AA00639F10 /* FirebaseInstanceID.xcframework */,
-				FA7E1A2D2458D1AA00639F10 /* FirebaseMessaging.xcframework */,
-				FA7E1A382458D1AA00639F10 /* FirebasePerformance.framework */,
-				FA7E1A2A2458D1AA00639F10 /* FirebaseRemoteConfig.xcframework */,
-				FA7E1A3B2458D1AA00639F10 /* GoogleAppMeasurement.framework */,
-				FA7E1A302458D1AA00639F10 /* GoogleDataTransport.xcframework */,
-				FA7E1A312458D1AA00639F10 /* GoogleDataTransportCCTSupport.xcframework */,
-				FA7E1A352458D1AA00639F10 /* GoogleToolboxForMac.xcframework */,
-				FA7E1A372458D1AA00639F10 /* GoogleUtilities.xcframework */,
-				FA7E1A2B2458D1AA00639F10 /* GTMSessionFetcher.xcframework */,
-				FA7E1A2F2458D1AA00639F10 /* nanopb.xcframework */,
-				FA7E1A3C2458D1AA00639F10 /* PromisesObjC.xcframework */,
-				FA7E1A3A2458D1AA00639F10 /* Protobuf.xcframework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 				FAD4602C12260A8500141873 /* UIKit.framework */,
+				96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -163,6 +91,16 @@
 				FAD45FD51225FED600141873 /* applePush_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		3E59C99CC72EE3EE872FB6ED /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4CDA3BB94718F541853D0BC4 /* Pods-fcm-push.debug.xcconfig */,
+				C4D0AD1B4A0521913C12576B /* Pods-fcm-push.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		FA3E1F161779EF7600F5E33A /* impl */ = {
@@ -185,7 +123,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FACF84D218C7DC0C00871A64 /* applepushclient.h in Headers */,
-				AC380131206025C9005A40FF /* Firebase.h in Headers */,
 				FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */,
 				FACF84D318C7DC0C00871A64 /* PushNotificationsReceiver.h in Headers */,
 			);
@@ -198,6 +135,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "fcm-push" */;
 			buildPhases = (
+				2D6C5845D15E4D4B8E8ED8B7 /* [CP] Check Pods Manifest.lock */,
 				FAC155E6145855CF0016F3BD /* Headers */,
 				FAC155E9145855CF0016F3BD /* Sources */,
 				FAC155ED145855CF0016F3BD /* Frameworks */,
@@ -228,7 +166,7 @@
 				French,
 				German,
 			);
-			mainGroup = 0867D691FE84028FC02AAC07 /* applePush */;
+			mainGroup = 0867D691FE84028FC02AAC07;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -237,6 +175,31 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2D6C5845D15E4D4B8E8ED8B7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-fcm-push-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		FAC155E9145855CF0016F3BD /* Sources */ = {
@@ -261,6 +224,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
 					"$(RHO_ROOT)/platform/shared/common",
 					"$(RHO_ROOT)/platform/shared/rubyext",
 					"$(RHO_ROOT)/platform/shared/ruby/include",
@@ -272,6 +236,17 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+					../../../../../platform/shared/common,
+					../../../../../platform/shared/rubyext,
+					../../../../../platform/shared/ruby/include,
+					../../../../../platform/shared/ruby/iphone,
+					../../../../../platform/shared,
+					../../../../../platform/iphone/Classes,
+					../../../../../platform/iphone/Classes/NativeView,
+					../../../../../platform/iphone/Classes/Signature,
+					../../../../../platform/iphone/Classes/Camera,
+					../../../../../platform/iphone/Classes/AppManager,
+					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -289,6 +264,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
 					"$(RHO_ROOT)/platform/shared/common",
 					"$(RHO_ROOT)/platform/shared/rubyext",
 					"$(RHO_ROOT)/platform/shared/ruby/include",
@@ -300,17 +276,17 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/common",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/rubyext",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/include",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/iphone",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/NativeView",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Signature",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Camera",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/AppManager",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
+					../../../../../platform/shared/common,
+					../../../../../platform/shared/rubyext,
+					../../../../../platform/shared/ruby/include,
+					../../../../../platform/shared/ruby/iphone,
+					../../../../../platform/shared,
+					../../../../../platform/iphone/Classes,
+					../../../../../platform/iphone/Classes/NativeView,
+					../../../../../platform/iphone/Classes/Signature,
+					../../../../../platform/iphone/Classes/Camera,
+					../../../../../platform/iphone/Classes/AppManager,
+					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -322,6 +298,7 @@
 		};
 		FAC155F1145855CF0016F3BD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4CDA3BB94718F541853D0BC4 /* Pods-fcm-push.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
@@ -338,6 +315,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = applePush_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
 					"$(RHO_ROOT)/platform/shared/common",
 					"$(RHO_ROOT)/platform/shared/rubyext",
 					"$(RHO_ROOT)/platform/shared/ruby/include",
@@ -349,17 +327,17 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/common",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/rubyext",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/include",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/iphone",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/NativeView",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Signature",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Camera",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/AppManager",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
+					../../../../../platform/shared/common,
+					../../../../../platform/shared/rubyext,
+					../../../../../platform/shared/ruby/include,
+					../../../../../platform/shared/ruby/iphone,
+					../../../../../platform/shared,
+					../../../../../platform/iphone/Classes,
+					../../../../../platform/iphone/Classes/NativeView,
+					../../../../../platform/iphone/Classes/Signature,
+					../../../../../platform/iphone/Classes/Camera,
+					../../../../../platform/iphone/Classes/AppManager,
+					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -371,6 +349,7 @@
 		};
 		FAC155F2145855CF0016F3BD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C4D0AD1B4A0521913C12576B /* Pods-fcm-push.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DSTROOT = "/tmp/fcm-push.dst";
@@ -383,6 +362,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = applePush_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
 					"$(RHO_ROOT)/platform/shared/common",
 					"$(RHO_ROOT)/platform/shared/rubyext",
 					"$(RHO_ROOT)/platform/shared/ruby/include",
@@ -394,17 +374,17 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/common",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/rubyext",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/include",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared/ruby/iphone",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/shared",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/NativeView",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Signature",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/Camera",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/AppManager",
-					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
+					../../../../../platform/shared/common,
+					../../../../../platform/shared/rubyext,
+					../../../../../platform/shared/ruby/include,
+					../../../../../platform/shared/ruby/iphone,
+					../../../../../platform/shared,
+					../../../../../platform/iphone/Classes,
+					../../../../../platform/iphone/Classes/NativeView,
+					../../../../../platform/iphone/Classes/Signature,
+					../../../../../platform/iphone/Classes/Camera,
+					../../../../../platform/iphone/Classes/AppManager,
+					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

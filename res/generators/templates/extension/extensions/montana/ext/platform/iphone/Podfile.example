@@ -5,7 +5,7 @@
 # and workspace will be builded instead of project
 
 platform :ios, '10.0'
-use_frameworks!
+#use_frameworks!
 
 project '<%= name.camel_case %>.xcodeproj'
 
