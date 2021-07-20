@@ -37,7 +37,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
 import java.lang.Throwable;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
@@ -46,13 +45,13 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
     public static final FCMListener listener = FCMListener.getInstance();
     
     static final String FCM_PUSH_CLIENT = "fcm";
-    static String clientToken = "";
 
     private static String gStr(int key){
         String value = "";
@@ -117,26 +116,23 @@ public final class FCMFacade {
         }   
   
         refreshToken();  
-
-        
-
     }
+
     public static void refreshToken(){
         try{
             Logger.T(TAG, "FCM: registation of application");
-            clientToken = "";
-            clientToken = FirebaseInstanceId.getInstance().getToken();
+            String clientToken = ContextFactory.getContext().getSharedPreferences("FireBase", 
+                ContextFactory.getContext().MODE_PRIVATE).getString("token", "");
             if ((clientToken != "") && (clientToken != null)){
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
-                Logger.T(TAG, "FCM: registation successfully");
+                Logger.T(TAG, "FCM: registation successfully, token = " + clientToken);
             }else{
-                clientToken = "";
+                //clientToken = "";
                 Logger.T(TAG, "FCM: can't get token, try to refresh later");
             }
         }catch(Exception exc){
             Logger.T(TAG, "FCM: can't handle registation " + exc.toString() );
         }
-        Logger.T(TAG, "FCM: token = " + clientToken);
     }
 
 }

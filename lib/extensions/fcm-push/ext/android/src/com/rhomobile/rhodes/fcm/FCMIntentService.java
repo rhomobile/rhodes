@@ -117,30 +117,32 @@ public class FCMIntentService extends FirebaseMessagingService {
         
     }
 
-    @Override
-    synchronized public void handleIntent(Intent intent) {
+    /*@Override
+    public void handleIntent(Intent intent) {
         Logger.W(TAG, "FCM: onHandleIntent()");
         savedService = this;
-        if (intent.getExtras() != null) {
-            for (String key : intent.getExtras().keySet()) {
-                Object value = intent.getExtras().get(key);
-                //Logger.W(TAG, "Key: " + key + " Value: " + value);
-                if (key.equals("google.message_id")){
-                    savedIntents.put((String) value, intent);
-                    lastHandledIntent = (String) value;
-                    Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
+        if (ACTION_REMOTE_INTENT.equals(action) || ACTION_DIRECT_BOOT_REMOTE_INTENT.equals(action)) {
+            if (intent.getExtras() != null) {
+                for (String key : intent.getExtras().keySet()) {
+                    Object value = intent.getExtras().get(key);
+                    //Logger.W(TAG, "Key: " + key + " Value: " + value);
+                    if (key.equals("google.message_id")){
+                        savedIntents.put((String) value, intent);
+                        lastHandledIntent = (String) value;
+                        Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
+                    }
                 }
             }
         }
         super.handleIntent(intent);        
-    }
+    }*/
 
     public static void tryToHandleIntent(String value){
         try{
             if (savedService != null){
                 Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
                 if (savedIntents.containsKey(value)){
-                    savedService.handleIntent(savedIntents.get(value));
+                    //savedService.handleIntent(savedIntents.get(value));
                     Logger.W(TAG, "FCM: tryToHandleIntent() - intent handled");
                 }
             }
@@ -166,6 +168,14 @@ public class FCMIntentService extends FirebaseMessagingService {
 
             
         }
+    }
+
+    @Override
+    public void onNewToken(String token){
+        super.onNewToken(token);
+        Logger.W(TAG, "FCM: onNewToken: " + token);
+        ContextFactory.getContext().getSharedPreferences("FireBase", MODE_PRIVATE).edit().putString("token", token).apply();
+        FCMFacade.refreshToken();        
     }
 
 
