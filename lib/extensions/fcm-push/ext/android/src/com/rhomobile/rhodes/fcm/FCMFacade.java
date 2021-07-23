@@ -89,13 +89,14 @@ public final class FCMFacade {
             try {
                 options = new FirebaseOptions.Builder()
                 .setApplicationId(gStr(R.string.google_app_id))
-                //.setApiKey(gStr(R.string.google_api_key))
+                .setApiKey(gStr(R.string.google_api_key))
+                .setProjectId(gStr(R.string.project_id))
                 //.setDatabaseUrl(gStr(R.string.firebase_database_url))
                 //.setStorageBucket(gStr(R.string.google_storage_bucket))
                 .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
                 .build();
             } catch( Throwable e ) {
-                Logger.E(TAG, "FCM: poblems on building options: " + e);
+                Logger.E(TAG, "FCM: problems on building options: " + e);
                 e.printStackTrace();
             }
 
@@ -103,14 +104,14 @@ public final class FCMFacade {
                 FirebaseApp.initializeApp(ContextFactory.getContext(), options);
                 Logger.T(TAG, "FCM: initialization of application");
             }catch(Exception e){
-                Logger.E(TAG, "FCM: poblems on initialization app: " + e);
+                Logger.E(TAG, "FCM: problems on initialization app: " + e);
                 e.printStackTrace();
             }
             try{
                 FirebaseApp.getInstance();
                 Logger.T(TAG, "FCM: Firebase Inited");                
             }catch(Exception e){
-                Logger.E(TAG, "FCM: poblems on getting instance: " + e);
+                Logger.E(TAG, "FCM: problems on getting instance: " + e);
                 e.printStackTrace();
             }
         }   
@@ -123,6 +124,8 @@ public final class FCMFacade {
             Logger.T(TAG, "FCM: registation of application");
             String clientToken = ContextFactory.getContext().getSharedPreferences("FireBase", 
                 ContextFactory.getContext().MODE_PRIVATE).getString("token", "");
+
+            clientToken = FirebaseInstanceId.getInstance().getToken();
             if ((clientToken != "") && (clientToken != null)){
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
                 Logger.T(TAG, "FCM: registation successfully, token = " + clientToken);

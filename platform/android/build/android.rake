@@ -1381,8 +1381,12 @@ namespace "build" do
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
       ENV["RHO_DEBUG"] = $debug.to_s
-      ENV["CUSTOM_FCM_SENDER_ID"] = $app_config["android"]["fcmSenderID"] unless $app_config["android"].nil?
-      ENV["CUSTOM_FCM_APPLICATION_ID"] = $app_config["android"]["fcmAppID"] unless $app_config["android"].nil?
+      if (not $app_config["android"].nil?) and (not $app_config["android"]["fcm"].nil?)
+        ENV["FCM_MPBILESDK_APP_ID"] = $app_config["android"]["fcm"]["mobilesdk_app_id"]
+        ENV["FCM_PROJECT_NUMBER"] = $app_config["android"]["fcm"]["project_number"]
+        ENV["FCM_CURRENT_KEY"] = $app_config["android"]["fcm"]["current_key"]
+        ENV["FCM_PROJECT_ID"] = $app_config["android"]["fcm"]["project_id"]
+      end
       
       if $app_config['android'] != nil && $app_config['android']['barcode_engine'] == "google"
         ENV["BARCODE_ENGINE"] = 'google'

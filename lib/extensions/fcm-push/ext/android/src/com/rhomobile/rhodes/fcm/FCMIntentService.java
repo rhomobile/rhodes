@@ -61,6 +61,12 @@ public class FCMIntentService extends FirebaseMessagingService {
     private static FirebaseMessagingService savedService = null;
     private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
 
+
+    public FCMIntentService(){
+        super();
+        Logger.I(TAG, "FCM: creating FCMIntentService");
+    }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         lastHandledIntent = null;
@@ -117,11 +123,12 @@ public class FCMIntentService extends FirebaseMessagingService {
         
     }
 
-    /*@Override
+   /* @Override
     public void handleIntent(Intent intent) {
         Logger.W(TAG, "FCM: onHandleIntent()");
         savedService = this;
-        if (ACTION_REMOTE_INTENT.equals(action) || ACTION_DIRECT_BOOT_REMOTE_INTENT.equals(action)) {
+        //String action = intent.getAction();
+        //if (ACTION_REMOTE_INTENT.equals(action) || ACTION_DIRECT_BOOT_REMOTE_INTENT.equals(action)) {
             if (intent.getExtras() != null) {
                 for (String key : intent.getExtras().keySet()) {
                     Object value = intent.getExtras().get(key);
@@ -133,7 +140,7 @@ public class FCMIntentService extends FirebaseMessagingService {
                     }
                 }
             }
-        }
+        //}
         super.handleIntent(intent);        
     }*/
 
@@ -142,7 +149,7 @@ public class FCMIntentService extends FirebaseMessagingService {
             if (savedService != null){
                 Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
                 if (savedIntents.containsKey(value)){
-                    //savedService.handleIntent(savedIntents.get(value));
+                    savedService.handleIntent(savedIntents.get(value));
                     Logger.W(TAG, "FCM: tryToHandleIntent() - intent handled");
                 }
             }

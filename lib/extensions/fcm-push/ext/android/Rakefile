@@ -132,49 +132,74 @@ end
 multitask TARGETLIB_AARCH64 => OBJ_AARCH64
 
 
-$jsonfile = File.read(File.join($app_dir, 'google-services.json')) if File.exists?(File.join($app_dir, 'google-services.json'))
-  
+
+
+
+
+###############
+
 $xmlFileWithDataFromJson = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>"
+
 def add_data_to_string(name, dataFromJson)
-  $xmlFileWithDataFromJson << "\n\t<string name=\"" << name << "\" translatable=\"false\">" << 
-  $jsonfile.scan(/#{dataFromJson}.*\".*\"/).last.scan(/:.*\".*\"/).last.scan(/\".*\"/).last.gsub("\"","") << "</string>"
+  $xmlFileWithDataFromJson << "\n\t<string name=\"" << name << "\" translatable=\"false\">" << dataFromJson << "</string>"
 end
 
-def createXmlFromJson()
-  puts "Creating values.xml from google-sevices.json" if $jsonfile
-  add_data_to_string("default_web_client_id", "client_id") if $jsonfile
-  add_data_to_string("firebase_database_url", "firebase_url") if $jsonfile
-  
-  if ENV["CUSTOM_FCM_SENDER_ID"].nil?
-    add_data_to_string("gcm_defaultSenderId", "project_number") if $jsonfile
-  else  
-    $xmlFileWithDataFromJson << "\n\t<string name=\"gcm_defaultSenderId\" translatable=\"false\">" <<  
-    ENV["CUSTOM_FCM_SENDER_ID"] << "</string>"
-  end
-  add_data_to_string("google_api_key", "current_key") if $jsonfile
-  
-  if ENV["CUSTOM_FCM_APPLICATION_ID"].nil?
-    add_data_to_string("google_app_id", "mobilesdk_app_id") if $jsonfile
-  else
-    $xmlFileWithDataFromJson << "\n\t<string name=\"google_app_id\" translatable=\"false\">" <<  
-    ENV["CUSTOM_FCM_APPLICATION_ID"] << "</string>"
-  end
-  add_data_to_string("google_crash_reporting_api_key", "current_key") if $jsonfile
-  add_data_to_string("google_storage_bucket", "storage_bucket") if $jsonfile
-  add_data_to_string("project_id", "project_id") if $jsonfile
+$jsonfile = File.read(File.join($app_dir, 'google-services.json')) if File.exists?(File.join($app_dir, 'google-services.json'))
 
-  $xmlFileWithDataFromJson << "\n</resources>"
-  resGoogleDir = File.join($curdir, 'res', 'res', 'values')
-  #resDebug = File.join(resGoogleDir, 'debug')
-  #resRelease = File.join(resGoogleDir, 'release')
-  #FileUtils.mkdir_p(resDebug) unless File.exists?(resDebug)
-  FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
-  #File.open(File.join(resDebug, 'values.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
-  File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
-  puts "fireBaseValues.xml created"
+if $jsonfile.nil? 
+
+  if ENV["FCM_MPBILESDK_APP_ID"].nil?
+    puts "Please set mobilesdk_app_id variable in android/fcm section of build.yml"
+  end
+  if ENV["FCM_PROJECT_NUMBER"].nil?
+    puts "Please set project_number variable in android/fcm section of build.yml"
+  end
+  if ENV["FCM_CURRENT_KEY"].nil?
+    puts "Please set current_key variable in android/fcm section of build.yml"
+  end
+  if ENV["FCM_PROJECT_ID"].nil?
+    puts "Please set project_id variable in android/fcm section of build.yml"
+  end
+  
+  if ENV["FCM_MPBILESDK_APP_ID"].nil? or ENV["FCM_PROJECT_NUMBER"].nil? or ENV["FCM_CURRENT_KEY"].nil? or ENV["FCM_PROJECT_ID"].nil?
+    exit 1
+  end
+
+
+  add_data_to_string("google_app_id", ENV["FCM_MPBILESDK_APP_ID"])
+  add_data_to_string("gcm_defaultSenderId", ENV["FCM_PROJECT_NUMBER"])
+  add_data_to_string("google_api_key", ENV["FCM_CURRENT_KEY"])
+  add_data_to_string("project_id", ENV["FCM_PROJECT_ID"])
+
+else
+  begin 
+    jsonHash = JSON.parse($jsonfile)
+
+    puts "Creating values.xml from google-sevices.json" if $jsonfile
+
+    add_data_to_string("google_app_id", jsonHash["client"][0]["client_info"]["mobilesdk_app_id"])
+    add_data_to_string("gcm_defaultSenderId", jsonHash["project_info"]["project_number"])
+    add_data_to_string("default_web_client_id", jsonHash["client"][0]["oauth_client"][0]["client_id"])
+    add_data_to_string("google_api_key", jsonHash["client"][0]["api_key"][0]["current_key"])
+    add_data_to_string("google_crash_reporting_api_key", jsonHash["client"][0]["api_key"][0]["current_key"])
+    add_data_to_string("project_id", jsonHash["project_info"]["project_id"])
+
+  rescue Exception => e
+    puts "\nCan't create id values for firebase. Please check your google-services.json.\n"
+    puts e
+    exit 1
+  end
 end
 
-createXmlFromJson()
+$xmlFileWithDataFromJson << "\n</resources>"
+resGoogleDir = File.join($curdir, 'res', 'res', 'values')
+
+FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
+File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
+puts "fireBaseValues.xml created"
+
+##############
+
 
 namespace 'arch' do
   task :arm => [TARGETLIB_ARM]

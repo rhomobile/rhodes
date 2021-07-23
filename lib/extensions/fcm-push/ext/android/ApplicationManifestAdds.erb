@@ -12,14 +12,6 @@
     </intent-filter>
 </service>
 
-<receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-	 android:enabled="true">
-	 <intent-filter>
-	     <action android:name="com.google.android.gms.measurement.UPLOAD" />
-	     <action android:name="com.android.vending.INSTALL_REFERRER"/>
-	 </intent-filter>
-</receiver>
-
 
 <receiver android:exported="false" android:name="com.google.firebase.iid.FirebaseInstanceIdInternalReceiver"/>
 <service android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdService">
@@ -36,14 +28,14 @@
 
 
 
-
 <service android:directBootAware="true" android:exported="false" android:name="com.google.firebase.components.ComponentDiscoveryService">
     <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
-    <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
     <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
 </service>
 
-<provider android:authorities="<%=@appPackageName%>.firebaseinitprovider" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider"/>
+<provider android:authorities="<%=@appPackageName%>.firebaseinitprovider" android:directBootAware="true" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider"/>
 
 
 <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
