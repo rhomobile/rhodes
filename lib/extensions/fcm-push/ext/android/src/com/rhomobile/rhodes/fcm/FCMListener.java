@@ -73,7 +73,7 @@ public class FCMListener extends AbstractRhoListener{
     }
     @Override
     public void onNewIntent(RhodesActivity activity, Intent intent) { 
-        Logger.W("fcm", "FCM: onNewIntent");
+        /*Logger.W("fcm", "FCM: onNewIntent");
         if ((intent != null)&&(intent.getExtras() != null)) {
         	try{
 	            for (String key : intent.getExtras().keySet()) {
@@ -88,7 +88,7 @@ public class FCMListener extends AbstractRhoListener{
 	        }
         }else{
             Logger.W(TAG, "New intent is null");
-        }
+        }*/
         
     }
 

@@ -35,6 +35,7 @@ import android.net.Uri;
 import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.Constants;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.PushContract;
@@ -123,26 +124,37 @@ public class FCMIntentService extends FirebaseMessagingService {
         
     }
 
-   /* @Override
+    @Override
     public void handleIntent(Intent intent) {
         Logger.W(TAG, "FCM: onHandleIntent()");
         savedService = this;
-        //String action = intent.getAction();
-        //if (ACTION_REMOTE_INTENT.equals(action) || ACTION_DIRECT_BOOT_REMOTE_INTENT.equals(action)) {
-            if (intent.getExtras() != null) {
-                for (String key : intent.getExtras().keySet()) {
-                    Object value = intent.getExtras().get(key);
-                    //Logger.W(TAG, "Key: " + key + " Value: " + value);
-                    if (key.equals("google.message_id")){
-                        savedIntents.put((String) value, intent);
-                        lastHandledIntent = (String) value;
-                        Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
-                    }
+        String action = intent.getAction();
+
+        Logger.W(TAG, "FCM: INTENT ACTION: " + action);
+
+        if (intent.getExtras() != null) {
+            for (String key : intent.getExtras().keySet()) {
+                Object value = intent.getExtras().get(key);
+                Logger.W(TAG, "FCM: Key: " + key + " Value: " + value);
+                if (key.equals("google.message_id")){
+                    savedIntents.put((String) value, intent);
+                    lastHandledIntent = (String) value;
+                    Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
                 }
             }
-        //}
-        super.handleIntent(intent);        
-    }*/
+
+        }
+        if (intent.getExtras() != null) {
+            Logger.W(TAG, "FCM: TITLE " + intent.getExtras().get( Constants.AnalyticsKeys.COMPOSER_LABEL));
+        }
+        super.handleIntent(intent);
+                
+    }
+
+
+    public void extractDataFromIntent(Intent intent){
+        
+    }
 
     public static void tryToHandleIntent(String value){
         try{

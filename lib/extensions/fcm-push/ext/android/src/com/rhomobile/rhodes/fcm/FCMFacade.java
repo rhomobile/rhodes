@@ -91,8 +91,6 @@ public final class FCMFacade {
                 .setApplicationId(gStr(R.string.google_app_id))
                 .setApiKey(gStr(R.string.google_api_key))
                 .setProjectId(gStr(R.string.project_id))
-                //.setDatabaseUrl(gStr(R.string.firebase_database_url))
-                //.setStorageBucket(gStr(R.string.google_storage_bucket))
                 .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
                 .build();
             } catch( Throwable e ) {
@@ -130,7 +128,6 @@ public final class FCMFacade {
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
                 Logger.T(TAG, "FCM: registation successfully, token = " + clientToken);
             }else{
-                //clientToken = "";
                 Logger.T(TAG, "FCM: can't get token, try to refresh later");
             }
         }catch(Exception exc){

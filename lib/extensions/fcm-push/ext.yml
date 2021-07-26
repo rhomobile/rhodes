@@ -14,8 +14,6 @@ android:
   source_list: ext/android/ext_java.files
   maven_deps:
   - 'com.google.firebase:firebase-messaging:21.1.0'
-  #- 'com.google.firebase:firebase-iid:21.1.0'
-  #- 'com.google.firebase:firebase-core:18.0.3'
   adds: ext/android/res
 libraries: ['fcm-push']
 xml_api_paths: ext/fcm.xml
