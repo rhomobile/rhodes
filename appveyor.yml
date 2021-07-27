@@ -15,7 +15,6 @@ environment:
       target_os: android
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
       target_artefact_file_name: auto_common_spec_signed.apk
-      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
 
 
     - win32_rhosimulator:
@@ -169,6 +168,7 @@ before_test:
   - cd C:\TAU\rhoconnect-client
   - rake gem:make_gem
   - set /P BUILD_VERSION_RHOCONNECT=<version
+  - set /P JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
