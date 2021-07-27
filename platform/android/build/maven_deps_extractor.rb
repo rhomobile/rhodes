@@ -25,7 +25,8 @@ class MavenDepsExtractor
     @file_deps = []
 
     @rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
-    @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
+
+    @m2home = ENV["MAVEN_HOME"].nil? ? File.join( @rhoroot, 'res', 'build-tools', 'maven' ) : ENV["MAVEN_HOME"]
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
     if RUBY_PLATFORM =~ /(win|w)32$/
