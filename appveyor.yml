@@ -3,6 +3,20 @@ platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
   matrix:
+    - android_auto_common_spec_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      build_command: "device:android:production"
+      #after_build_command: "run:win32:spec"
+      app_name: auto_common_spec
+      target_os: android
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
+      target_artefact_file_name: auto_common_spec_signed.apk
+
+
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
@@ -94,8 +108,6 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       #target_artefact_file_name: framework_spec-setup.exe
 
-
-
     - win32_kitchensinkJS:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
@@ -170,7 +182,6 @@ test_script:
   - cd %test_app_folder%
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
   - rake clean:win32
-  #- rake clean:uwp
   - IF DEFINED pre_build_command rake %pre_build_command% --trace
   - rake %build_command% --trace
   - IF DEFINED after_build_command rake %after_build_command%
