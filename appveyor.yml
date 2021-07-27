@@ -168,7 +168,8 @@ before_test:
   - cd C:\TAU\rhoconnect-client
   - rake gem:make_gem
   - set /P BUILD_VERSION_RHOCONNECT=<version
-  - set /P JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0
+  - set
+  - set /P JAVA_HOME=C:\Program Files\Java\jdk1.8.0
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
