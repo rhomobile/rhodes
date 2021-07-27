@@ -15,6 +15,7 @@ environment:
       target_os: android
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
       target_artefact_file_name: auto_common_spec_signed.apk
+      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
 
 
     - win32_rhosimulator:
