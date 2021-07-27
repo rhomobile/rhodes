@@ -16,7 +16,6 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
       target_artefact_file_name: auto_common_spec_signed.apk
       JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-      MAVEN_HOME: C:\maven\apache-maven-3.6.2
 
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -149,7 +148,6 @@ build: off
 install:
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - set
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
