@@ -9,7 +9,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:android:production --trace"
+      build_command: "device:android:production"
       #after_build_command: "run:win32:spec"
       app_name: auto_common_spec
       target_os: android
@@ -148,6 +148,9 @@ build: off
 install:
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
+
+  - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
+  - IF %target_os%==android 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
@@ -170,10 +173,7 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
-  - appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
-  - 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22
-  - Tree C:\PROGRA~2\Android\android-sdk\add-ons
-
+  
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
   #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
