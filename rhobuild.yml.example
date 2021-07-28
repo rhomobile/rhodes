@@ -3,7 +3,7 @@ env:
   paths:
     java: C:/Program Files/Java/jdk11/bin
     android: C:/Program Files (x86)/Android/android-sdk
-    android-ndk: C:/Program Files (x86)/Android/android-sdk/ndk/android-ndk-r21e-windows-x86_64
+    android-ndk: C:/TAU/android-ndk-r21e-windows-x86_64
     cabwiz:  C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
     msbuild: C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
     vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
