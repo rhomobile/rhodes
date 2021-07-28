@@ -171,7 +171,7 @@ before_test:
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
   - appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
-  - 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons
+  - 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22
   - Tree C:\PROGRA~2\Android\android-sdk\add-ons
 
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
