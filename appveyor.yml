@@ -9,7 +9,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:android:production"
+      build_command: "device:android:production --trace"
       #after_build_command: "run:win32:spec"
       app_name: auto_common_spec
       target_os: android
