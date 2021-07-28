@@ -249,10 +249,11 @@ class MavenDepsExtractor
     argv << "-Ddest=./"
     argv << "-Dtransitive=false"
 
-    #argv << '-e' if Rake.application.options.trace
-    #argv << '-X' if Rake.application.options.trace
+    argv << '-fae'
+
     argv << '-e' if Rake.application.options.trace
     argv << '-X' if Rake.application.options.trace
+
 
     argv.join(' ')
   end
