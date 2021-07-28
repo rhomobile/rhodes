@@ -26,7 +26,7 @@ class MavenDepsExtractor
 
     @rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
 
-    @m2home = ENV["APPVEYOR_BUILD_WORKER_IMAGE"].nil? ? File.join( @rhoroot, 'res', 'build-tools', 'maven' ) : File.join('C:','PROGRA~2','Apache','Maven')
+    @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
     if RUBY_PLATFORM =~ /(win|w)32$/
