@@ -200,7 +200,7 @@ class MavenDepsExtractor
   end
 
   def maven_env
-    { 'JAVA_HOME' => @java_home, 'M2_HOME' => @m2home, 'JAVA_TOOL_OPTIONS' => '-Dhttps.protocols=TLSv1.2' }
+    { 'JAVA_HOME' => @java_home, 'M2_HOME' => @m2home, 'MAVEN_OPTS' => '-XX:MaxPermSize=2g -Xmx4g', 'JAVA_OPTS' => '-XX:MaxPermSize=2g -Xmx4g' }
   end
 
   def dep_copy_cmd
