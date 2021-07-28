@@ -200,7 +200,7 @@ class MavenDepsExtractor
   end
 
   def maven_env
-    { 'JAVA_HOME' => @java_home, 'M2_HOME' => @m2home, 'MAVEN_OPTS' => '-XX:MaxPermSize=2g -Xmx4g', 'JAVA_OPTS' => '-XX:MaxPermSize=2g -Xmx4g' }
+    { 'JAVA_HOME' => @java_home, 'M2_HOME' => @m2home }
   end
 
   def dep_copy_cmd
