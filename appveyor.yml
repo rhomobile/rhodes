@@ -194,7 +194,7 @@ test_script:
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
   - rake clean:win32
   - IF DEFINED pre_build_command rake %pre_build_command% --trace
-  - rake %build_command%
+  - rake %build_command% --trace
   - IF DEFINED after_build_command rake %after_build_command%
   - md C:\TAU\rhodes\target\
   - IF DEFINED target_artefact_file_name copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
