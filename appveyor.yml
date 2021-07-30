@@ -161,6 +161,7 @@ install:
   - IF %target_os%==android appveyor DownloadFile https://dl.google.com/android/repository/android-ndk-r21e-windows-x86_64.zip -FileName C:\TAU\android-ndk-r21e-windows-x86_64.zip
   - IF %target_os%==android 7z e -y C:\TAU\android-ndk-r21e-windows-x86_64.zip -oC:\TAU\android-ndk-r21e-windows-x86_64
 
+  - tree C:/TAU/android-ndk-r21e-windows-x86_64
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
