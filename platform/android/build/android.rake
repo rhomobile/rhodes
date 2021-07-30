@@ -1225,7 +1225,12 @@ namespace "config" do
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
-      AndroidTools::MavenDepsExtractor.instance.extract_all
+      begin
+        AndroidTools::MavenDepsExtractor.instance.extract_all
+      rescue Exception => e
+        puts "Maven deps extractor exception: " + e
+      end
+     
 
       if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
         v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))

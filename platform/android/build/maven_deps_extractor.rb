@@ -229,12 +229,6 @@ class MavenDepsExtractor
       env = maven_env
       pwd = path
 
-      puts "PATH: " + path
-      puts Dir[path + "/*"]
-      puts "CMD: " + cmd
-      exit 1
-      
-
       @logger.info "Running Maven dependency get plugin"
       puts cmd.to_s
       Jake.run3( cmd, pwd, env )
