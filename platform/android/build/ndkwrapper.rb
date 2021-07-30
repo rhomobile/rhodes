@@ -219,7 +219,7 @@ class NDKWrapper
 
 
         variants.each do |variant|
-          puts "Check toolchain path: #{variant}" if Rake.application.options.trace    
+          puts "Check toolchain path: #{variant}"# if Rake.application.options.trace    
           next unless File.directory? variant
 
           ndktools = variant
@@ -229,7 +229,7 @@ class NDKWrapper
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
           ndkabi = 'x86_64-linux-android' if ndkabi == 'x86_64'
 
-          puts "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}" if Rake.application.options.trace
+          puts "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}" #if Rake.application.options.trace
 
           tools = {}
           
