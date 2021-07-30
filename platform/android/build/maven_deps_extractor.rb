@@ -230,7 +230,7 @@ class MavenDepsExtractor
       pwd = path
 
       puts "PATH: " + path
-      Dir[path + "/*"]
+      puts Dir[path + "/*"]
       puts "CMD: " + cmd
       exit 1
       
