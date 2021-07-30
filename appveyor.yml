@@ -183,9 +183,6 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
-  
-  #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
   - cd C:\TAU\
   - rmdir /Q /S rhodes
