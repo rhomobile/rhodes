@@ -229,8 +229,9 @@ class MavenDepsExtractor
       env = maven_env
       pwd = path
 
-      puts path
-      exit 1
+      puts "PATH: " + path
+      puts "CMD: " + cmd
+      puts "MAVEN_ENV: " + maven_env
 
       @logger.info "Running Maven dependency get plugin"
       puts cmd.to_s
