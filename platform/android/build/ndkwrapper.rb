@@ -153,15 +153,18 @@ class NDKWrapper
     ndkabi = "unknown"
     ndkhostvariants = []
     if HostPlatform.windows?
+        puts "Windows platform"
         $bufcheck64 = `WMIC OS get OSArchitecture`.encode('UTF-8', invalid: :replace, replace: "").split[1]
         ndkhostvariants << 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
         ndkhostvariants << 'windows'
     else
+        puts "Not windows platform"
         ndkhostvariants = [
           `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
           `uname -s`.downcase!.chomp! + '-x86'
         ]
     end
+    exit 1
 
     if(@rev_major >= 18)
       toolchainversions = ['8.0.0']
