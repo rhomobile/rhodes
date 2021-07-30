@@ -230,7 +230,9 @@ class MavenDepsExtractor
       pwd = path
 
       puts "PATH: " + path
+      Dir[path + "/*"]
       puts "CMD: " + cmd
+      exit 1
       
 
       @logger.info "Running Maven dependency get plugin"
