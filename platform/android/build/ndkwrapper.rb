@@ -43,8 +43,6 @@ class NDKWrapper
 
   def parse_rev( val )
     @rev_major, @rev_minor, @rev_tiny = val.split('.').map { |v| v.to_i }
-    puts "VERS: " + val
-    exit 1
   end
 
   def link_sysroot( api, abi )
