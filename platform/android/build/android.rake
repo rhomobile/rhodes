@@ -1225,20 +1225,13 @@ namespace "config" do
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
-      begin
-        AndroidTools::MavenDepsExtractor.instance.extract_all
+      AndroidTools::MavenDepsExtractor.instance.extract_all
 
-        if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
-          v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
-          raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
-          $v4support_classpath = v4jar.first
-        end
-      rescue Exception => e
-        puts "Maven deps extractor exception: " + e.to_s
+      if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
+        v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
+        raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
+        $v4support_classpath = v4jar.first
       end
-     
-
-      
 
 
       print_timestamp('android:extensions FINISH')
