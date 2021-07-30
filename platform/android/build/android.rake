@@ -1228,7 +1228,7 @@ namespace "config" do
       begin
         AndroidTools::MavenDepsExtractor.instance.extract_all
       rescue Exception => e
-        puts "Maven deps extractor exception: " + e
+        puts "Maven deps extractor exception: " + e.to_s
       end
      
 
