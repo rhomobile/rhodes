@@ -193,7 +193,7 @@ install:
   - set RAKEOPT=-rdevkit
 
 
-  - if %target_os%==android keytool -genkey -v -keystore debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "UN=Rho-Android-appveyor-build" -storepass VerySecurePassword -keypass VerySecurePassword
+  - if %target_os%==android keytool -genkey -v -keystore debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass VerySecurePassword -keypass VerySecurePassword
 
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22
