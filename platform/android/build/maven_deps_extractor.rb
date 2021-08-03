@@ -240,15 +240,15 @@ class MavenDepsExtractor
     argv = []
     argv << "\"" + @mvnbin + "\""
     argv << '"dependency:get"'
-    argv << "-Dmaven.repo.local=\"#{File.join(@m2home,'m2')}\""
+    argv << "\"-Dmaven.repo.local=#{File.join(@m2home,'m2')}\""
 
-    argv << "-DgroupId=\"#{grp_id}\""
-    argv << "-DartifactId=\"#{art_id}\""
-    argv << "-Dversion=\"#{ver}\""
-    argv << "-DremoteRepositories=\"#{repos}\""
-    argv << "-Dpackaging=pom"
-    argv << "-Ddest=\"./\""
-    argv << "-Dtransitive=false"
+    argv << "\"-DgroupId=#{grp_id}\""
+    argv << "\"-DartifactId=#{art_id}\""
+    argv << "\"-Dversion=#{ver}\""
+    argv << "\"-DremoteRepositories=#{repos}\""
+    argv << "\"-Dpackaging=pom\""
+    argv << "\"-Ddest=./\""
+    argv << "\"-Dtransitive=false\""
 
     argv << '-B'
     argv << '-q'
