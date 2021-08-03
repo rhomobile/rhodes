@@ -10,7 +10,7 @@ environment:
     #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
     #   test_app_folder: C:\TAU\RMS-Testing\
     #   test_app_subfolder: auto\feature_def\auto_common_spec\
-    #   build_command: "device:android:production"
+    #   build_command: "device:android:debug"
     #   #after_build_command: "run:win32:spec"
     #   app_name: auto_common_spec
     #   target_os: android
@@ -26,7 +26,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "device:android:production"
+      build_command: "device:android:debug"
       #after_build_command: "run:win32:spec"
       app_name: framework_spec
       target_os: android
@@ -40,7 +40,7 @@ environment:
       QTDIR: C:\Qt\5.13\msvc2017
       testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
       test_app_folder: C:\TAU\RMS-Testing\
-      build_command: "device:android:production"
+      build_command: "device:android:debug"
       #after_build_command: "run:win32:spec"
       app_name: SAS
       target_os: android
