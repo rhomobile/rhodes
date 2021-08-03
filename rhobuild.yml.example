@@ -1,7 +1,7 @@
 env:
   #app: C:/rhodes-app
   paths:
-    java: C:/Program Files (x86)/Java/jdk1.8.0/bin
+    java: C:/Program Files/Java/jdk11/bin
     android: C:/Program Files (x86)/Android/android-sdk
     android-ndk: C:/ProgramData/Microsoft/AndroidNDK64/android-ndk-r17
     cabwiz:  C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz

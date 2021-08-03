@@ -10,7 +10,7 @@ environment:
     #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
     #   test_app_folder: C:\TAU\RMS-Testing\
     #   test_app_subfolder: auto\feature_def\auto_common_spec\
-    #   build_command: "device:android:debug"
+    #   build_command: "device:android:production"
     #   #after_build_command: "run:win32:spec"
     #   app_name: auto_common_spec
     #   target_os: android
@@ -26,13 +26,13 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "device:android:debug"
+      build_command: "device:android:production"
       #after_build_command: "run:win32:spec"
       app_name: framework_spec
       target_os: android
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
       target_artefact_file_name: framework_spec_signed.apk
-      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+      JAVA_HOME: C:\Program Files\Java\jdk11
       ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
     - android_auto_common_spec_2017:
@@ -40,13 +40,13 @@ environment:
       QTDIR: C:\Qt\5.13\msvc2017
       testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
       test_app_folder: C:\TAU\RMS-Testing\
-      build_command: "device:android:debug"
+      build_command: "device:android:production"
       #after_build_command: "run:win32:spec"
       app_name: SAS
       target_os: android
       target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
       target_artefact_file_name: SAS_signed.apk
-      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+      JAVA_HOME: C:\Program Files\Java\jdk11
       ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
 
