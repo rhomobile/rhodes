@@ -20,130 +20,130 @@ environment:
       #ANDROID_NDK_HOME: C:\TAU\android-ndk-r21e-windows-x86_64
 
 
-    - win32_rhosimulator:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: build:win32:rhosimulator_to C:/TAU/rhosim/RhoSimulator.zip
-      app_name: RhoSimulator
-      target_os: win32
-      target_artefact_path: C:\TAU\rhosim\
-      target_artefact_file_name: RhoSimulator.zip
+    # - win32_rhosimulator:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\auto_common_spec\
+    #   build_command: build:win32:rhosimulator_to C:/TAU/rhosim/RhoSimulator.zip
+    #   app_name: RhoSimulator
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\rhosim\
+    #   target_artefact_file_name: RhoSimulator.zip
 
-    - win32_auto_common_spec_2019:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      QTDIR: C:\Qt\5.15\msvc2019
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:win32:production"
-      after_build_command: "run:win32:spec"
-      app_name: auto_common_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
-      target_artefact_file_name: auto_common_spec-setup.exe
+    # - win32_auto_common_spec_2019:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #   QTDIR: C:\Qt\5.15\msvc2019
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\auto_common_spec\
+    #   build_command: "device:win32:production"
+    #   after_build_command: "run:win32:spec"
+    #   app_name: auto_common_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
+    #   target_artefact_file_name: auto_common_spec-setup.exe
     
-    - win32_framework_spec_2019:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      QTDIR: C:\Qt\5.15\msvc2019
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "run:win32:spec"
-      #after_build_command: "run:win32:spec"
-      app_name: framework_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
-      #target_artefact_file_name: framework_spec-setup.exe
+    # - win32_framework_spec_2019:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #   QTDIR: C:\Qt\5.15\msvc2019
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\framework_spec\
+    #   build_command: "run:win32:spec"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: framework_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
+    #   #target_artefact_file_name: framework_spec-setup.exe
 
 
-    - win32_auto_common_spec_2017:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:win32:production"
-      after_build_command: "run:win32:spec"
-      app_name: auto_common_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
-      target_artefact_file_name: auto_common_spec-setup.exe
+    # - win32_auto_common_spec_2017:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\auto_common_spec\
+    #   build_command: "device:win32:production"
+    #   after_build_command: "run:win32:spec"
+    #   app_name: auto_common_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
+    #   target_artefact_file_name: auto_common_spec-setup.exe
     
-    - win32_framework_spec_2017:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "run:win32:spec"
-      #after_build_command: "run:win32:spec"
-      app_name: framework_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
-      #target_artefact_file_name: framework_spec-setup.exe
+    # - win32_framework_spec_2017:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\framework_spec\
+    #   build_command: "run:win32:spec"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: framework_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
+    #   #target_artefact_file_name: framework_spec-setup.exe
 
-    - win32_auto_common_spec_2015:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      QTDIR: C:\Qt\5.9\msvc2015
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:win32:production"
-      after_build_command: "run:win32:spec"
-      app_name: auto_common_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
-      target_artefact_file_name: auto_common_spec-setup.exe
+    # - win32_auto_common_spec_2015:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   QTDIR: C:\Qt\5.9\msvc2015
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\auto_common_spec\
+    #   build_command: "device:win32:production"
+    #   after_build_command: "run:win32:spec"
+    #   app_name: auto_common_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
+    #   target_artefact_file_name: auto_common_spec-setup.exe
     
-    - win32_framework_spec_2015:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      QTDIR: C:\Qt\5.9\msvc2015
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "run:win32:spec"
-      #after_build_command: "run:win32:spec"
-      app_name: framework_spec
-      target_os: win32
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
-      #target_artefact_file_name: framework_spec-setup.exe
+    # - win32_framework_spec_2015:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   QTDIR: C:\Qt\5.9\msvc2015
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\framework_spec\
+    #   build_command: "run:win32:spec"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: framework_spec
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
+    #   #target_artefact_file_name: framework_spec-setup.exe
 
-    - win32_kitchensinkJS:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
-      test_app_folder: C:\TAU\kitchensinkJS\
-      build_command: "device:win32:production"
-      app_name: KitchensinkJS
-      target_os: win32
-      target_artefact_path: C:\TAU\kitchensinkJS\bin\target\win32\
-      target_artefact_file_name: kitchensinkJS-setup.exe
+    # - win32_kitchensinkJS:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
+    #   test_app_folder: C:\TAU\kitchensinkJS\
+    #   build_command: "device:win32:production"
+    #   app_name: KitchensinkJS
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\kitchensinkJS\bin\target\win32\
+    #   target_artefact_file_name: kitchensinkJS-setup.exe
 
-    - win32_kitchensinkRuby:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
-      test_app_folder: C:\TAU\kitchensinkRuby\
-      build_command: "device:win32:production"
-      app_name: KitchensinkRuby
-      target_os: win32
-      target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\win32\
-      target_artefact_file_name: kitchensinkRuby-setup.exe
+    # - win32_kitchensinkRuby:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
+    #   test_app_folder: C:\TAU\kitchensinkRuby\
+    #   build_command: "device:win32:production"
+    #   app_name: KitchensinkRuby
+    #   target_os: win32
+    #   target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\win32\
+    #   target_artefact_file_name: kitchensinkRuby-setup.exe
 
-    - win32_rho_ruby:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      pre_build_command: "build:rhoruby"
-      build_command: "device:win32:production"
-      after_build_command: "run:win32:spec"
-      app_name: auto_common_spec
-      target_os: win32
+    # - win32_rho_ruby:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\auto_common_spec\
+    #   pre_build_command: "build:rhoruby"
+    #   build_command: "device:win32:production"
+    #   after_build_command: "run:win32:spec"
+    #   app_name: auto_common_spec
+    #   target_os: win32
     
 
 build: off

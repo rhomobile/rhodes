@@ -238,16 +238,16 @@ class MavenDepsExtractor
 
   def dep_get_cmd(grp_id, art_id, ver, repos)
     argv = []
-    argv << @mvnbin
-    argv << 'dependency:get'
-    argv << "-Dmaven.repo.local=#{File.join(@m2home,'m2')}"
+    argv << "\"" + @mvnbin + "\""
+    argv << '"dependency:get"'
+    argv << "-Dmaven.repo.local=\"#{File.join(@m2home,'m2')}\""
 
-    argv << "-DgroupId=#{grp_id}"
-    argv << "-DartifactId=#{art_id}"
-    argv << "-Dversion=#{ver}"
-    argv << "-DremoteRepositories=#{repos}"
+    argv << "-DgroupId=\"#{grp_id}\""
+    argv << "-DartifactId=\"#{art_id}\""
+    argv << "-Dversion=\"#{ver}\""
+    argv << "-DremoteRepositories=\"#{repos}\""
     argv << "-Dpackaging=pom"
-    argv << "-Ddest=./"
+    argv << "-Ddest=\"./\""
     argv << "-Dtransitive=false"
 
     argv << '-B'
