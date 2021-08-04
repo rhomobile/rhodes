@@ -4,57 +4,49 @@ clone_folder: C:\TAU\rhodes
 environment:
   matrix:
 
-    # - android_auto_common_spec_2017:
-    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #   QTDIR: C:\Qt\5.13\msvc2017
-    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-    #   test_app_folder: C:\TAU\RMS-Testing\
-    #   test_app_subfolder: auto\feature_def\auto_common_spec\
-    #   build_command: "device:android:debug"
-    #   #after_build_command: "run:win32:spec"
-    #   app_name: auto_common_spec
-    #   target_os: android
-    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
-    #   target_artefact_file_name: auto_common_spec_signed.apk
-    #   JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-    #   ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
-
-
     - android_auto_common_spec_2017:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\framework_spec\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
       build_command: "device:android:debug"
       #after_build_command: "run:win32:spec"
-      app_name: framework_spec
+      app_name: auto_common_spec
       target_os: android
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
-      target_artefact_file_name: framework_spec-debug.apk
-      JAVA_HOME: C:\Program Files\Java\jdk11
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
+      target_artefact_file_name: auto_common_spec-debug.apk
+      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
       ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
-    - android_auto_common_spec_2017:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      build_command: "device:android:debug"
-      #after_build_command: "run:win32:spec"
-      app_name: SAS
-      target_os: android
-      target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
-      target_artefact_file_name: SAS-debug.apk
-      JAVA_HOME: C:\Program Files\Java\jdk11
-      ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
+    # - android_auto_common_spec_2017:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   test_app_subfolder: auto\feature_def\framework_spec\
+    #   build_command: "device:android:debug"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: framework_spec
+    #   target_os: android
+    #   target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
+    #   target_artefact_file_name: framework_spec-debug.apk
+    #   JAVA_HOME: C:\Program Files\Java\jdk11
+    #   ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
-
-
-
-
-
-
+    # - android_auto_common_spec_2017:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
+    #   test_app_folder: C:\TAU\RMS-Testing\
+    #   build_command: "device:android:debug"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: SAS
+    #   target_os: android
+    #   target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
+    #   target_artefact_file_name: SAS-debug.apk
+    #   JAVA_HOME: C:\Program Files\Java\jdk11
+    #   ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
     # - win32_rhosimulator:
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -193,15 +185,13 @@ install:
   - set RAKEOPT=-rdevkit
 
 
-  
-
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z e -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22
 
-  - if %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
-  #- IF %target_os%==android appveyor DownloadFile https://dl.google.com/android/repository/android-ndk-r21e-windows-x86_64.zip -FileName C:\TAU\android-ndk-r21e-windows-x86_64.zip
-  #- IF %target_os%==android 7z e -y C:\TAU\android-ndk-r21e-windows-x86_64.zip -oC:\TAU\android-ndk-r21e-windows-x86_64
+  - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
 
+
+  - tree "C:/Program Files (x86)/Android/android-sdk/add-ons/addon-symbol_emdk-symbol-22"
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
