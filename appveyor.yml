@@ -191,7 +191,7 @@ install:
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
 
 
-  - tree "C:/Program Files (x86)/Android/android-sdk/add-ons/addon-symbol_emdk-symbol-22"
+  - tree -F "C:\Program Files (x86)\Android\android-sdk\add-ons\addon-symbol_emdk-symbol-22\"
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
