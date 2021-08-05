@@ -28,7 +28,6 @@ package com.rhomobile.rhodes;
 
 import java.io.File;
 import java.util.List;
-import java.nio.file.Paths;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
@@ -123,7 +122,8 @@ public class LocalFileProvider extends ContentProvider
     }
 
     public static boolean isHomeDir(Context ctx, String fileName){
-        String filePath = Paths.get(ctx.getApplicationInfo().dataDir, "rhodata", "apps").toString();
+        final File f = new File( ctx.getApplicationInfo().dataDir, "rhodata" );        
+        final String filePath = new File(f,"apps").getPath();
         return fileName.startsWith(filePath) || fileName.startsWith("file://" + filePath);
     }
     

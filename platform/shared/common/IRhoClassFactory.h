@@ -26,9 +26,13 @@
 
 #pragma once
 
+#include "common/RhoStd.h"
+#include "net/INetRequest.h"
+
 namespace rho {
-namespace net{
-    struct INetRequestImpl;
+
+namespace net
+{
     struct ISSL;
 }
 
@@ -53,7 +57,55 @@ struct IRhoClassFactory
     virtual IRhoCrypt* createRhoCrypt() = 0;
 
     virtual net::INetRequestImpl* createNetRequestImpl() = 0;
+    virtual void registerNetRequestBuilder( const String& name, net::INetRequestBuilder* builder, bool setAsDefault = true ) = 0;
+    virtual void setDefaultNetRequestBuilder( const String& name ) = 0;
+
     virtual const ISecurityTokenGenerator* createSecurityTokenGenerator() = 0;
+};
+
+//abstract base class stubbing some of IRhoClassFactory.
+//override for specific platforms.
+class CBaseRhoClassFactory : public IRhoClassFactory
+{
+public:
+
+    CBaseRhoClassFactory()
+        : mSelectedNetRequestBuilder(0)
+    {
+
+    }
+
+    virtual void registerNetRequestBuilder( const String& name, net::INetRequestBuilder* builder, bool setAsDefault = true )
+    {
+        mNetRequestBuilders[name] = builder;
+
+        if ( setAsDefault ) {
+            setDefaultNetRequestBuilder( name );
+        }
+    }
+
+    virtual void setDefaultNetRequestBuilder( const String& name )
+    {
+        mSelectedNetRequestBuilder = 0;
+
+        auto search = mNetRequestBuilders.find( name );
+        if ( search != mNetRequestBuilders.end() ) {
+            mSelectedNetRequestBuilder = search->second;
+        }
+    }
+
+    virtual net::INetRequestImpl* createNetRequestImpl()
+    {
+        net::INetRequestImpl* ret = 0;
+        if ( mSelectedNetRequestBuilder != 0 ) {
+            ret = mSelectedNetRequestBuilder->build();
+        }
+        return ret;
+    }
+
+private:
+    std::map<String, net::INetRequestBuilder*> mNetRequestBuilders;
+    net::INetRequestBuilder* mSelectedNetRequestBuilder;
 };
 
 }

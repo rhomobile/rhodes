@@ -1,0 +1,16 @@
+# this is example of Podfile - used only for iOS build when you use Cocoa Pods modules
+# If you want to use cocoapods when you build your extension - rename this to "Podfile"
+# and modify according to your pods list
+# when extension will builded we automatically call "pod install"
+# and workspace will be builded instead of project
+
+platform :ios, '10.0'
+#use_frameworks!
+
+project '<%= name.camel_case %>.xcodeproj'
+
+# pod list:
+pod 'GoogleMLKit/TextRecognition'
+
+target '<%= name.camel_case %>' do
+end

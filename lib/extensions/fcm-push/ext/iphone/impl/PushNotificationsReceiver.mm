@@ -9,6 +9,7 @@
 #import "PushNotificationsReceiver.h"
 #include "Push.h"
 #import "Rhodes.h"
+#include "logging/RhoLog.h"
 
 @implementation PushNotificationsReceiver
 
@@ -25,7 +26,8 @@ static PushNotificationsReceiver *instance = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
        [FIRApp configure];
        [FIRMessaging messaging].delegate = instance;
-       [FIRMessaging messaging].shouldEstablishDirectChannel = true;
+       // removed from latest Firebase
+        //[FIRMessaging messaging].shouldEstablishDirectChannel = true;
     });
     
     return instance;
@@ -51,10 +53,15 @@ static PushNotificationsReceiver *instance = nil;
     free(szpin);
 }
 
-- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+//- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+//    isDirectMessage = true;
+//    NSLog(@"FCM Received direct message: %@", remoteMessage.appData);
+//    [self onPushMessageReceived:remoteMessage.appData];
+//}
+- (FIRMessagingMessageInfo *)appDidReceiveMessage:(NSDictionary *)message {
     isDirectMessage = true;
-    NSLog(@"FCM Received direct message: %@", remoteMessage.appData);
-    [self onPushMessageReceived:remoteMessage.appData];
+    NSLog(@"FCM Received direct message: %@", message);
+    [self onPushMessageReceived:message];
 }
 
 //- (void)messaging:(FIRMessaging *)messaging didRefreshRegistrationToken:(NSString *)fcmToken {

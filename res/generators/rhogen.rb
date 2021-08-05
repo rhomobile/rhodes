@@ -109,6 +109,11 @@ module Rhogen
       template.destination = "#{name}/build.yml"
     end
 
+    template :podfile do |template|
+      template.source = 'Podfile.example'
+      template.destination = "#{name}/Podfile.example"
+    end
+
     template :gitignore do |template|
       template.source = 'gitignore'
       template.destination = "#{name}/.gitignore"
@@ -1160,6 +1165,11 @@ module Rhogen
     template :extension_iphone_rakefile do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Rakefile'
       template.destination = "extensions/#{name}/ext/platform/iphone/Rakefile"
+    end
+
+    template :extension_iphone_podfile do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/Podfile.example'
+      template.destination = "extensions/#{name}/ext/platform/iphone/Podfile.example"
     end
 
     template :extension_iphone_pch do |template|

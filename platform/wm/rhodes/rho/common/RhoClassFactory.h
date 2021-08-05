@@ -34,7 +34,7 @@
 namespace rho {
 namespace common {
 
-class CRhoClassFactory : public IRhoClassFactory
+class CRhoClassFactory : public CBaseRhoClassFactory
 {
 public:
     virtual ~CRhoClassFactory(void){}
@@ -55,7 +55,7 @@ public:
 
     const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
     {
-        return nullptr;
+        return NULL;
     }
 
     virtual IRhoCrypt* createRhoCrypt();

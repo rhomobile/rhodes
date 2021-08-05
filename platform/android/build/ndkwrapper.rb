@@ -244,7 +244,7 @@ class NDKWrapper
     end
 
     if ndktools.nil?
-      raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
+      raise "Can't detect NDK toolchain path (corrupted NDK installation?), toolchain is " + $toolchain
     end 
   end
 

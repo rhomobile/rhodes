@@ -14,6 +14,9 @@ class IPhoneBuild
         $rootdir = ENV['RHO_ROOT']
         raise "RHO_ROOT is not set" if $rootdir.nil?
 
+        $app_path = ENV["RHO_APP_DIR"]
+        raise "RHO_APP_DIR is not set" if $app_path.nil?
+
         $xcodebuild = ENV['XCODEBUILD']
         raise "XCODEBUILD is not set" if $xcodebuild.nil?
 
@@ -51,21 +54,53 @@ class IPhoneBuild
            $configuration = 'Release'
         end
 
-        result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcode_project_target_name+'.a'
+        result_path = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos")
+        result_lib = result_path + '/lib'+xcode_project_target_name+'.a'
         target_lib = $targetdir + '/lib'+ext_lib_name+'.a'
+
+        currentdir = Dir.pwd()
+        build_path = File.join(currentdir, '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos"))
+
 
         FileUtils.rm_rf 'build'
         FileUtils.rm_rf target_lib
 
-        args = ['build', '-target', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
+        additional_string = nil
+        options = {}
+
+        project_workspace_path = File.join(currentdir, ext_name + ".xcworkspace")
+
+        podfile_path = File.join(currentdir, "Podfile")
+
+        if (File.exists?(podfile_path)) && (!File.exists?(project_workspace_path))
+            #we shoudl setup project for cocoapods
+            puts "We found Podfile, but workspace are not exists - we should run 'pod install' to generte workspace"
+
+            require File.join(ENV['RHO_ROOT'], 'lib','build','jake')
+
+            Jake.run('pod', ['install'])
+        end
+
+
+        if File.exists?(project_workspace_path)
+            args = ['build', '-workspace', ext_name + ".xcworkspace", '-scheme', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
+            additional_string = " BUILT_PRODUCTS_DIR="+ build_path+" CONFIGURATION_BUILD_DIR="+build_path
+            options = {:string_for_add_to_command_line => additional_string}
+        else
+            args = ['build', '-target', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
+            #args = ['build', '-scheme', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
+        end
+
         args << ('OTHER_CFLAGS="'+$other_cflags.to_s+'"') if !$other_cflags.nil?
 
         require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
 
-        ret = IPhoneBuild.run_and_trace($xcodebuild,args)
+
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args, options)
 
         # copy result to $targetdir
         FileUtils.cp result_lib,target_lib
+        FileUtils.cp result_lib,File.join($app_path, "project", "iphone", 'ExtLibs', 'lib'+ext_lib_name+'.a')
 
         puts "Build \""+ext_name+"\" extension : result library filepath ["+target_lib+"]"
 

@@ -464,7 +464,7 @@ def java_compile(outpath, classpath, srclist)
     args = []
     args << "-g"
     args << "-d"
-    args << outpath
+    args << "\"" + outpath + "\""
     args << "-source"
     args << "1.6"
     args << "-target"
@@ -473,7 +473,7 @@ def java_compile(outpath, classpath, srclist)
     args << "-encoding"
     args << "latin1"
     args << "-classpath"
-    args << classpath
+    args << "\"" + classpath + "\""
     args << "@#{srclist}"
     puts Jake.run(javac, args)
     unless $?.success?

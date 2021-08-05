@@ -244,6 +244,12 @@ namespace common
 namespace net
 {
 
+class INetRequestBuilder
+{
+public:
+  virtual INetRequestImpl* build() = 0;
+};
+
 class INetRequestCallback
 {
   public:

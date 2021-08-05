@@ -1,0 +1,11 @@
+platform :ios, '10.0'
+#use_frameworks!
+
+project 'fcm-push.xcodeproj'
+
+pod 'Firebase/Auth'
+pod 'Firebase/Firestore'
+pod 'Firebase/Messaging'
+
+target 'fcm-push' do
+end

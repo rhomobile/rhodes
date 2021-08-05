@@ -2368,6 +2368,7 @@ def clear_linker_settings
     #    ENV["EXTENSIONS_LDFLAGS"] = ""
 
     $ldflags = ""
+    $ldflags_array = []
   end
 
 end
@@ -2384,19 +2385,25 @@ def add_linker_library(libraryname)
   #    end
   #    File.open($startdir + "/platform/iphone/rhorunner.xcodeproj/project.pbxproj","w") {|f| f.write outfile}
   #  end
-  simulator = $sdk =~ /iphonesimulator/
+  if $config["platform"] == "iphone"
+    simulator = $sdk =~ /iphonesimulator/
 
-  if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
-    tmpdir = ENV["TARGET_TEMP_DIR"]
-  else
-    tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
-      ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+    if ENV["TARGET_TEMP_DIR"] and ENV["TARGET_TEMP_DIR"] != ""
+      tmpdir = ENV["TARGET_TEMP_DIR"]
+    else
+      tmpdir = File.join($app_path, 'project/iphone') + "/build/rhorunner.build/#{$configuration}-" +
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+    end
+    #$ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
+    $ldflags_array << "#{tmpdir}/#{libraryname}"
   end
-  $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
 end
 
 def add_inker_library_absolute(fulllibraryfilepath)
+  if $config["platform"] == "iphone"
     $ldflags << fulllibraryfilepath + "\n" unless $ldflags.nil?
+    #$ldflags_array << fulllibraryfilepath
+  end
 end
 
 def set_linker_flags

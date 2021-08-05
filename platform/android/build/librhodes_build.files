@@ -28,4 +28,3 @@ platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
 platform/android/Rhodes/jni/src/MethodResultJni.cpp
 platform/android/Rhodes/jni/src/SecurityTokenGenerator.cpp
 platform/android/Rhodes/jni/src/JNIRhoRubyCppWrapper.cpp
-platform/android/Rhodes/jni/src/JNINetRequest.cpp
