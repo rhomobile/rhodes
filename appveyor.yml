@@ -94,8 +94,6 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       #target_artefact_file_name: framework_spec-setup.exe
 
-
-
     - win32_kitchensinkJS:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       QTDIR: C:\Qt\5.13\msvc2017
@@ -129,13 +127,70 @@ environment:
       after_build_command: "run:win32:spec"
       app_name: auto_common_spec
       target_os: win32
+
+    - android_auto_common_spec_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      build_command: "device:android:debug"
+      #after_build_command: "run:win32:spec"
+      app_name: auto_common_spec
+      target_os: android
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\android\
+      target_artefact_file_name: auto_common_spec-debug.apk
+      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+      ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
+
+    - android_framework_spec_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\framework_spec\
+      build_command: "device:android:debug"
+      #after_build_command: "run:win32:spec"
+      app_name: framework_spec
+      target_os: android
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
+      target_artefact_file_name: framework_spec-debug.apk
+      JAVA_HOME: C:\Program Files\Java\jdk11
+      ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
+
+    - android_system-api-samples_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
+      testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
+      test_app_folder: C:\TAU\rhodes-system-api-samples\
+      build_command: "device:android:debug"
+      #after_build_command: "run:win32:spec"
+      app_name: SAS
+      target_os: android
+      target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
+      target_artefact_file_name: SAS-debug.apk
+      JAVA_HOME: C:\Program Files\Java\jdk11
+      ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
     
 
 build: off
 
 install:
+  - ps: Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+  - ps: Start-Sleep -s 10
+  - ps: Restart-Computer -Force
+  - ps: Start-Sleep -s 10
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
+
+
+  - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
+  - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
+
+  - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
+
+
+#  - Tree "C:\Program Files (x86)\Android\android-sdk\add-ons" /F
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
@@ -147,6 +202,7 @@ before_test:
   - ruby -v
   - gem -v
   - bundle -v
+  - cd C:\TAU\rhodes\
   - cp rhobuild.yml.example rhobuild.yml
   - ruby C:\TAU\rhodes\lib\build\buildgem.rb
   - set /P BUILD_VERSION=<version
@@ -158,8 +214,6 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
-  #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
   - cd C:\TAU\
   - rmdir /Q /S rhodes
@@ -170,7 +224,6 @@ test_script:
   - cd %test_app_folder%
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
   - rake clean:win32
-  #- rake clean:uwp
   - IF DEFINED pre_build_command rake %pre_build_command% --trace
   - rake %build_command% --trace
   - IF DEFINED after_build_command rake %after_build_command%

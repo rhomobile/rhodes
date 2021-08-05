@@ -25,6 +25,8 @@ class MavenDepsExtractor
     @file_deps = []
 
     @rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
+
+    #@m2home = ENV["APPVEYOR_BUILD_WORKER_IMAGE"].nil? ? File.join( @rhoroot, 'res', 'build-tools', 'maven' ) : File.join('C:','PROGRA~2','Apache','Maven')
     @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
@@ -204,9 +206,9 @@ class MavenDepsExtractor
   def dep_copy_cmd
     argv = []
     argv << @mvnbin
-    argv << 'dependency:copy-dependencies'
+    argv << '"dependency:copy-dependencies"'
 #    argv << '-o' #work offline
-    argv << "-Dmaven.repo.local=#{File.join(@m2home,'m2')}"
+    argv << "\"-Dmaven.repo.local=#{File.join(@m2home,'m2')}\""
     argv << '-e' if Rake.application.options.trace
     argv << '-X' if Rake.application.options.trace
   
@@ -236,20 +238,23 @@ class MavenDepsExtractor
 
   def dep_get_cmd(grp_id, art_id, ver, repos)
     argv = []
-    argv << @mvnbin
-    argv << 'dependency:get'
-    argv << "-Dmaven.repo.local=#{File.join(@m2home,'m2')}"
+    argv << "\"" + @mvnbin + "\""
+    argv << '"dependency:get"'
+    argv << "\"-Dmaven.repo.local=#{File.join(@m2home,'m2')}\""
 
-    argv << "-DgroupId=#{grp_id}"
-    argv << "-DartifactId=#{art_id}"
-    argv << "-Dversion=#{ver}"
-    argv << "-DremoteRepositories=#{repos}"
-    argv << "-Dpackaging=pom"
-    argv << "-Ddest=./"
-    argv << "-Dtransitive=false"
+    argv << "\"-DgroupId=#{grp_id}\""
+    argv << "\"-DartifactId=#{art_id}\""
+    argv << "\"-Dversion=#{ver}\""
+    argv << "\"-DremoteRepositories=#{repos}\""
+    argv << "\"-Dpackaging=pom\""
+    argv << "\"-Ddest=./\""
+    argv << "\"-Dtransitive=false\""
 
+    argv << '-B'
+    argv << '-q'
     argv << '-e' if Rake.application.options.trace
     argv << '-X' if Rake.application.options.trace
+
 
     argv.join(' ')
   end
