@@ -45,6 +45,7 @@
 const char *rho_java_class[] = {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) name,
 #include "rhojava.inc"
+#include "rhojava_extra.inc"                    //generated from extensions-declarated preloads
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
