@@ -140,7 +140,7 @@ android:
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
-  - sys-img-x86-android-26
+  - sys-img-x86-android-28
 
 env:
   global:
