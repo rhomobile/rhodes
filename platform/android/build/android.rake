@@ -1017,6 +1017,8 @@ namespace "config" do
       $ext_android_library_deps = {}
       $ext_android_platform_lib = []
 
+      preload_java_classes = []
+
       $app_extensions_list.each do |ext, extpath|
         next if extpath.nil?
 
@@ -1220,8 +1222,15 @@ namespace "config" do
           end
         end
 
+        preload_java_classes.push(*extconf_android["preload_java_classes"]) if (extconf_android && extconf_android["preload_java_classes"])
+
         puts "#{extpath} is configured"
       end # $app_extensions_list.each
+
+      mkdir_p(File.join( $tmpdir, "include" ) )
+      File.open( File.join( $tmpdir, "include", "rhojava_extra.inc" ), "w" ) { |f|
+        preload_java_classes.each { |cls| f.puts( "\"#{cls}\"," ) }
+      }
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
@@ -1862,6 +1871,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/ruby/android\""
       args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
       args << "-I\"#{$coreapidir}\""
+      args << "-I\"#{File.join($tmpdir,"include")}\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
