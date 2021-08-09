@@ -3115,11 +3115,16 @@ def run_as_spec(device_flag, uninstall_app)
   AndroidTools.logclear(device_flag)
   # Start emulator with options: hidden window display and wipe user data
   AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e'
-  do_uninstall(device_flag)
+
+  begin
+    do_uninstall(device_flag)
+  rescue Exception => e
+    puts "Uninstalling application exception: " + e.to_s
+  end
 
   # Failsafe to prevent eternal hangs
   Thread.new {
-    sleep 2000
+    sleep 10000
     if device_flag == '-e'
       #AndroidTools.kill_adb_and_emulator
       puts "%%% was AndroidTools.kill_adb_and_emulator !!!"
@@ -3370,7 +3375,7 @@ namespace "run" do
       end
 
       task :spec, :uninstall_app do |t, args|
-        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
+          Jake.decorate_spec { run_as_spec('-e', args.uninstall_app) }
       end
     end
 
