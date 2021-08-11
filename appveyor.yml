@@ -158,19 +158,19 @@ environment:
       JAVA_HOME: C:\Program Files\Java\jdk11
       ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
 
-    - android_system-api-samples_2017:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
-      testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
-      test_app_folder: C:\TAU\rhodes-system-api-samples\
-      build_command: "device:android:debug"
-      #after_build_command: "run:win32:spec"
-      app_name: SAS
-      target_os: android
-      target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
-      target_artefact_file_name: SAS-debug.apk
-      JAVA_HOME: C:\Program Files\Java\jdk11
-      ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
+    # - android_system-api-samples_2017:
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   QTDIR: C:\Qt\5.13\msvc2017
+    #   testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
+    #   test_app_folder: C:\TAU\rhodes-system-api-samples\
+    #   build_command: "device:android:debug"
+    #   #after_build_command: "run:win32:spec"
+    #   app_name: SAS
+    #   target_os: android
+    #   target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
+    #   target_artefact_file_name: SAS-debug.apk
+    #   JAVA_HOME: C:\Program Files\Java\jdk11
+    #   ANDROID_NDK_HOME: C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r17
     
 
 build: off
