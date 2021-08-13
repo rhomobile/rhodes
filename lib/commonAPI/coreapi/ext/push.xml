@@ -15,8 +15,11 @@ For FCM:
     :::ruby
     capabilities: ["push"]
     extensions: ["fcm-push"]
-    fcmSenderID: 'your_fcm_sender_id'
-    fcmAppID: 'your_fcm_app_id'
+    fcm:
+        mobilesdk_app_id: "mobilesdk_app_id from google-services.json"
+        project_number: "project_number from google-services.json"
+        current_key: "current_key from google-services.json"
+        project_id: "project_id from google-services.json"
 
 **Supporting FCM Push on iOS** Download GoogleService-Info.plist and put it into the root of your application. Please read guide [Add Firebase to your iOS project](https://firebase.google.com/docs/ios/setup) for more details.
 

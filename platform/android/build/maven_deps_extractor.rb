@@ -48,7 +48,6 @@ class MavenDepsExtractor
     @jni_libs = []
     @manifests = []
 
-    @have_v4_support_lib = false
 
   end
 
@@ -161,7 +160,6 @@ class MavenDepsExtractor
 
     Dir[File.join(src,'*')].each do |f|
 
-      @have_v4_support_lib = true if ( File.basename(f) =~ /support-v4/ )
 
       if File.extname(f) == '.aar'        
         target = File.join(dst,File.basename(f,'.aar'))
@@ -272,9 +270,10 @@ class MavenDepsExtractor
     Jake.run3( cmd, pwd, env )
     rm pom
 
+    target = File.join(path,'target')
     @logger.debug "Moving extracted dependencies to #{path}"
-    Dir[File.join(path,'target','dependency','*')].each { |f| mv(f,path) }
-    rm_r File.join(path,'target')
+    Dir[File.join(target,'dependency','*')].each { |f| mv(f,path) }
+    rm_r File.join(target) if File.directory?(target)
   end
 
   def split_dependency( dep )
@@ -378,9 +377,6 @@ class MavenDepsExtractor
     @jars.join(separator)
   end
 
-  def have_v4_support_lib?
-    @have_v4_support_lib
-  end
 
 end
 

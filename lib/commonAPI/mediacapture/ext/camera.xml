@@ -219,11 +219,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="true">
-                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <PLATFORM>Android</PLATFORM>
-                <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. Applicable to takePicture() and choosePicture() both. None of the Rho camera properties shall be applicable except desiredWidth and desiredHeight (desired size aplly if useRealBitmapResize enabled).</DESC>
-            </PROPERTY>
             <PROPERTY name="useRealBitmapResize" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
@@ -322,15 +317,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
 							          </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
+						    <PLATFORM>WM, CE, iOS, WP8</PLATFORM>
                             <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_width" type="INTEGER" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS, UWP</PLATFORM>
+						    <PLATFORM>WM, CE, iOS, UWP</PLATFORM>
                             <DESC>It is recommended to use imageWidth in preference to this parameter.</DESC>
                         </PARAM>
                         <PARAM name="image_format" type="STRING" deprecated="true">
-						    <PLATFORM>Android, WM, CE, iOS</PLATFORM>
+						    <PLATFORM>WM, CE, iOS</PLATFORM>
                             <DESC>It is recommended to use imageFormat in preference to this parameter.</DESC>
                         </PARAM>
                     </PARAMS>
@@ -384,7 +379,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, CE, UWP, iOS</PLATFORM>
                         <DESC>
-                          Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android and WP8 devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
+                          Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android and WP8 devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel, enableEditing.
                           In UWP dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8, wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>

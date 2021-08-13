@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -45,7 +46,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
 
-public class GMapActivity extends FragmentActivity {
+public class GMapActivity extends FragmentActivity implements OnMapReadyCallback {
     
     static class MarkerAdds {
         public String url;
@@ -117,8 +118,14 @@ public class GMapActivity extends FragmentActivity {
         setContentView(R.layout.gmaplayout);
         
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        
-        mMap = mapFragment.getMap();
+
+        mapFragment.getMapAsync(this);
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap){
+        mMap = googleMap;
         
         if ( null == mMap ) {
             Logger.E(TAG,"GoogleMap object is null from fragment. Finishing activity.");
@@ -297,6 +304,7 @@ public class GMapActivity extends FragmentActivity {
         });
         geocoding.start();
     }
+
 
     @Override
     protected void onStart() {

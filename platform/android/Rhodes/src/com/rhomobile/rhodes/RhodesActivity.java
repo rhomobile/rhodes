@@ -70,8 +70,8 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.util.Log;
 
-import android.support.v4.content.PermissionChecker;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.content.PermissionChecker;
+import androidx.core.app.ActivityCompat;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback {
 	

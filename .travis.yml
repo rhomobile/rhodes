@@ -38,7 +38,7 @@ script:
 #- rvm gemset use rhodes
 
 # install Rhodes gem to clean gemset. All dependencies should be installed automatically
-- travis_wait 90 gem install --no-document ./rhodes-$(cat ./version).gem
+- travis_wait 45 gem install --no-document ./rhodes-$(cat ./version).gem
 
 # check rhodes path is valid
 - |
@@ -71,7 +71,10 @@ script:
 
 # generate few apps from scratch
 - rhodes app vanilla_rhodes_app
-- cd vanilla_rhodes_app && rhodes extension testext && cd ..
+- cd vanilla_rhodes_app 
+#- safe_run_target_script upgrade_package.sh here we build not only android aps
+- rhodes extension testext
+- cd ..
 - rhodes jsapp vanilla_rhodes_jsapp
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
 
@@ -116,9 +119,10 @@ cache:
   - /home/travis/.rvm/
 
 before_cache:
-  - gem uninstall rhodes -a -x --force
-  - gem uninstall rhoconnect-client -a -x --force
   - gem uninstall rho-tau-extensions -a -x --force
+  - gem uninstall rhoconnect-client -a -x --force
+  - gem uninstall rhodes -a -x --force
+  #- gem uninstall bundler -a -x --force
 
 android:
   components:
@@ -131,15 +135,16 @@ android:
   - extra-android-support
   - add-on
   - extra
-  - build-tools-26.0.2
-  - android-26
+  - build-tools-28.0.1
+  - android-28
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
-#  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
+#  - sys-img-x86-android-28
 
 env:
   global:
+  - PATH=$PATH:/$TRAVIS_BUILD_DIR/.ci
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
@@ -168,46 +173,40 @@ matrix:
     osx_image: xcode12
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec" RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="sas" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="ruby-2.4.10"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode11.4
+  #   env: RHO_TARGET="iphone"    RHO_APP="sas" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="ruby-2.4.10"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode12
-    env: RHO_TARGET="iphone"    RHO_APP="universal_push_example" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode12
+  #   env: RHO_TARGET="iphone"    RHO_APP="universal_push_example" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode11.4
+  #   env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode12
+  #   env: RHO_TARGET="iphone"    RHO_APP="sas" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode12
-    env: RHO_TARGET="iphone"    RHO_APP="sas" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode11.4
+  #   env: RHO_TARGET="iphone"    RHO_APP="universal_push_example" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="universal_push_example" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode12
+  #   env: RHO_TARGET="iphone"    RHO_APP="todo-nodejs" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_TAU_EXTENSIONS="yes"
 
-  - language: objective-c
-    os: osx
-    osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
-
-  - language: objective-c
-    os: osx
-    osx_image: xcode12
-    env: RHO_TARGET="iphone"    RHO_APP="todo-nodejs" RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_TAU_EXTENSIONS="yes"
-
-  - language: objective-c
-    os: osx
-    osx_image: xcode12
-    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+  # - language: objective-c
+  #   os: osx
+  #   osx_image: xcode12
+  #   env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
 #linux targets
   - language: c++
@@ -241,29 +240,28 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.1"
 
-#  - language: android
-#    os: linux
-#    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="30" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.3.8"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.3.8"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="27" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.6.5" 
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="rhodes_fcm_test" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  SKIP_TESTS=1
-
-
-#  - language: android
-#    os: linux
-#    env: RHO_TARGET="android"    RHO_APP="todo-nodejs" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_TAU_EXTENSIONS="yes" SKIP_TESTS=1 ANDROID_ABIS="arm"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="30" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.7.1" 
 
   - language: android
     os: linux
-    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
+    env: RHO_TARGET="android"    RHO_APP="rhodes_fcm_test" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  SKIP_TESTS=1 
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="inventory_demo" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1
+    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8" 
+
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="inventory_demo" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 

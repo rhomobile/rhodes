@@ -37,7 +37,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
 import java.lang.Throwable;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
@@ -46,13 +45,13 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
     public static final FCMListener listener = FCMListener.getInstance();
     
     static final String FCM_PUSH_CLIENT = "fcm";
-    static String clientToken = "";
 
     private static String gStr(int key){
         String value = "";
@@ -90,13 +89,12 @@ public final class FCMFacade {
             try {
                 options = new FirebaseOptions.Builder()
                 .setApplicationId(gStr(R.string.google_app_id))
-                //.setApiKey(gStr(R.string.google_api_key))
-                //.setDatabaseUrl(gStr(R.string.firebase_database_url))
-                //.setStorageBucket(gStr(R.string.google_storage_bucket))
+                .setApiKey(gStr(R.string.google_api_key))
+                .setProjectId(gStr(R.string.project_id))
                 .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
                 .build();
             } catch( Throwable e ) {
-                Logger.E(TAG, "FCM: poblems on building options: " + e);
+                Logger.E(TAG, "FCM: problems on building options: " + e);
                 e.printStackTrace();
             }
 
@@ -104,39 +102,37 @@ public final class FCMFacade {
                 FirebaseApp.initializeApp(ContextFactory.getContext(), options);
                 Logger.T(TAG, "FCM: initialization of application");
             }catch(Exception e){
-                Logger.E(TAG, "FCM: poblems on initialization app: " + e);
+                Logger.E(TAG, "FCM: problems on initialization app: " + e);
                 e.printStackTrace();
             }
             try{
                 FirebaseApp.getInstance();
                 Logger.T(TAG, "FCM: Firebase Inited");                
             }catch(Exception e){
-                Logger.E(TAG, "FCM: poblems on getting instance: " + e);
+                Logger.E(TAG, "FCM: problems on getting instance: " + e);
                 e.printStackTrace();
             }
         }   
   
         refreshToken();  
-
-        
-
     }
+
     public static void refreshToken(){
         try{
             Logger.T(TAG, "FCM: registation of application");
-            clientToken = "";
+            String clientToken = ContextFactory.getContext().getSharedPreferences("FireBase", 
+                ContextFactory.getContext().MODE_PRIVATE).getString("token", "");
+
             clientToken = FirebaseInstanceId.getInstance().getToken();
-            if ((clientToken != "")&&(clientToken != null)){
+            if ((clientToken != "") && (clientToken != null)){
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
-                Logger.T(TAG, "FCM: registation successfully");
+                Logger.T(TAG, "FCM: registation successfully, token = " + clientToken);
             }else{
-                clientToken = "";
                 Logger.T(TAG, "FCM: can't get token, try to refresh later");
             }
         }catch(Exception exc){
-            Logger.T(TAG, "FCM: can't handle registation");
+            Logger.T(TAG, "FCM: can't handle registation " + exc.toString() );
         }
-        Logger.T(TAG, "FCM: token = " + clientToken);
     }
 
 }

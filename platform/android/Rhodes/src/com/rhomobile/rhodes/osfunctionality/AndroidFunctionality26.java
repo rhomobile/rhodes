@@ -26,7 +26,7 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.app.Notification.Builder;
 import android.content.Context;
 import android.app.NotificationManager;

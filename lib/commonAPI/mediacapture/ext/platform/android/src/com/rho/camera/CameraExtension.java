@@ -8,8 +8,6 @@ public class CameraExtension extends AbstractRhoExtension implements IRhoExtensi
     
     private static final String TAG = CameraExtension.class.getSimpleName();
     
-    static final String INTENT_EXTRA_PREFIX = "com.rho.camera.";
-
     @Override
     public String onGetProperty(IRhoExtManager extManager, String name) {
         if (name.equalsIgnoreCase("has_camera")) {

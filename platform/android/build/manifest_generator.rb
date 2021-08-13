@@ -54,6 +54,7 @@ class ManifestGenerator
   
   def addGoogleMaps
     @usesLibraries['com.google.android.maps'] = true 
+    @usesLibraries['org.apache.http.legacy'] = false 
   end
   
   def addGooglePush(erbPath)

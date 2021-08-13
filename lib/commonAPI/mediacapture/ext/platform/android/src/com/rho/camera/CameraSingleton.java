@@ -27,26 +27,35 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.ui.FileList;
 
-public class CameraSingletonObject implements ICameraSingletonObject {
-    private static final String TAG = CameraSingletonObject.class.getSimpleName();
-    public static boolean deprecated_choose_pic;
-    private int mId;
+public class CameraSingleton implements ICameraSingleton {
+    private static final String TAG = CameraSingleton.class.getSimpleName();
+    private int mId = 0;
 
     static int getCameraIndex(String id) {
         return Integer.valueOf(id.substring(7)).intValue();
     }
+
     static String getCameraId(int idx) {
         return "camera#" + String.valueOf(idx);
     }
 
-    @Override
     public int getCameraCount() {
         Logger.T(TAG, "getCameraCount");
-        return 1;
+        return android.hardware.Camera.getNumberOfCameras();
     }
 
-    public CameraSingletonObject() {
-        mId = 0;
+
+    public CameraSingleton() {
+        int camera_count = getCameraCount();
+        for (int i = 0 ; i < camera_count; i++) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(i, info);
+            if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK) {
+                setDefaultIndex(i);
+                return;
+            }
+        }
+
     }
 
     @Override
@@ -76,7 +85,29 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void getCameraByType(String cameraType, IMethodResult result) {
-        result.set(getDefaultID());
+        int cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+        if (cameraType.equalsIgnoreCase(ICameraSingleton.CAMERA_TYPE_FRONT)) {
+            Logger.T(TAG, "Requesting front camera.");
+            cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+        } else if (cameraType.equalsIgnoreCase(ICameraSingleton.CAMERA_TYPE_BACK)) {
+            Logger.T(TAG, "Requesting back camera.");
+            cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+        } else {
+            Logger.E(TAG, "Unknown camera type requested: " + cameraType);
+            result.setArgError("Unknown camera type requested: " + cameraType);
+            return;
+        }
+
+        int cameraCount = getCameraCount();
+        int i;
+        for (i = 0 ; i < cameraCount; i++) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(i, info);
+            if (info.facing == cameraTypeId) {
+                result.set(getCameraId(i));
+                return;
+            }
+        }
     }
 
     @Override
@@ -84,73 +115,56 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
     	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
-    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){
 
-        CameraObject.deprecated_take_pic = false;
-
-    		propertyMap.put("deprecated", "false");
-    		deprecated_choose_pic = false;
-    	}
-    	else
-    		deprecated_choose_pic = true;
-
-        // set default values
-        if(propertyMap.get("useSystemViewfinder") == null) {
-            propertyMap.put("useSystemViewfinder", "true");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE) == null) {
+            propertyMap.put(ICameraSingleton.PROPERTY_USE_REAL_BITMAP_RESIZE, "true");
         }
-        if(propertyMap.get("useRealBitmapResize") == null) {
-            propertyMap.put("useRealBitmapResize", "true");
-        }
-        if(propertyMap.get("useRotationBitmapByEXIF") == null) {
-            propertyMap.put("useRotationBitmapByEXIF", "true");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF) == null) {
+            propertyMap.put(ICameraSingleton.PROPERTY_USE_ROTATION_BITMAP_BY_EXIF, "true");
         }
 
         Intent intent = null;
         String outputFormat = null;
-        if(propertyMap.get("outputFormat") == null){
-            propertyMap.put("outputFormat", "image");
-            outputFormat = propertyMap.get("outputFormat");
+        if(propertyMap.get(ICameraSingleton.PROPERTY_OUTPUT_FORMAT) == null){
+            propertyMap.put(ICameraSingleton.PROPERTY_OUTPUT_FORMAT, ICameraSingleton.OUTPUT_FORMAT_IMAGE);
         }
-        else{
-            outputFormat = propertyMap.get("outputFormat");
-        }
+        outputFormat = propertyMap.get(ICameraSingleton.PROPERTY_OUTPUT_FORMAT);
+
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
         RhodesActivity ra = RhodesActivity.safeGetInstance();
        
 
-        if ( Boolean.parseBoolean(propertyMap.get("useSystemViewfinder")) ) {
-            /*
-            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            getIntent.setType("image/*");
 
-            Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pickIntent.setType("image/*");
+        /*
+        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        getIntent.setType("image/*");
 
-            Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.setType("image/*");
 
-            intent =  chooserIntent;
-            */
+        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
 
-            intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/*");
+        intent =  chooserIntent;
+        */
 
-        }else{
-            intent = new Intent(ra, FileList.class);
-        }
+        intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+
+
 
         propertyMap.put("fromGallery", "true");
         String fileName = null;
-        if(!propertyMap.containsKey("fileName")){
+        if(!propertyMap.containsKey(ICameraSingleton.PROPERTY_FILE_NAME)){
             fileName = "/sdcard/DCIM/Camera/";
         }
         else{
-            fileName = propertyMap.get("fileName");
+            fileName = propertyMap.get(ICameraSingleton.PROPERTY_FILE_NAME);
         }
         if (fileName != null && fileName.length() > 0) {
-            if (outputFormat.equalsIgnoreCase("image")) {
+            if (outputFormat.equalsIgnoreCase(ICameraSingleton.OUTPUT_FORMAT_IMAGE)) {
                 String tmpPath = getTemporaryLoc(fileName);
                 if (tmpPath == null) {
                     throw new RuntimeException("Failed to access shared temporary folder");
@@ -193,15 +207,6 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     }
     */
-
-    @Override
-    public ICameraObject createCameraObject(String id) {
-        Logger.T(TAG, "createCameraObject: " + id);
-        return new CameraObject(id);
-    }
-
-
-
     private static String insertImage(ContentResolver cr, String imageFullPath) {
 
             String filename =  imageFullPath.substring(imageFullPath.lastIndexOf("/")+1, imageFullPath.length());
@@ -272,13 +277,8 @@ public class CameraSingletonObject implements ICameraSingletonObject {
          * @see android.provider.MediaStore.Images.Media (StoreThumbnail private method)
          */
 
-private static Bitmap storeThumbnail(
-                ContentResolver cr,
-                Bitmap source,
-                long id,
-                float width,
-                float height,
-                int kind) {
+    private static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id,
+                float width, float height, int kind) {
 
             // create the matrix to scale it
             Matrix matrix = new Matrix();
@@ -315,8 +315,6 @@ private static Bitmap storeThumbnail(
 
     }
 
-
-
     public static void copyImageFileToDeviceGallery(String imageFullPath) {
 
         String imageName = imageFullPath.substring(imageFullPath.lastIndexOf("/")+1, imageFullPath.length());
@@ -327,15 +325,12 @@ private static Bitmap storeThumbnail(
 
 
     @Override
-    public void copyImageToDeviceGallery(String pathToImage,
-    IMethodResult result) {
+    public void copyImageToDeviceGallery(String pathToImage, IMethodResult result) {
         copyImageFileToDeviceGallery(pathToImage);
     }
 
 
-
-    public void copyImageToDeviceGalleryOld(String pathToImage,
-    IMethodResult result) {
+    public void copyImageToDeviceGalleryOld(String pathToImage, IMethodResult result) {
         // TODO Auto-generated method stub
         String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
         String abspath = copyImageToDesired(pathToImage, imageName);
@@ -428,5 +423,4 @@ private static Bitmap storeThumbnail(
 
         return mediafile.getAbsolutePath();
     }
-
 }

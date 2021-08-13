@@ -32,9 +32,10 @@ import android.app.NotificationManager;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.Constants;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.PushContract;
@@ -49,123 +50,123 @@ import org.json.JSONObject;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import android.os.Bundle;
 import android.os.Handler;
+import java.util.Queue;
+import java.util.LinkedList;
 
 
 public class FCMIntentService extends FirebaseMessagingService {
 
     private static final String TAG = FCMIntentService.class.getSimpleName();
     public static final FCMListener listener = FCMListener.getInstance();
-    static private String lastHandledIntent = null;
+        
+    public static Queue<String> messagesQueue = new LinkedList<String>();
     
-    private static FirebaseMessagingService savedService = null;
-    private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
+
+    public FCMIntentService(){
+        super();
+        Logger.I(TAG, "FCM: creating FCMIntentService");
+    }
+  
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        lastHandledIntent = null;
-        savedIntents.remove(remoteMessage.getMessageId());
+    public void handleIntent(Intent intent) {
+        Logger.W(TAG, "FCM: onHandleIntent()");
+        extractDataFromIntent(intent);
+        super.handleIntent(intent);
+    }
 
-        Logger.I(TAG, "FCM: onMessageReceived()");
-        Map<String, String> params = new HashMap<String, String>();
 
-        if (remoteMessage.getMessageId() != null) params.put("id", remoteMessage.getMessageId());
-        Logger.I(TAG, "FCM: id - " + remoteMessage.getMessageId());
+    void extractDataFromIntent(Intent intent){
 
-        if (remoteMessage.getFrom() != null) params.put("from", remoteMessage.getFrom());
-        Logger.I(TAG, "FCM: from - " + remoteMessage.getFrom());
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            try{
 
-        if (remoteMessage.getTo() != null) params.put("to", remoteMessage.getTo());
-        Logger.I(TAG, "FCM: to - " + remoteMessage.getTo());
+                RemoteMessage remoteMessage = new RemoteMessage(bundle);
 
-        if (remoteMessage.getNotification() != null){
-            if (remoteMessage.getNotification().getBody() != null)  params.put("body", remoteMessage.getNotification().getBody());
-            Logger.I(TAG, "FCM: body - " + remoteMessage.getNotification().getBody());
+                if (remoteMessage.getMessageId() == null) return;
 
-            if (remoteMessage.getNotification().getTitle() != null) params.put("title", remoteMessage.getNotification().getTitle());
-            Logger.I(TAG, "FCM: title - " + remoteMessage.getNotification().getTitle());
+                Logger.I(TAG, "FCM: onMessageReceived()");
+                Map<String, String> params = new HashMap<String, String>();
 
-            if (remoteMessage.getNotification().getTag() != null) params.put("tag", remoteMessage.getNotification().getTag());
-            Logger.I(TAG, "FCM: tag - " + remoteMessage.getNotification().getTag());
-        }
 
-        try{
-            JSONObject jsonObject = new JSONObject(params);
+                if (remoteMessage.getMessageId() != null) params.put("id", remoteMessage.getMessageId());
+                Logger.I(TAG, "FCM: id - " + remoteMessage.getMessageId());
 
-            try {
-                jsonObject.put("data", new JSONObject(remoteMessage.getData()));
-                Logger.I(TAG, "FCM: data - " + remoteMessage.getData());
-            } catch (JSONException e) {
-                Logger.I(TAG, "FCM: jsonObject generation error");
+                if (remoteMessage.getFrom() != null) params.put("from", remoteMessage.getFrom());
+                Logger.I(TAG, "FCM: from - " + remoteMessage.getFrom());
+
+                if (remoteMessage.getTo() != null) params.put("to", remoteMessage.getTo());
+                Logger.I(TAG, "FCM: to - " + remoteMessage.getTo());
+
+                if (remoteMessage.getNotification() != null){
+                    if (remoteMessage.getNotification().getBody() != null)  params.put("body", remoteMessage.getNotification().getBody());
+                    Logger.I(TAG, "FCM: body - " + remoteMessage.getNotification().getBody());
+
+                    if (remoteMessage.getNotification().getTitle() != null) params.put("title", remoteMessage.getNotification().getTitle());
+                    Logger.I(TAG, "FCM: title - " + remoteMessage.getNotification().getTitle());
+
+                    if (remoteMessage.getNotification().getTag() != null) params.put("tag", remoteMessage.getNotification().getTag());
+                    Logger.I(TAG, "FCM: tag - " + remoteMessage.getNotification().getTag());
+                }
+
+            
+                JSONObject jsonObject = new JSONObject(params);
+
+                try {
+                    jsonObject.put("data", new JSONObject(remoteMessage.getData()));
+                    Logger.I(TAG, "FCM: data - " + remoteMessage.getData());
+                } catch (JSONException e) {
+                    Logger.I(TAG, "FCM: jsonObject generation error");
+                    e.printStackTrace();
+                }
+
+                Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
+
+                messagesQueue.add(jsonObject.toString());
+
+            }catch(Exception e){
+                Logger.W(TAG, "FCM: exception on extracting data from intent");
                 e.printStackTrace();
             }
 
-            Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
+            handleMessagesQueue();
+        }
 
-            PushContract.handleMessage(ContextFactory.getContext(), jsonObject.toString(), FCMFacade.FCM_PUSH_CLIENT);
+    }
+
+    public static void handleMessagesQueue(){
+        try{
+            while(messagesQueue.size() != 0){
+                Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle messages queue");
+                PushContract.handleMessage(ContextFactory.getContext(), messagesQueue.peek(), FCMFacade.FCM_PUSH_CLIENT);
+                messagesQueue.remove();
+            }
         }catch(Exception e){
-            Logger.E(TAG, "FCM: can't create object for handleMessage");
+            Logger.E(TAG, "FCM: can't handle the messages queue");
             e.printStackTrace();
         }
     }
 
-   
-
-    @Override
-    public void onDeletedMessages() {
-        Logger.W(TAG, "FCM: onDeletedMessages()");
-        
-    }
-
-    @Override
-    synchronized public void handleIntent(Intent intent) {
-        Logger.W(TAG, "FCM: onHandleIntent()");
-        savedService = this;
-        if (intent.getExtras() != null) {
-            for (String key : intent.getExtras().keySet()) {
-                Object value = intent.getExtras().get(key);
-                //Logger.W(TAG, "Key: " + key + " Value: " + value);
-                if (key.equals("google.message_id")){
-                    savedIntents.put((String) value, intent);
-                    lastHandledIntent = (String) value;
-                    Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
-                }
-            }
-        }
-        super.handleIntent(intent);        
-    }
-
-    public static void tryToHandleIntent(String value){
-        try{
-            if (savedService != null){
-                Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
-                if (savedIntents.containsKey(value)){
-                    savedService.handleIntent(savedIntents.get(value));
-                    Logger.W(TAG, "FCM: tryToHandleIntent() - intent handled");
-                }
-            }
-        }catch(Exception e){
-            Logger.W(TAG, "FCM: tryToHandleIntent() - can't handle intent");
-        }
-    }
-
-
     static public void resume()
     {
-        if (lastHandledIntent != null){
+        Timer timerObj = new Timer();
+        TimerTask timerTaskObj = new TimerTask() {
+            public void run() {
+                handleMessagesQueue();
+            }
+        };
+        timerObj.schedule(timerTaskObj, 1000);
+    }
 
-            Timer timerObj = new Timer();
-            TimerTask timerTaskObj = new TimerTask() {
-                public void run() {
-                    if (lastHandledIntent != null){
-                        tryToHandleIntent(lastHandledIntent);
-                    }
-                }
-            };
-            timerObj.schedule(timerTaskObj, 1000);
-
-            
-        }
+    @Override
+    public void onNewToken(String token){
+        super.onNewToken(token);
+        Logger.W(TAG, "FCM: onNewToken: " + token);
+        ContextFactory.getContext().getSharedPreferences("FireBase", MODE_PRIVATE).edit().putString("token", token).apply();
+        FCMFacade.refreshToken();        
     }
 
 

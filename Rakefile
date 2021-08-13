@@ -4435,59 +4435,68 @@ namespace "build" do
 end
 
 def downloadRhosim( targetPath )
-  require 'tempfile'
 
-  commit = `git rev-parse HEAD`.strip
-  branch = `git rev-parse --abbrev-ref HEAD`.strip
+    require 'tempfile'
 
-  if RUBY_PLATFORM =~ /(win|w)32$/
-    url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/win32-RhoSimulator/RhoSimulator.zip"
-  elsif RUBY_PLATFORM =~ /darwin/
-    url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"    
-  else
-    return
-  end
+    commit = `git rev-parse HEAD`.strip
+    branch = `git rev-parse --abbrev-ref HEAD`.strip
 
-  $logger.info "Downloading rhosim from #{url}"
-
-  file = Tempfile.new('rhosim.zip')
-  file.binmode
-
-  uri = URI.parse(url)
-
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-
-  http.request_get(uri.path) do |response|
-    length = response['Content-Length'].to_i
-    x = 0
-
-    response.read_body do |fragment|
-      x += fragment.length
-      file.write(fragment)
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/win32-RhoSimulator/RhoSimulator.zip"
+    elsif RUBY_PLATFORM =~ /darwin/
+      url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"    
+    else
+      return
     end
+
+    $logger.info "Downloading rhosim from #{url}"
+
+    file = Tempfile.new('rhosim.zip')
+    file.binmode
+
+    uri = URI.parse(url)
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    begin
+
+      http.request_get(uri.path) do |response|
+        length = response['Content-Length'].to_i
+        x = 0
+
+        response.read_body do |fragment|
+          x += fragment.length
+          file.write(fragment)
+        end
+      end
+
+      file.flush
+      file.close
+
+      $logger.info "Unzipping #{file.path} to #{targetPath}"
+
+      mkdir_p( targetPath )
+
+      require 'zip'
+
+      zipfile = file.path
+      file.close
+
+      Zip::File.open(zipfile) do |zip_file|
+        zip_file.each do |f|
+          fpath = File.join(targetPath, f.name)
+          zip_file.extract(f, fpath)
+        end
+      end
+      
+  rescue Exception => e
+    $logger.error "Can't download RhoSimulator: #{e.inspect}"
+
+    rm_r targetPath
+  ensure
+    file.delete
   end
-
-  file.flush
-  file.close
-
-  $logger.info "Unzipping #{file.path} to #{targetPath}"
-
-  mkdir_p( targetPath )
-
-  require 'zip'
-
-  zipfile = file.path
-  file.close
-
-  Zip::File.open(zipfile) do |zip_file|
-    zip_file.each do |f|
-      fpath = File.join(targetPath, f.name)
-      zip_file.extract(f, fpath)
-    end
-  end
-
-  file.delete
 
 end
 
