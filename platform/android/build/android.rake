@@ -910,13 +910,15 @@ namespace "config" do
 
       begin
         core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml'))
-      rescue
-        puts "Error while loading config file with maven dependencies " + File.join( $builddir, 'config.yml')
+      rescue Exception => e
+        $logger.warn "Can't read core build config: #{e.inspect}"
       end
 
-      core_build_cfg['maven_deps']&.each { |d|
-        AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
-      }
+      if core_build_cfg['maven_deps']
+        core_build_cfg['maven_deps'].each { |d|
+          AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
+        }
+      end
     end
     
     unless $debug
