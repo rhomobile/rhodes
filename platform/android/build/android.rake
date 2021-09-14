@@ -596,6 +596,8 @@ namespace "config" do
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
+    $build_bundle = false
+    $build_bundle = get_case_insensetive_property("build_bundle").to_i == 1 unless $app_config["android"].nil?
     
     $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
@@ -801,6 +803,8 @@ namespace "config" do
         $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
         $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
       end
+
+      $bundletool = File.join($startdir, "res", "build-tools", "bundletool.jar")
 
       $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
       $adb = find_file( "adb" + $exe_ext,
@@ -1858,6 +1862,12 @@ namespace "build" do
       print_timestamp('build:android:genconfig FINISH')
     end
 
+    def clear_flats(path)
+      Dir.glob(File.join(path,'**','*.flat')) do |filepath|
+        rm_rf filepath
+      end
+    end
+
     task :librhodes => [:libs, :extensions, :genconfig] do
       print_timestamp('build:android:librhodes START')
       if $skip_so_build
@@ -2308,16 +2318,16 @@ namespace "build" do
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
 
-      puts "Generate initial R.java at #{$app_rjava_dir}"
+     puts "Generate initial R.java at #{$app_rjava_dir}"
 
-     if ($rhodes_as_lib)
+     if ($rhodes_as_lib || $build_bundle)
         puts $appres.to_s
         puts $app_rjava_dir.to_s
 
         mkdir_p $appres_flats
 
         Dir.glob(File.join($appres,'**','*.*')) do |filepath|
-          args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+          args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay(File.dirname(filepath))]
           args << '-v' if Rake.application.options.trace
           Jake.run($aapt2, args)
         end
@@ -2325,15 +2335,25 @@ namespace "build" do
         res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
         res_dirs.each do |dir|
           Dir.glob(File.join(dir,'**','*.*')) do |filepath|
-            args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+            args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay(File.dirname(filepath))]
             args << '-v' if Rake.application.options.trace
             Jake.run($aapt2, args)
           end
         end
 
-        flat_args = []
-        Dir.glob(File.join($appres_flats,'**','*.flat')) do |filepath|
-          flat_args << PathToWindowsWay(filepath)
+        flaten_list_file_path = File.join($tmpdir, "flaten_list.txt")
+        File.open(flaten_list_file_path, "w") do |f|     
+          Dir.glob(File.join($appres,'**','*.flat')) do |filepath|
+            f.write(filepath)            
+            f.write(" ")
+          end
+
+          res_dirs.each do |dir|
+            Dir.glob(File.join(dir,'**','*.flat')) do |filepath|
+              f.write(filepath)            
+              f.write(" ")
+            end
+          end
         end
 
         FormatManifestToAapt2Compat($appmanifest)
@@ -2344,14 +2364,22 @@ namespace "build" do
           "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")), 
           "-I", PathToWindowsWay($androidjar)
         ]
-        args += flat_args
+
         args +=
         [
           "--manifest", PathToWindowsWay($appmanifest), 
           "-A", PathToWindowsWay($appassets), 
           "--java", PathToWindowsWay($app_rjava_dir), 
-          "--output-text-symbols", PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
+          "-R", "@" + PathToWindowsWay(flaten_list_file_path),
+          "--auto-add-overlay"
         ]
+
+        if $rhodes_as_lib
+          args << "--output-text-symbols"
+          args << PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
+        end
+
+        args << "--proto-format" if $build_bundle if $build_bundle
       else
 
         args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
@@ -2360,9 +2388,12 @@ namespace "build" do
 
       args << '-v' if Rake.application.options.trace
 
-      if ($rhodes_as_lib)
+      if ($rhodes_as_lib || $build_bundle)
         require 'nokogiri'
-        FormatManifestToAarCompat($appmanifest)
+        
+        if($rhodes_as_lib) 
+          FormatManifestToAarCompat($appmanifest)
+        end
         Jake.run($aapt2, args)
         raise 'Error in AAPT: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
@@ -2372,6 +2403,12 @@ namespace "build" do
         elsif (File.exists?(File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')))
           cp_r File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java'), File.join($app_rjava_dir, 'R.java')
           rm_rf File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')
+        end
+
+        clear_flats($appres)
+        res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+        res_dirs.each do |dir|
+          clear_flats(dir)
         end
         
       else
@@ -2816,6 +2853,67 @@ def prepare_aar_package
 
 end
 
+def create_bundle()
+  puts "Creating android bundle"
+
+  resourcepkg = $bindir + "/_tmp.aar"
+  bundle_dir = File.join($tmpdir, "android_bundle")
+  manifest_dir = File.join(bundle_dir, "manifest")
+  dex_dir = File.join(bundle_dir, "dex")
+  mkdir_p bundle_dir
+  mkdir_p manifest_dir
+  mkdir_p dex_dir
+  cp_r resourcepkg, File.join(bundle_dir, "base.zip")
+  cp_r File.join($bindir, "classes.dex"), dex_dir
+  bundle_pkg = File.join(bundle_dir, "base.zip")
+  
+  args = ["xf", bundle_pkg, "AndroidManifest.xml"]
+  Jake.run($jarbin, args, manifest_dir)
+
+  args = ["uf", bundle_pkg, '-C', '.', 'manifest']
+  Jake.run($jarbin, args, bundle_dir)
+
+  args = ["uf", bundle_pkg, '-C', '.', 'dex']
+  Jake.run($jarbin, args, bundle_dir)
+
+  args = ["uf", bundle_pkg]
+  Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
+    arch = File.basename(File.dirname(lib))
+    args << "lib/#{arch}/#{File.basename(lib)}"
+  end
+  Jake.run($jarbin, args, $tmpdir)
+  unless $?.success?
+    raise "Error packaging native libraries in bundle"
+  end
+
+  #pack .javares to root directory
+  respath = File.join( $tmpdir, '.javares' )
+  args = ["uf", bundle_pkg, '-C', '.', 'root']
+  cp_r respath, File.join( bundle_dir, 'root' ) if File.exists?(respath)
+  Jake.run($jarbin, args, bundle_dir) if File.exists?(respath)
+
+  Zip::File.open(bundle_pkg) do |archive|
+    archive.remove("AndroidManifest.xml")
+  end
+
+  output_bundle = $targetdir + "/" + $appname + "-bundle.aab"
+  rm_rf output_bundle if File.exists?(output_bundle)
+
+  puts "Running bundletool utility"
+  args = []
+  args << "-Xmx1024m"
+  args << "-jar"
+  args << $bundletool
+  args << "build-bundle"
+  args << "--modules=#{bundle_dir}/base.zip"
+  args << "--output=#{output_bundle}"
+
+  Jake.run(File.join($java, 'java'+$exe_ext), args)
+  unless $?.success?
+    raise "Error running bundletool utility"
+  end
+end
+
 namespace "package" do
   task :android => "build:android:all" do
     print_timestamp('package:android START')
@@ -3001,6 +3099,11 @@ namespace "package" do
 
     Jake.run($jarbin, args, respath) if File.directory?(respath)
     rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
+
+    if $build_bundle
+      create_bundle()
+    end
+
     puts "Finish packaging"
     print_timestamp('package:android FINISH')
   end
