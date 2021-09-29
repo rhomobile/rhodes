@@ -742,6 +742,16 @@ static void callback_uicreated(void *arg, String const &strQuery)
     rho_http_sendresponse(arg, "");
 }
 
+static void callback_uicloserequest(void *arg, String const &strQuery)
+{
+#ifndef RHO_NO_RUBY_API
+    if (!RHODESAPP().isJSApplication() && !RHODESAPP().isNodeJSApplication())
+        rho_ruby_uiCloseRequest();
+#endif
+
+    rho_http_sendresponse(arg, "");
+}
+
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
 #ifndef RHO_NO_RUBY_API
@@ -776,6 +786,23 @@ static void callback_resetDBOnSyncUserChanged(void *arg, String const &strQuery)
 void CRhodesApp::callUiCreatedCallback()
 {
     m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::ui_created));
+}
+
+int CRhodesApp::callUiCloseRequestCallback()
+{
+    if ( m_bExit || !rho_ruby_is_started()) return 1;
+
+    String strUrl = m_strHomeUrl + "/system/uicloserequest";
+    NetResponse resp = getNetRequest().pullData( strUrl, NULL );
+    if ( !resp.isOK() )
+    {
+        LOG(ERROR) + "UI close request callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        return 1;
+    }else{
+        return 0;
+    }
+    return 1;
+
 }
 
 void CRhodesApp::callUiDestroyedCallback()
@@ -1575,6 +1602,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
     m_httpServer->register_uri("/system/deactivateapp", callback_deactivateapp);
     m_httpServer->register_uri("/system/uicreated", callback_uicreated);
+    m_httpServer->register_uri("/system/uicloserequest", callback_uicloserequest);
     m_httpServer->register_uri("/system/uidestroyed", callback_uidestroyed);
     m_httpServer->register_uri("/system/loadserversources", callback_loadserversources);
     m_httpServer->register_uri("/system/resetDBOnSyncUserChanged", callback_resetDBOnSyncUserChanged);
@@ -2926,6 +2954,16 @@ void rho_rhodesapp_callUiCreatedCallback()
         RAWLOGC_ERROR("RhodesApp", "UI created callback is missing because application instance is NULL");
     }
 }
+
+int rho_rhodesapp_callUiCloseRequestCallback() //return zero if you whant to suppress closing
+{
+    if ( rho::common::CRhodesApp::getInstance() ){
+        return RHODESAPP().callUiCloseRequestCallback();
+    }
+
+    return 1;
+}
+
 
 void rho_rhodesapp_callUiDestroyedCallback()
 {

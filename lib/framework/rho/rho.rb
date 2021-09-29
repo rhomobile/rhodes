@@ -180,6 +180,15 @@ module Rho
       end
     end
 
+    def ui_close_request
+      begin
+        get_app(APPNAME).on_ui_close_request
+      rescue Exception => e
+        trace_msg = e.backtrace.join("\n")
+        puts '"UI created" callback failed: ' + e.inspect + ";Trace: #{trace_msg}"
+      end
+    end
+
     def ui_destroyed
       begin
         get_app(APPNAME).on_ui_destroyed

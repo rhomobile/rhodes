@@ -310,20 +310,28 @@ void QtMainWindow::showEvent(QShowEvent *)
 
 void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
-    if ( rho_ruby_is_started() )
-        rb_thread_wakeup(rb_thread_main());
+    if (!acceptClosing){
+        acceptClosing = rho_rhodesapp_callUiCloseRequestCallback() == 0 ? false : true;
+    }
 
-    if (mainWindowCallback) mainWindowCallback->onWindowClose();
-    tabbarRemoveAllTabs(false);
-    if (m_logView)
-        m_logView->close();
+    if (acceptClosing){
+        if ( rho_ruby_is_started() )
+            rb_thread_wakeup(rb_thread_main());
 
-    QTimer::singleShot(1, this, [&]{rho_rhodesapp_callUiDestroyedCallback();});
-    QTimer::singleShot(1000, this, [&]{rho::common::CRhodesApp::Destroy();});
-    QTimer::singleShot(3000, this, [this, ce]{
-        ce->accept();
-        QMainWindow::closeEvent(ce);
-    });
+        if (mainWindowCallback) mainWindowCallback->onWindowClose();
+        tabbarRemoveAllTabs(false);
+        if (m_logView)
+            m_logView->close();
+
+        QTimer::singleShot(1, this, [&]{rho_rhodesapp_callUiDestroyedCallback();});
+        QTimer::singleShot(1000, this, [&]{rho::common::CRhodesApp::Destroy();});
+        QTimer::singleShot(3000, this, [this, ce]{
+            ce->accept();
+            QMainWindow::closeEvent(ce);
+        });
+    }else{
+        ce->setAccepted(false);
+    }
 
 }
 
@@ -389,7 +397,7 @@ void QtMainWindow::on_actionRotate180_triggered()
 
 void QtMainWindow::on_actionExit_triggered()
 {
-    this->close();
+    this->close();       
 }
 
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
@@ -956,6 +964,7 @@ void QtMainWindow::on_actionAbout_triggered()
 
 void QtMainWindow::exitCommand()
 {
+    acceptClosing = true;
     this->close();
 }
 
