@@ -113,6 +113,7 @@ static ID onConfigConflicts_mid;
 static ID activateApp_mid;
 static ID deactivateApp_mid;
 static ID uiCreated_mid;
+static ID uiCloseRequest_mid;
 static ID uiDestroyed_mid;
 static ID loadServerSources_mid;
 static ID loadAllSyncSources_mid;
@@ -362,6 +363,7 @@ void RhoRubyStart()
     CONST_ID(activateApp_mid, "activate_app");
     CONST_ID(deactivateApp_mid, "deactivate_app");
     CONST_ID(uiCreated_mid, "ui_created");
+    CONST_ID(uiCloseRequest_mid, "ui_close_request");    
     CONST_ID(uiDestroyed_mid, "ui_destroyed");
     CONST_ID(loadServerSources_mid,"load_server_sources");
     CONST_ID(loadAllSyncSources_mid,"load_all_sync_sources");
@@ -503,6 +505,11 @@ void rho_ruby_deactivateApp()
 void rho_ruby_uiCreated()
 {
     rb_funcall(framework, uiCreated_mid, 0);
+}
+
+void rho_ruby_uiCloseRequest()
+{
+    rb_funcall(framework, uiCloseRequest_mid, 0);
 }
 
 void rho_ruby_uiDestroyed()

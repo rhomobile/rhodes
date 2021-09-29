@@ -124,7 +124,7 @@ private:
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
     QMenuBar* createMenu();
-
+    bool acceptClosing = false;
 
 private:
     IMainWindowCallback* mainWindowCallback;

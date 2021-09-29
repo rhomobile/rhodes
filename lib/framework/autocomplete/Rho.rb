@@ -185,7 +185,9 @@ module Rho
     def on_deactivate_app
     end    
     def on_ui_created
-    end    
+    end     
+    def on_ui_close_request
+    end      
     def on_ui_destroyed
     end    
     def on_sync_user_changed
@@ -261,7 +263,9 @@ module Rho
     def activate_app
     end    
     def deactivate_app
-    end    
+    end        
+    def ui_close_request
+    end
     def ui_created
     end    
     def ui_destroyed

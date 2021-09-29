@@ -248,6 +248,7 @@ public:
 	void callBluetoothCallback(String strCallbackUrl, const char* body);
     void callAppActiveCallback(boolean bActive);
     void callUiCreatedCallback();
+    int callUiCloseRequestCallback();
     void callUiDestroyedCallback();
     void callPopupCallback(String strCallbackUrl, const String &id, const String &title);
     boolean callTimerCallback(const String& strUrl, const String& strData);
@@ -406,6 +407,7 @@ void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTi
 void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body);
 void rho_rhodesapp_callAppActiveCallback(int nActive);
 void rho_rhodesapp_callUiCreatedCallback();
+int rho_rhodesapp_callUiCloseRequestCallback();
 void rho_rhodesapp_callUiDestroyedCallback();
 void rho_rhodesapp_callScreenOffCallback();
 void rho_rhodesapp_callScreenOnCallback();
