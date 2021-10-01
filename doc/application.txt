@@ -96,6 +96,27 @@ Method on_ui_created will be invoked after application's UI was created (usually
 		super # To navigate to start_path from rhoconfig.txt
 	end
 
+Method on_ui_close_request will be invoked when application's UI is triggered to closed by user from the system UI
+	:::ruby
+	#in application.rb 
+	def on_ui_close_request
+		Alert.show_popup(
+	        :message=>"Do you realy whant to close?",
+	        :title=>"Information",
+	        :buttons => [{:id => 'ok', :title => 'Ok'},{:id => 'cancel', :title => 'Cancel'}],
+	        :callback => "/app/Application/on_close_callback"
+	    )
+	end
+
+	#in Appcliaction controller
+	def on_close_callback
+	    if @params['button_id'] == "ok"
+			Rho::Application.quit()
+	    end
+	end
+**NOTE: if you redefine this function on your application class - the app would not be automatically closed after execution of the function - you should also close the application from code by yourself (just call Rho::Application.quit()). Works only on Win32**
+
+
 Method on_ui_destroyed will be invoked when application's UI was destroyed (usually on app exit)
 	:::ruby
 	def on_ui_destroyed

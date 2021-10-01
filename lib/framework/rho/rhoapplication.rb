@@ -146,6 +146,10 @@ module Rho
       Rho::Application.processApplicationEvent({'applicationEvent'=>'UICreated'})
     end
 
+    def on_ui_close_request
+      Rho::Application.quit()
+    end
+
     def on_ui_destroyed
       Rho::Application.processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
     end
