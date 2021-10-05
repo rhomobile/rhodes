@@ -134,49 +134,15 @@ class AabBuilder
 
         flat_list = []
 
-        #cmp_res = File.join(@intermediate, 'compiled_resources.zip')
-
-        #First compile resources with aapt2
-        #args = [ 'compile' ]
-        #args += Dir[File.join(@res_dir,'**','*')].filter { |f| File.file?(f) }.map { |f| PathToWindowsWay(f) }
-        #args << '--dir'
-        #args << @res_dir
-
         flat_list += compile_res_dir_to_flat(@res_dir)
 
         #Add all resources from maven dependencies
         @maven_deps.res_dirs.each {|d|
-            #args += Dir[ File.join(d,'**','*')].filter{ |f| File.file?(f) }.map{ |f| PathToWindowsWay(f) }
-            #args << '--dir'
-            #args << d
             flat_list += compile_res_dir_to_flat(d)
         }
 
-        #args << '-o'
-        #args << cmp_res
-        #Jake.run( @aapt2, args )        
-
-=begin        
-        #Extract compiled resources from zip
-        cmp_res_dir = File.join(@intermediate,'compiled_resources')
-        mkdir_p cmp_res_dir
-        Zip::File.open(cmp_res) { |zip_file|
-            zip_file.each {|f|                
-                fpath = File.join(cmp_res_dir,f.name)
-                dir = File.dirname(fpath)
-                mkdir_p dir unless File.directory? dir
-                zip_file.extract(f,fpath)
-            }
-        }
-=end
-        #Generate text file for compiled flat resources
-        #cmp_res_dir = File.join(@intermediate,'compiled_resources')
-        #mkdir_p cmp_res_dir
-        #@cmp_res_dir = File.join(@intermediate,'compiled_resources')        
-        
         reslist = File.join(@intermediate,'flat.txt')
         File.open( reslist, 'w' ) { |f| f.write flat_list.join(' ') }
-        #File.open( @reslist, 'w' ) { |f| f.write Dir[File.join(@cmp_res_dir,'*.flat')].join(' ') }
 
         #prepared archive name with protobuf data
         @pbprep = File.join(@intermediate,'output.apk')
