@@ -590,6 +590,8 @@ def init_aab_builder
   builder.rjava_dir = $app_rjava_dir
   builder.maven_deps = AndroidTools::MavenDepsExtractor.instance
 
+  builder.no_compress_exts = $no_compression
+
   builder.init
 end
 

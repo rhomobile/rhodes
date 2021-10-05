@@ -5,11 +5,12 @@ require 'zip'
 require 'pathname'
 require 'singleton'
 require 'securerandom'
+require 'json'
 
 class AabBuilder
     include Singleton
 
-    attr_accessor :output_path, :res_dir, :dex_path, :apk_path, :manifest, :logger, :aapt2, :build_dir, :androidjar, :bundletool, :javabin, :rjava_dir, :maven_deps
+    attr_accessor :output_path, :res_dir, :dex_path, :apk_path, :manifest, :logger, :aapt2, :build_dir, :androidjar, :bundletool, :javabin, :rjava_dir, :maven_deps, :no_compress_exts
     attr_accessor :keystore, :storealias, :storepass, :keypass, :debug
 
     #This is the final step, run it from android.rake after all is done:
@@ -30,12 +31,27 @@ class AabBuilder
 
         extract_legacy_data_to_bundle_prep_dir
         
-        build_base_zip        
+        build_base_zip   
+        
+        create_config_file
 
         #Finally build AAB archive from prepared base.zip
         @bundle = File.join(@intermediate,'bundle.aab')
-        args = [ '-jar', @bundletool, 'build-bundle', "--modules=#{@base_zip}", "--output=#{@bundle}"]
+        args = [ '-jar', @bundletool, 'build-bundle', "--modules=#{@base_zip}", "--output=#{@bundle}" , "--config=#{@config_file}"]
         Jake.run( @javabin, args )
+    end
+
+    def create_config_file       
+
+        cfg = {}
+        cfg['compression'] = {}
+        cfg['compression']['uncompressedGlob'] = 
+            [ 
+                "res/raw/**",                                               #don't compress any raw resources
+            ] + @no_compress_exts.map { |ext| "assets/**.#{ext}" }          #don't compress specific extensions in assets
+        
+        @config_file = File.join(@intermediate,'config.json')
+        File.open( @config_file, 'w') { |f| f.write( cfg.to_json ) }
     end
 
     def build_base_zip
@@ -158,9 +174,16 @@ class AabBuilder
             '--manifest', @manifest, 
             '-R', '@'+File.join(reslist),
             '--auto-add-overlay',
-            '--java',
+            '--java',            
             PathToWindowsWay(rdir)
         ]        
+
+        if @no_compress_globs
+            @no_compress_globs.each do |ext|
+              args << '-0'
+              args << ext
+            end
+          end
         
         #Finally run link to generate R.java for compiled resources. We need manifest ready at this point
         Jake.run( @aapt2, args )       
@@ -197,7 +220,8 @@ class AabBuilder
             defined? @bundletool and
             defined? @javabin and
             defined? @rjava_dir and
-            defined? @maven_deps
+            defined? @maven_deps and
+            defined? @no_compress_exts
     end
 
     def sign(target)
