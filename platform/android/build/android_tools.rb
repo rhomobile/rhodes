@@ -847,6 +847,49 @@ module_function :read_manifest_package
   end
   module_function :signApkDebug
 
+  def signAab( inputAab, outputAab, keystore, keypass, storepass, storealias  )
+    @@logger.info "Signing AAB file"
+
+    args = []
+
+    args << "-sigalg"
+    args << "SHA256withRSA"
+    #args << "-digestalg"
+    #args << "SHA256"
+    args << "-verbose"
+    args << "-keystore"
+    args << keystore
+    args << "-storepass"
+    args << storepass
+    args << "-signedjar"
+    args << outputAab
+    args << inputAab
+    args << storealias if storealias 
+    
+    Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
+
+    unless $?.success?
+      @@logger.error "Error running jarsigner"
+      exit 1
+    end
+  end
+  module_function :signAab
+
+  def signAabDebug( inputAab, outputAab )
+    @@logger.info "Sign Debug AAB file"
+
+    keystore = File.join(Dir.home,'/.android/debug.keystore')
+    #Try to find debug keystore in another location
+    if ENV['USERPROFILE']
+      keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    end
+
+    raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
+
+    signAab( inputAab, outputAab, keystore, 'android', 'android', 'androiddebugkey' )
+  end
+  module_function :signAabDebug
+
   def alignApk( inputApk, outputApk )
     args = []
     args << "-f"

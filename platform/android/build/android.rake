@@ -27,6 +27,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/apk_builder.rb'
+require File.dirname(__FILE__) + '/aab_builder.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
@@ -551,6 +552,49 @@ def get_case_insensetive_property(property)
   return nil
 end
 
+def select_aapt2
+
+  platform_dir = ''
+  
+  if OS.windows?
+    platform_dir = 'windows'
+  elsif OS.mac?
+    platform_dir = 'osx'
+  elsif OS.linux?
+    platform_dir = 'linux'
+  else
+    raise "unknown host OS"
+  end  
+
+  File.join($startdir, "res", "build-tools", "aapt2", platform_dir , 'aapt2'+$exe_ext)
+end
+
+
+def init_aab_builder
+  builder = AabBuilder.instance
+
+  builder.logger = $logger
+  builder.res_dir = $appres
+  builder.output_path = $targetdir
+  builder.dex_path = File.join( $bindir, 'classes.dex' )
+  builder.apk_path = File.join( $bindir, 'rhodes.ap_')
+  #builder.res_dirs << AndroidTools::MavenDepsExtractor.instance.res_dirs
+
+  builder.build_dir = $tmpdir
+  builder.androidjar = $androidjar
+  builder.manifest = $appmanifest
+
+  builder.aapt2 = select_aapt2
+  builder.bundletool = $bundletool
+  builder.javabin = File.join( $java, 'java' + $exe_ext )
+  builder.rjava_dir = $app_rjava_dir
+  builder.maven_deps = AndroidTools::MavenDepsExtractor.instance
+
+  builder.no_compress_exts = $no_compression
+
+  builder.init
+end
+
 namespace "config" do
   task :set_android_platform do
     $current_platform = "android"
@@ -710,7 +754,7 @@ namespace "config" do
 
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
-    $appres_flats = File.join $tmpdir,'flats'
+    $appres_flats = File.join $tmpdir,'flats' #do we really need a global var for that?
     $appassets = $srcdir
     $applibs = File.join $tmpdir,'lib'
 
@@ -986,6 +1030,7 @@ namespace "config" do
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
 
+    init_aab_builder if $build_bundle
 
     print_timestamp('config:android FINISH')
 
@@ -2319,14 +2364,15 @@ namespace "build" do
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
 
-     puts "Generate initial R.java at #{$app_rjava_dir}"
+      $logger.info "Generate initial R.java at #{$app_rjava_dir}"
 
-     if ($rhodes_as_lib || $build_bundle)
-        puts $appres.to_s
-        puts $app_rjava_dir.to_s
+      $logger.debug $appres.to_s
+      $logger.debug $app_rjava_dir.to_s
 
+      if ( $rhodes_as_lib )
         mkdir_p $appres_flats
 
+        #walkthrough resources dir
         Dir.glob(File.join($appres,'**','*.*')) do |filepath|
           args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay(File.dirname(filepath))]
           args << '-v' if Rake.application.options.trace
@@ -2357,17 +2403,13 @@ namespace "build" do
           end
         end
 
-        FormatManifestToAapt2Compat($appmanifest)
+        FormatManifestToAapt2Compat($appmanifest) #what is that?
         
         args = 
         [
           "link", 
           "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")), 
-          "-I", PathToWindowsWay($androidjar)
-        ]
-
-        args +=
-        [
+          "-I", PathToWindowsWay($androidjar),
           "--manifest", PathToWindowsWay($appmanifest), 
           "-A", PathToWindowsWay($appassets), 
           "--java", PathToWindowsWay($app_rjava_dir), 
@@ -2380,8 +2422,7 @@ namespace "build" do
           args << PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
         end
 
-        args << "--proto-format" if $build_bundle if $build_bundle
-      else
+      else  #no bundle and no lib so we use old AAPT
 
         args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
         args += AndroidTools::MavenDepsExtractor.instance.aapt_args
@@ -2389,7 +2430,7 @@ namespace "build" do
 
       args << '-v' if Rake.application.options.trace
 
-      if ($rhodes_as_lib || $build_bundle)
+      if ($rhodes_as_lib )
         require 'nokogiri'
         
         if($rhodes_as_lib) 
@@ -2398,6 +2439,7 @@ namespace "build" do
         Jake.run($aapt2, args)
         raise 'Error in AAPT: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
+        #how about some comments on this magic?
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
           cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
           rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
@@ -2412,33 +2454,30 @@ namespace "build" do
           clear_flats(dir)
         end
         
+      elsif ($build_bundle)
+          AabBuilder.instance.build_resources
       else
         Jake.run($aapt, args)
         raise 'Error in AAPT: R.java' unless $?.success?
       end
 
-      
-      @packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
-      @packs.each do |p|
+
+      #We should've generated R.java at this point. Now let's duplicate it for our dependencies substituting package names
+      packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
+      packs.each do |p|
         path_to_p = File.join $tmpdir, 'gen', p.split('.')
         mkdir_p path_to_p
         buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage " + p + ";\n")
         File.open(File.join(path_to_p, "R.java"), "w") { |f| f.write(buf) }
       end
 
-      #buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
-      #File.open($app_android_r, "w") { |f| f.write(buf) }
-
       mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
-      #buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
       $ext_android_library_deps.each do |package, path|
-
         if !File.directory?(path)
           puts "[WARN] Path for dependency #{package} does not exists (#{path})"
-          #next
         end
 
         next if ((!package) or (package.empty?))
@@ -2858,64 +2897,22 @@ def prepare_aar_package
 end
 
 def create_bundle()
-  puts "Creating android bundle"
+  $logger.info "Creating android bundle"
 
-  resourcepkg = $bindir + "/_tmp.aar"
-  bundle_dir = File.join($tmpdir, "android_bundle")
-  manifest_dir = File.join(bundle_dir, "manifest")
-  dex_dir = File.join(bundle_dir, "dex")
-  mkdir_p bundle_dir
-  mkdir_p manifest_dir
-  mkdir_p dex_dir
-  cp_r resourcepkg, File.join(bundle_dir, "base.zip")
-  cp_r File.join($bindir, "classes.dex"), dex_dir
-  bundle_pkg = File.join(bundle_dir, "base.zip")
-  
-  args = ["xf", bundle_pkg, "AndroidManifest.xml"]
-  Jake.run($jarbin, args, manifest_dir)
+  builder = AabBuilder.instance
 
-  args = ["uf", bundle_pkg, '-C', '.', 'manifest']
-  Jake.run($jarbin, args, bundle_dir)
+  builder.build
 
-  args = ["uf", bundle_pkg, '-C', '.', 'dex']
-  Jake.run($jarbin, args, bundle_dir)
+  signed_bundle = File.join($targetdir,"#{$appname}-bundle-signed.aab")
 
-  args = ["uf", bundle_pkg]
-  Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
-    arch = File.basename(File.dirname(lib))
-    args << "lib/#{arch}/#{File.basename(lib)}"
+  builder.debug = $debug
+  if $debug
+    builder.keystore = $keystore
+    builder.keypass = $keypass
+    builder.storepass = $storepass
+    builder.storealias = $storealias
   end
-  Jake.run($jarbin, args, $tmpdir)
-  unless $?.success?
-    raise "Error packaging native libraries in bundle"
-  end
-
-  #pack .javares to root directory
-  respath = File.join( $tmpdir, '.javares' )
-  args = ["uf", bundle_pkg, '-C', '.', 'root']
-  cp_r respath, File.join( bundle_dir, 'root' ) if File.exists?(respath)
-  Jake.run($jarbin, args, bundle_dir) if File.exists?(respath)
-
-  Zip::File.open(bundle_pkg) do |archive|
-    archive.remove("AndroidManifest.xml")
-  end
-
-  output_bundle = $targetdir + "/" + $appname + "-bundle.aab"
-  rm_rf output_bundle if File.exists?(output_bundle)
-
-  puts "Running bundletool utility"
-  args = []
-  args << "-Xmx1024m"
-  args << "-jar"
-  args << $bundletool
-  args << "build-bundle"
-  args << "--modules=#{bundle_dir}/base.zip"
-  args << "--output=#{output_bundle}"
-
-  Jake.run(File.join($java, 'java'+$exe_ext), args)
-  unless $?.success?
-    raise "Error running bundletool utility"
-  end
+  builder.sign( signed_bundle )  
 end
 
 namespace "package" do
