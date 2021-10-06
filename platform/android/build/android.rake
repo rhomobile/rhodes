@@ -2450,9 +2450,6 @@ namespace "build" do
         raise 'Error in AAPT: R.java' unless $?.success?
       end
 
-      @packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
-      @packs.each do |p|
-
       #We should've generated R.java at this point. Now let's duplicate it for our dependencies substituting package names
       packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
       packs.each do |p|
