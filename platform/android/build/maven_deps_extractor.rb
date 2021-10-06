@@ -330,6 +330,10 @@ class MavenDepsExtractor
     return args
   end
 
+  def res_dirs
+    aapt2_res_dirs
+  end
+
 
   def aapt_args
     args = []
