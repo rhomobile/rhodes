@@ -59,9 +59,11 @@ class AabBuilder
 
         @base_zip = File.join( @intermediate, 'base.zip' )
         Zip::File.open( @base_zip, Zip::File::CREATE) { |z|
-            Dir[File.join(@prep_bundle_dir,'**','*')].filter{|f| File.file? f}.each{ |f|
-                p = Pathname.new(f)
-                z.add( p.relative_path_from(root) ,f)
+            Dir[File.join(@prep_bundle_dir,'**','*')].each{ |f|
+                if File.file? f
+                    p = Pathname.new(f)
+                    z.add( p.relative_path_from(root) ,f)
+                end
             }
         }
     end
@@ -101,11 +103,13 @@ class AabBuilder
             zip_file.extract('AndroidManifest.xml', File.join( @prep_bundle_dir,'manifest', 'AndroidManifest.xml') )
             zip_file.extract('resources.pb', File.join( @prep_bundle_dir,'resources.pb') )
 
-            zip_file.filter {|f| f.name.start_with?('res/') }.each { |f|            
-                fpath = File.join( @prep_bundle_dir,f.name)
-                dir = File.dirname(fpath)
-                mkdir_p dir unless File.directory? dir
-                zip_file.extract(f,fpath)
+            zip_file.each { |f|   
+                if f.name.start_with?('res/')         
+                    fpath = File.join( @prep_bundle_dir,f.name)
+                    dir = File.dirname(fpath)
+                    mkdir_p dir unless File.directory? dir
+                    zip_file.extract(f,fpath)
+                end
             }
         }
     end
@@ -130,12 +134,11 @@ class AabBuilder
         raise "Resource target #{target} should not exist at that point" if File.exists?(target)
         mkdir_p target
 
-        Dir[File.join(dir,'**','*')]
-            .filter { |f| File.file?(f) }
-                .map { |f| PathToWindowsWay(f) }
-                    .each { |f|
-                        Jake.run( @aapt2, ['compile', f, '-o', target ] )    
-                    }
+        Dir[File.join(dir,'**','*')].each { |f|
+            if File.file?(f)
+                Jake.run( @aapt2, ['compile', PathToWindowsWay(f), '-o', target ] )    
+            end
+        }
 
         #return *.flat list
         Dir[File.join(target,'**','*.flat')]        
