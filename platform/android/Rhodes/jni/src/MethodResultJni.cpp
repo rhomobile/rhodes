@@ -421,6 +421,10 @@ void MethodResultJni::setRubyProcCallback(JNIEnv* env, jlong jRubyProc)
 
     env->SetLongField(m_jResult, s_fidRubyProcCallback, jRubyProc);
 
+    m_hasCallback = true;
+
+    rho_ruby_holdValue(jRubyProc);
+
     RAWTRACE("Callback has been set ^^^");
 }
 //----------------------------------------------------------------------------------------------------------------------
