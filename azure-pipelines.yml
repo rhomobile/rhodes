@@ -1,14 +1,23 @@
 name: rhomobile
+
 variables:
 - name: BUILD_DIR
   value: $(Build.Repository.LocalPath)
+- name: OS_NAME
+  value: osx
+- name: RHO_TARGET
+  value: rhosimulator_osx
+- name: RHO_RUNNER_SCRIPT
+  value: run_app_on_simulator.sh
+- name: RHO_RUBY
+  value: ruby-2.7.0
 
 stages:  
   - stage: before_install
     jobs:
       - job: setup_for_host
         steps:
-          - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
+          - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
       - job: setup_for_target
         steps:
           - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
@@ -18,10 +27,10 @@ stages:
       - job:
         steps:
           #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
-          - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-          - script: rvm use $RHO_RUBY
+          #- script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
+          #- script: rvm use $RHO_RUBY
           # run target-specific and host-specific install scripts ( for instance download and install NDK/SDK for Android targets)
-          - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
+          - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/install.sh
           - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
           
 #  - stage: build
