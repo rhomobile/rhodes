@@ -20,6 +20,6 @@ stages:
           - script: $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
           - script: $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
           
-  - stage: build
-  - stage: before_deploy
-  - stage: deploy
+#  - stage: build
+#  - stage: before_deploy
+#  - stage: deploy
