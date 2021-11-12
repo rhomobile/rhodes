@@ -15,15 +15,12 @@ variables:
 stages:  
   - stage: build
     jobs:
-      - job: before_install
+      - job: build
         steps:
         #setup for host
         - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
         #setup for target
         - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
-
-      - job: install
-        steps:
         #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
         - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
         - script: rvm use $RHO_RUBY
