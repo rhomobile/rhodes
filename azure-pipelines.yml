@@ -17,13 +17,4 @@ stages:
     jobs:
       - job: build
         steps:
-        #setup for host
-        - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
-        #setup for target
-        - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
-        #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
-        - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-        - script: rvm use $RHO_RUBY
-        # run target-specific and host-specific install scripts ( for instance download and install NDK/SDK for Android targets)
-        - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/install.sh
-        - script: $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
+        - script: $BUILD_DIR/.ci/azure-build.sh
