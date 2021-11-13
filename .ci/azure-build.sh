@@ -7,21 +7,21 @@ uname -a
 
 #setup for host
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
-source ~/.rvm/scripts/rvm
-rvm list
+#source ~/.rvm/scripts/rvm
+#rvm list
 #setup for target
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
-$BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-rvm use $RHO_RUBY
+#$BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/check_cache_and_install_ruby.sh
+#rvm use $RHO_RUBY
 # run target-specific and host-specific install scripts ( for instance download and install NDK/SDK for Android targets)
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/install.sh
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
 
 # start building of Rhodes gem in a separate gemset
 cd $BUILD_DIR
-rvm gemset create rhodes
-rvm gemset use rhodes
+#rvm gemset create rhodes
+#rvm gemset use rhodes
 
 bundle install
 gem list
@@ -40,14 +40,14 @@ $BUILD_DIR/lib/build/buildgem.rb
 gem install --no-document ./rhodes-$(cat ./version).gem
 
 # check rhodes path is valid
-if [ "$(get-rhodes-info --rhodes-path)" != "$HOME/.rvm/gems/$RHO_RUBY@rhodes/gems/rhodes-$(cat ./version)" ]
-then
-    echo "Unexpected path to Rhodes:"
-    echo "$(get-rhodes-info --rhodes-path)"
-    echo "Expected path:"
-    echo "$HOME/.rvm/gems/$RHO_RUBY@rhodes/gems/rhodes-$(cat ./version)"
-    exit 1
-fi
+#if [ "$(get-rhodes-info --rhodes-path)" != "$HOME/.rvm/gems/$RHO_RUBY@rhodes/gems/rhodes-$(cat ./version)" ]
+#then
+#    echo "Unexpected path to Rhodes:"
+#    echo "$(get-rhodes-info --rhodes-path)"
+#    echo "Expected path:"
+#    echo "$HOME/.rvm/gems/$RHO_RUBY@rhodes/gems/rhodes-$(cat ./version)"
+#    exit 1
+#fi
 
 # run target-specific rhodes-setup command
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
