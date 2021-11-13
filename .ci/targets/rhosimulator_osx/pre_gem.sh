@@ -22,7 +22,8 @@ echo "Building rhosim"
 cd $TRAVIS_BUILD_DIR
 #rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
 rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
-rake build:osx:rhosimulator
+env
+rake build:osx:rhosimulator --trace
 cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
 zip -r -y RhoSimulator.app.zip RhoSimulator.app
 # rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app
