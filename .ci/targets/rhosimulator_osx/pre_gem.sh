@@ -7,8 +7,8 @@ set -e
 
 echo Downloading Qt
 
-wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/Qt5.13.2_mini.tar.gz -O $HOME/Qt5.13.2.tar.gz
-tar -xzf $HOME/Qt5.13.2.tar.gz -C $HOME/
+wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/Qt5.13.2_mini.tar.gz -O $PIPELINE_WORKSPACE/Qt5.13.2.tar.gz
+tar -xzf $PIPELINE_WORKSPACE/Qt5.13.2.tar.gz -C $PIPELINE_WORKSPACE/
 echo Qt installed
 
 echo "Installing Rhoconnect client"

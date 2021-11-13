@@ -64,7 +64,7 @@ fi
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh
 
 gem list
-cd $HOME
+cd $PIPELINE_WORKSPACE
 
 # generate few apps from scratch
 rhodes app vanilla_rhodes_app
@@ -77,8 +77,8 @@ rhodes nodejsapp vanilla_rhodes_nodejsapp
 
 # clone testable app if required by matrix config
 if [[ -n $RHO_APP ]]; then
-    git clone $($BUILD_DIR/.ci/app_repo.rb) $HOME/$RHO_APP;
-    cd $HOME/$RHO_APP/$($BUILD_DIR/.ci/app_build_root.rb);
+    git clone $($BUILD_DIR/.ci/app_repo.rb) $PIPELINE_WORKSPACE/$RHO_APP;
+    cd $PIPELINE_WORKSPACE/$RHO_APP/$($BUILD_DIR/.ci/app_build_root.rb);
 fi
 
 if [[ -z $SKIP_BUILD ]]; then
