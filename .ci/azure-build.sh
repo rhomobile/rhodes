@@ -5,6 +5,8 @@ set -x
 
 #setup for host
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
+source ~/.rvm/scripts/rvm
+rvm list
 #setup for target
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
