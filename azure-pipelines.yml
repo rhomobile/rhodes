@@ -12,16 +12,16 @@ variables:
 - name: RHO_RUNNER_SCRIPT
   value: run_app_on_simulator.sh
 - name: RHO_RUBY
-  value: ruby-2.7.0
+  value: ruby-2.7.4
 - name: ruby_version
-  value: '2.7.0'
+  value: '2.7.4'
 
 stages:  
   - stage: build
     jobs:
       - job: build
         pool:
-          vmImage: 'macOS-latest'
+          vmImage: 'macOS-10.14'
         steps:
         - task: UseRubyVersion@0
           inputs:
