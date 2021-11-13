@@ -15,6 +15,19 @@ variables:
   value: ruby-2.7.4
 - name: ruby_version
   value: '2.7.4'
+- name: PATH
+  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
+#- name: BUILD_ARTEFACTS_DIR
+#  value: $HOME/build_artefacts
+  #- S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
+  #- S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
+- name: QTDIR
+  value: "$HOME/Qt5.13.2/5.13.2/clang_64"
+  #- RHO_RUBY="${RHO_RUBY:=$RUBY_VERSION}"
+  #- ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
+  #- NDK_NUMBER="${NDK_NUMBER:=21}"
+  #- ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
+
 
 stages:  
   - stage: build
