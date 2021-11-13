@@ -18,5 +18,7 @@ stages:
   - stage: build
     jobs:
       - job: build
+        pool:
+          vmImage: 'macOS-latest'
         steps:
         - script: $BUILD_DIR/.ci/azure-build.sh

@@ -3,6 +3,8 @@
 set -e
 set -x
 
+uname -a
+
 #setup for host
 $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/hosts/$OS_NAME/before_install.sh
 source ~/.rvm/scripts/rvm
