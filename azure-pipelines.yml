@@ -3,6 +3,8 @@ name: rhomobile
 variables:
 - name: BUILD_DIR
   value: $(Build.Repository.LocalPath)
+- name: TRAVIS_BUILD_DIR
+  value: $(Build.Repository.LocalPath)
 - name: OS_NAME
   value: osx
 - name: RHO_TARGET
