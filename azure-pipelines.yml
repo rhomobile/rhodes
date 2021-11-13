@@ -15,8 +15,8 @@ variables:
   value: ruby-2.7.4
 - name: ruby_version
   value: '2.7.4'
-- name: PATH
-  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
+#- name: PATH
+#  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
 #- name: BUILD_ARTEFACTS_DIR
 #  value: $HOME/build_artefacts
   #- S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
