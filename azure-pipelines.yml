@@ -13,6 +13,8 @@ variables:
   value: run_app_on_simulator.sh
 - name: RHO_RUBY
   value: ruby-2.7.0
+- name: ruby_version
+  value: '2.7.0'
 
 stages:  
   - stage: build
@@ -21,4 +23,8 @@ stages:
         pool:
           vmImage: 'macOS-latest'
         steps:
+        - task: UseRubyVersion@0
+          inputs:
+            versionSpec: $(ruby_version)
+            
         - script: $BUILD_DIR/.ci/azure-build.sh
