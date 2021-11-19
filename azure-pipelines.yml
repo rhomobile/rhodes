@@ -23,13 +23,6 @@ variables:
 - name: QTDIR
   value: $(Pipeline.Workspace)/Qt5.13.2/5.13.2/clang_64
 
-#- name: PATH
-#  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
-  #- RHO_RUBY="${RHO_RUBY:=$RUBY_VERSION}"
-  #- ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
-  #- NDK_NUMBER="${NDK_NUMBER:=21}"
-  #- ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
-
 - name: S3_JOB_DIR
   value: "$(Build.SourceVersion)/${{ variables.OS_NAME }}"
 
@@ -59,17 +52,8 @@ stages:
           inputs:
             targetType: 'inline'
             script: 'mkdir $BUILD_ARTEFACTS_DIR'
-#        - task: Bash@3
-#          inputs:
-#            targetType: 'inline'
-#            script: 'echo TestArtefact > $BUILD_ARTEFACTS_DIR/test.txt'
-#        - task: Bash@3
-#          inputs:
-#           targetType: 'inline'
-#           script: 'cat $BUILD_ARTEFACTS_DIR/test.txt'
-          
-        #- script: mkdir $BUILD_ARTEFACTS_DIR     
-        #- script: $BUILD_DIR/.ci/azure-build.sh        
+
+        - script: $BUILD_DIR/.ci/azure-build.sh        
         
         - task: S3Upload@1
           inputs:
