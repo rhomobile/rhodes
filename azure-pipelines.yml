@@ -15,19 +15,24 @@ variables:
   value: ruby-2.7.4
 - name: ruby_version
   value: '2.7.4'
-#- name: PATH
-#  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
-#- name: BUILD_ARTEFACTS_DIR
-#  value: $HOME/build_artefacts
-  #- S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
-  #- S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
+- name: BUILD_ARTEFACTS_DIR
+  value: $(Pipeline.Workspace)/build_artefacts
+
 - name: QTDIR
   value: $(Pipeline.Workspace)/Qt5.13.2/5.13.2/clang_64
+
+#- name: PATH
+#  value: $PATH:/$TRAVIS_BUILD_DIR/.ci
   #- RHO_RUBY="${RHO_RUBY:=$RUBY_VERSION}"
   #- ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
   #- NDK_NUMBER="${NDK_NUMBER:=21}"
   #- ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 
+- name: S3_JOB_DIR
+  value: "$(Build.SourceVersion)/$OS_NAME"
+
+- name: S3_DEPLOY_DIR
+  value: "$BUILD_REPOSITORY_NAME/$BUILD_SOURCEBRANCH"
 
 stages:  
   - stage: build
@@ -38,6 +43,16 @@ stages:
         steps:
         - task: UseRubyVersion@0
           inputs:
-            versionSpec: $(ruby_version)
-            
-        - script: $BUILD_DIR/.ci/azure-build.sh
+            versionSpec: $(ruby_version)            
+        - script: $BUILD_DIR/.ci/azure-build.sh        
+        - script: mkdir $BUILD_ARTEFACTS_DIR
+        - task: S3Upload@1
+          inputs:
+            regionName: 'eu-central-1'
+            bucketName: 'tau-autobuilds'
+            sourceFolder: '$BUILD_ARTEFACTS_DIR'
+            globExpressions: '**'
+            targetFolder: '''$S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP'''
+            filesAcl: 'public-read'
+            logRequest: true
+            logResponse: true
