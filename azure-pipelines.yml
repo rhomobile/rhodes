@@ -69,13 +69,13 @@ stages:
         #- script: mkdir $BUILD_ARTEFACTS_DIR     
         #- script: $BUILD_DIR/.ci/azure-build.sh        
         
-        #- task: S3Upload@1
-        #  inputs:
-        #    regionName: 'eu-central-1'
-        #    bucketName: 'tau-autobuilds'
-        #    sourceFolder: $BUILD_ARTEFACTS_DIR
-        #    globExpressions: '**'
-        #    targetFolder: $S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP
-        #    filesAcl: 'public-read'
-        #    logRequest: true
-        #    logResponse: true
+        - task: S3Upload@1
+          inputs:
+            regionName: 'eu-central-1'
+            bucketName: 'tau-autobuilds'
+            sourceFolder: '$BUILD_ARTEFACTS_DIR'
+            globExpressions: '**'
+            targetFolder: $S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP
+            filesAcl: 'public-read'
+            logRequest: true
+            logResponse: true
