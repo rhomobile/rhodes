@@ -56,9 +56,9 @@ stages:
           inputs:
             regionName: 'eu-central-1'
             bucketName: 'tau-autobuilds'
-            sourceFolder: '$BUILD_ARTEFACTS_DIR'
+            sourceFolder: $BUILD_ARTEFACTS_DIR
             globExpressions: '**'
-            targetFolder: '''$S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP'''
+            targetFolder: $S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP
             filesAcl: 'public-read'
             logRequest: true
             logResponse: true
