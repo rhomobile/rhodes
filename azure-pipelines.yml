@@ -46,6 +46,10 @@ stages:
         pool:
           vmImage: 'macOS-10.15'
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'env | sort'
         - task: UseRubyVersion@0
           inputs:
             versionSpec: $(ruby_version)       
