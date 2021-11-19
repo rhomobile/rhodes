@@ -37,7 +37,7 @@ unix:!macx {
 }
 macx {
  SUBDIRS += curl
- QMAKE_MAC_SDK = macosx10.15
+ QMAKE_MAC_SDK = macosx11.1
 }
 
 win32{
