@@ -52,17 +52,30 @@ stages:
             script: 'env | sort'
         - task: UseRubyVersion@0
           inputs:
-            versionSpec: $(ruby_version)       
-        - script: mkdir $BUILD_ARTEFACTS_DIR     
+            versionSpec: $(ruby_version)      
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'mkdir $BUILD_ARTEFACTS_DIR'
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'echo TestArtefact > $BUILD_ARTEFACTS_DIR/test.txt'
+        - task: Bash@3
+          inputs:
+           targetType: 'inline'
+           script: 'cat $BUILD_ARTEFACTS_DIR/test.txt'
+          
+        #- script: mkdir $BUILD_ARTEFACTS_DIR     
         #- script: $BUILD_DIR/.ci/azure-build.sh        
         
-        - task: S3Upload@1
-          inputs:
-            regionName: 'eu-central-1'
-            bucketName: 'tau-autobuilds'
-            sourceFolder: $BUILD_ARTEFACTS_DIR
-            globExpressions: '**'
-            targetFolder: $S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP
-            filesAcl: 'public-read'
-            logRequest: true
-            logResponse: true
+        #- task: S3Upload@1
+        #  inputs:
+        #    regionName: 'eu-central-1'
+        #    bucketName: 'tau-autobuilds'
+        #    sourceFolder: $BUILD_ARTEFACTS_DIR
+        #    globExpressions: '**'
+        #    targetFolder: $S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP
+        #    filesAcl: 'public-read'
+        #    logRequest: true
+        #    logResponse: true
