@@ -34,6 +34,11 @@ variables:
 - name: S3_DEPLOY_DIR
   value: "$BUILD_REPOSITORY_NAME/$BUILD_SOURCEBRANCH"
 
+trigger:
+  branches:
+    exclude:
+      - '*'
+
 stages:  
   - stage: build
     jobs:
@@ -43,9 +48,10 @@ stages:
         steps:
         - task: UseRubyVersion@0
           inputs:
-            versionSpec: $(ruby_version)            
-        - script: $BUILD_DIR/.ci/azure-build.sh        
-        - script: mkdir $BUILD_ARTEFACTS_DIR
+            versionSpec: $(ruby_version)       
+        - script: mkdir $BUILD_ARTEFACTS_DIR     
+        #- script: $BUILD_DIR/.ci/azure-build.sh        
+        
         - task: S3Upload@1
           inputs:
             regionName: 'eu-central-1'
