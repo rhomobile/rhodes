@@ -17,6 +17,8 @@ variables:
   value: '2.7.4'
 - name: BUILD_ARTEFACTS_DIR
   value: $(Pipeline.Workspace)/build_artefacts
+- name: RHO_APP
+  value: ""
 
 - name: QTDIR
   value: $(Pipeline.Workspace)/Qt5.13.2/5.13.2/clang_64
@@ -32,7 +34,7 @@ variables:
   value: "$(Build.SourceVersion)/${{ variables.OS_NAME }}"
 
 - name: S3_DEPLOY_DIR
-  value: "$(Build.Repository.Name)/$(Build.SourceBranch)"
+  value: "$(Build.Repository.Name)/$(Build.SourceBranchName)"
 
 trigger:
   branches:
@@ -46,10 +48,10 @@ stages:
         pool:
           vmImage: 'macOS-10.15'
         steps:
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: 'env | sort'
+#        - task: Bash@3
+#          inputs:
+#            targetType: 'inline'
+#            script: 'env | sort'
         - task: UseRubyVersion@0
           inputs:
             versionSpec: $(ruby_version)      
@@ -57,14 +59,14 @@ stages:
           inputs:
             targetType: 'inline'
             script: 'mkdir $BUILD_ARTEFACTS_DIR'
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: 'echo TestArtefact > $BUILD_ARTEFACTS_DIR/test.txt'
-        - task: Bash@3
-          inputs:
-           targetType: 'inline'
-           script: 'cat $BUILD_ARTEFACTS_DIR/test.txt'
+#        - task: Bash@3
+#          inputs:
+#            targetType: 'inline'
+#            script: 'echo TestArtefact > $BUILD_ARTEFACTS_DIR/test.txt'
+#        - task: Bash@3
+#          inputs:
+#           targetType: 'inline'
+#           script: 'cat $BUILD_ARTEFACTS_DIR/test.txt'
           
         #- script: mkdir $BUILD_ARTEFACTS_DIR     
         #- script: $BUILD_DIR/.ci/azure-build.sh        
