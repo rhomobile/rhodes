@@ -100,10 +100,12 @@
     UIPopoverController *popover;
 #endif
     RhoCameraSettings* settings;
+    BOOL isCaptureProcessRunning;
 
 }
 
 @property (retain) RhoCameraSettings* settings;
+@property (atomic) BOOL isCaptureProcessRunning;
 
 
 - (void)imagePickerController:(UIImagePickerController *)picker

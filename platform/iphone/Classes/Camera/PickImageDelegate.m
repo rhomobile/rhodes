@@ -151,7 +151,7 @@
 
 @implementation PickImageDelegate
 
-@synthesize settings;
+@synthesize settings, isCaptureProcessRunning;
 
 
 -(void) sendCancelCallback {
@@ -517,6 +517,13 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
+
+    if (!self.isCaptureProcessRunning) {
+        return;
+    }
+    //NSLog(@"$$$###$$$   didFinishPickingMediaWithInfo");
+    self.isCaptureProcessRunning = NO;
+    
     if (settings.format == CAMERA_SETTINGS_FORMAT_NOT_SETTED) {
         NSURL* url = (NSURL*)[info objectForKey:UIImagePickerControllerReferenceURL];
         //const char* cs_url = [[url path] UTF8String];
@@ -538,32 +545,39 @@
             settings.format = CAMERA_SETTINGS_FORMAT_JPG;
         }
     }
+
+    // Remove the picker interface and release the picker object.
+    [picker dismissViewControllerAnimated:NO completion:nil];
+    [picker.view removeFromSuperview];
+    //picker.view.hidden = YES;
+#ifdef __IPHONE_3_2
+    [popover dismissPopoverAnimated:YES];
+#endif
+    [picker release];
+
     UIImage* image = (UIImage*)[info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
         image = (UIImage*)[info objectForKey:UIImagePickerControllerOriginalImage];
     }
-    if (image != nil) {     
-        [self useImage:image];
+    if (image != nil) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self useImage:image];
+        });
     }
     else {
         //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
-        [self sendCancelCallback];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self sendCancelCallback];
+        });
     }
-    // Remove the picker interface and release the picker object. 
-    [picker dismissViewControllerAnimated:YES completion:nil];
-    [picker.view removeFromSuperview];
-	//picker.view.hidden = YES;
-    [picker release];
-#ifdef __IPHONE_3_2
-    [popover dismissPopoverAnimated:YES];
-#endif
 }
 
 
 - (void)imagePickerController:(UIImagePickerController *)picker 
 		didFinishPickingImage:(UIImage *)image 
 		editingInfo:(NSDictionary *)editingInfo 
-{ 
+{
+    //NSLog(@"$$$###$$$   didFinishPickingImage");
     if (settings.format == CAMERA_SETTINGS_FORMAT_NOT_SETTED) {
         settings.format = CAMERA_SETTINGS_FORMAT_JPG;
     }
@@ -573,7 +587,7 @@
     //it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
-    [picker dismissViewControllerAnimated:YES completion:nil];
+    [picker dismissViewControllerAnimated:NO completion:nil];
     [picker.view removeFromSuperview];
 	//picker.view.hidden = YES;
     [picker release];
@@ -584,19 +598,27 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
 { 
-    // Notify view about cancel
-    //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
-    [self sendCancelCallback];
-    
-    // Remove the picker interface and release the picker object. 
-    [picker dismissViewControllerAnimated:YES completion:nil]; 
+    if (!self.isCaptureProcessRunning) {
+        return;
+    }
+    self.isCaptureProcessRunning = NO;
+    // Remove the picker interface and release the picker object.
+    [picker dismissViewControllerAnimated:YES completion:nil];
     [picker.view removeFromSuperview];
-	//picker.view.hidden = YES;
-    [picker release]; 
+    //picker.view.hidden = YES;
 #ifdef __IPHONE_3_2
     [popover dismissPopoverAnimated:YES];
 #endif
-} 
+    [picker release];
+
+
+    // Notify view about cancel
+    //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self sendCancelCallback];
+    });
+    
+}
 
 #ifdef __IPHONE_3_2
 // UIPopoverControllerDelegate implementation

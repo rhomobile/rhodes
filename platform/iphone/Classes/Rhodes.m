@@ -489,6 +489,9 @@ static Rhodes *instance = NULL;
             picker.allowsEditing = NO;
         }
 #endif
+      
+        delegateObject.isCaptureProcessRunning = YES;
+        
         // Show picker
 #ifdef __IPHONE_3_2
         if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) && (type != UIImagePickerControllerSourceTypeCamera)) {
