@@ -84,6 +84,10 @@ fi
 if [[ -z $SKIP_BUILD ]]; then
     $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
 fi
+
+# add this for copy builded artifacts to foder for ipload to S3
+$BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh
+
 #TODO: change this to run specs in auto mode and collect results
 if [[ -z $SKIP_TESTS ]]; then
     $BUILD_DIR/.ci/safe_run.sh $BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
