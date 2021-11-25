@@ -21,7 +21,7 @@ variables:
   value: ""
 
 - name: QTDIR
-  value: $(Pipeline.Workspace)/Qt5.13.2/5.13.2/clang_64
+  value: $(Pipeline.Workspace)/Qt5.15.2/5.15.2/clang_64
 
 - name: S3_JOB_DIR
   value: "$(Build.SourceVersion)/${{ variables.OS_NAME }}"
