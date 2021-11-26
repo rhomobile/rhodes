@@ -71,7 +71,7 @@ script:
 
 # generate few apps from scratch
 - rhodes app vanilla_rhodes_app
-- cd vanilla_rhodes_app 
+- cd vanilla_rhodes_app
 #- safe_run_target_script upgrade_package.sh here we build not only android aps
 - rhodes extension testext
 - cd ..
