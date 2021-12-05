@@ -916,7 +916,7 @@ module_function :read_manifest_package
     args << "-alias"
     args << storealias
     args << "-keyalg"
-    args << "RSA"
+    args << "SHA256withRSA"
     args << "-validity"
     args << "20000"
     args << "-keystore"
