@@ -127,24 +127,91 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
         }
     }
     if (isDirectRequestActivated) {
+        BOOL isDirectProcessingActivated = NO;
+
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3
+        if (!isDirectProcessingActivated) {
+            
+            try {
+                NSArray *privateStrArr = @[@"Handlers", @"Scheme", @"url", @"_"];
+                NSString *keyName =  [[[privateStrArr reverseObjectEnumerator] allObjects] componentsJoinedByString:@""];
+                
+                CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"rhoapiprotocol"];
+                NSMutableDictionary *handlers = [configuration valueForKey:keyName];
+                if (handlers != nil) {
+                    handlers[@"http"] = schemeHandler;
+                    handlers[@"https"] = schemeHandler;
+                    isDirectProcessingActivated = YES;
+                }
+            } catch(id anException)  {
+                int o = 9;
+                o = 7;
+
+            }
+        }
+#endif
+
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2
+        if (!isDirectProcessingActivated) {
+
+            try {
+
+                NSArray *privateStrArr = @[@"Controller", @"Context", @"Browsing", @"K", @"W"];
+                NSString *className =  [[[privateStrArr reverseObjectEnumerator] allObjects] componentsJoinedByString:@""];
+                NSArray *privateStr2Arr = @[@":", @"Protocol", @"Custom", @"For", @"Scheme", @"register"];
+                NSString *selName =  [[[privateStr2Arr reverseObjectEnumerator] allObjects] componentsJoinedByString:@""];
+
+                Class cls = NSClassFromString(className);
+                SEL sel = NSSelectorFromString(selName);
+                
+                if (cls && sel) {
+                    if ([(id)cls respondsToSelector:sel]) {
+                        [(id)cls performSelector:sel withObject:@"http"];
+                        [(id)cls performSelector:sel withObject:@"https"];
+                        isDirectProcessingActivated = YES;
+                    }
+                }
+                // already registered when app started
+                //[NSURLProtocol registerClass:[CRhoURLProtocol class]];
+                
+            } catch(id anException)  {
+                int o = 9;
+                o = 7;
+
+            }
+
+        }
+#endif
+
 #ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
 
-        CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+        if (!isDirectProcessingActivated) {
+            try {
 
-        // replace original static method to our bogus method
-        Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
-        Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
-        method_exchangeImplementations(bogusHandle, handleOriginal);
+                CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+
+                // replace original static method to our bogus method
+                Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
+                Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
+                method_exchangeImplementations(bogusHandle, handleOriginal);
 
 
-        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
-        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
 
-        // return original static method
-        method_exchangeImplementations(bogusHandle, handleOriginal);
-#else
-        RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING capability to build.yml !!!");
+                // return original static method
+                method_exchangeImplementations(bogusHandle, handleOriginal);
+                isDirectProcessingActivated = YES;
+            } catch(id anException)  {
+                int o = 9;
+                o = 7;
+            }
+        }
 #endif
+        if (!isDirectProcessingActivated) {
+            RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2 or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3 capability/s to build.yml !!!");
+        }
     }
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
 

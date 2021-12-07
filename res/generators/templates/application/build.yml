@@ -62,8 +62,11 @@ applog: rholog.txt
   #- ios_uiwebview
   ## iOS do not support direct(intercept by application's code) http/https request processing in WKWebView
   ## add this capability for add some code with support this feature by some "unofficial" method.
-  ## set ios_direct_local_requests = 1 in rhoconfig.txt for use this code 
+  ## set ios_direct_local_requests = 1 in rhoconfig.txt for use this code
+  ## ios_wkwebview_http_direct_processing_method_2 is recommended because it is small lightweight access to undocumented API
   #- ios_wkwebview_http_direct_processing
+  #- ios_wkwebview_http_direct_processing_method_2
+  #- ios_wkwebview_http_direct_processing_method_3
 
 iphone:
   configuration: Release

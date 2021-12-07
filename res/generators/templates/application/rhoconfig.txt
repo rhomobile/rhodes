@@ -95,6 +95,7 @@ sync_poll_interval=0
 #If true, request to local server will be applied directly, bypassing socket intercommunication, no network requests are involved. If false, a legacy client-server intercommunication will be made for local requests. Default is TRUE. To support per-app VPN (i.e. MobileIron) this option should be set to TRUE.
 #We make default value to FALSE because now WKWebView is default (UIWebView was deprecated by Apple and you can not submit application with UIWebView to AppStore!)
 # WkWebView do not support http/https request direct processing, but you can not enable it if you add this capability to build.yml: ios_wkwebview_http_direct_processing
+# or/and ios_wkwebview_http_direct_processing_method_2 or/and ios_wkwebview_http_direct_processing_method_3
 # With this capability some additional code will be added to project. That code provide unofficiall direct work with http/https requests from WKWebView and you will be able set
 # ios_direct_local_requests = 1
 
