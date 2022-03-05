@@ -2443,7 +2443,7 @@ set_pioinfo_extra(void)
 //RHO start : trying to get _asatty address from both debug and release crt dlls
 //   vvv
 # ifdef _DEBUG
-#  define UCRTBASE "ucrtbase.dll"
+#  define UCRTBASE "ucrtbased.dll"
 # else
 #  define UCRTBASE "ucrtbase.dll"
 # endif
@@ -2476,7 +2476,8 @@ set_pioinfo_extra(void)
 //RHO start
 //   vvv
 
-#define FUNCTION_BEFORE_RET_MARK "\xc9"
+#define FUNCTION_BEFORE_RET_MARK "\x5d"
+#define FUNCTION_BEFORE_RET_MARK_2 "\xc9"
 
 #  define FUNCTION_SKIP_BYTES 0
     /* mov eax,dword ptr [eax*4+100EB430h] */
@@ -2488,7 +2489,13 @@ set_pioinfo_extra(void)
 			int beforeRetFound = (memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0);
 			char* pret = (pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES);
 			int retFound = ( (*(pret) & FUNCTION_RET ) == FUNCTION_RET);
-			
+
+#ifdef FUNCTION_BEFORE_RET_MARK_2
+			if (!(beforeRetFound && retFound)) {
+				beforeRetFound = (memcmp(pend, FUNCTION_BEFORE_RET_MARK_2, sizeof(FUNCTION_BEFORE_RET_MARK_2) - 1) == 0);
+				pret = (pend + (sizeof(FUNCTION_BEFORE_RET_MARK_2) - 1) + FUNCTION_SKIP_BYTES);
+			}
+#endif			
             // find end of function
 			if ( beforeRetFound && retFound ) {
 			/*
