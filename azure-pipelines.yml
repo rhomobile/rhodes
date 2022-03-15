@@ -12,9 +12,9 @@ variables:
 - name: RHO_RUNNER_SCRIPT
   value: run_app_on_simulator.sh
 - name: RHO_RUBY
-  value: ruby-2.7.4
+  value: ruby-2.7.5
 - name: ruby_version
-  value: '2.7.4'
+  value: '2.7.5'
 - name: BUILD_ARTEFACTS_DIR
   value: $(Pipeline.Workspace)/build_artefacts
 - name: RHO_APP
