@@ -1,0 +1,67 @@
+name: rhomobile
+
+variables:
+- name: BUILD_DIR
+  value: $(Build.Repository.LocalPath)
+- name: TRAVIS_BUILD_DIR
+  value: $(Build.Repository.LocalPath)
+- name: OS_NAME
+  value: osx
+- name: RHO_TARGET
+  value: rhosimulator_osx
+- name: RHO_RUNNER_SCRIPT
+  value: run_app_on_simulator.sh
+- name: RHO_RUBY
+  value: ruby-2.7.4
+- name: ruby_version
+  value: '2.7.4'
+- name: BUILD_ARTEFACTS_DIR
+  value: $(Pipeline.Workspace)/build_artefacts
+- name: RHO_APP
+  value: ""
+
+- name: QTDIR
+  value: $(Pipeline.Workspace)/Qt5.15.2/5.15.2/clang_64
+
+- name: S3_JOB_DIR
+  value: "$(Build.SourceVersion)/${{ variables.OS_NAME }}"
+
+- name: S3_DEPLOY_DIR
+  value: "$(Build.Repository.Name)/$(Build.SourceBranchName)"
+
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+stages:  
+  - stage: build
+    jobs:
+      - job: build
+        pool:
+          vmImage: 'macOS-10.15'
+        steps:
+#        - task: Bash@3
+#          inputs:
+#            targetType: 'inline'
+#            script: 'env | sort'
+        - task: UseRubyVersion@0
+          inputs:
+            versionSpec: $(ruby_version)      
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'mkdir $BUILD_ARTEFACTS_DIR'
+
+        - script: $BUILD_DIR/.ci/azure-build.sh        
+        
+        - task: S3Upload@1
+          inputs:
+            regionName: 'eu-central-1'
+            bucketName: 'tau-autobuilds'
+            sourceFolder: '$(BUILD_ARTEFACTS_DIR)'
+            globExpressions: '**'
+            targetFolder: $(S3_DEPLOY_DIR)/$(S3_JOB_DIR)-$(RHO_TARGET)-$(RHO_APP)
+            filesAcl: 'public-read'
+            logRequest: true
+            logResponse: true
