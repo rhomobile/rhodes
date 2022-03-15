@@ -7,8 +7,8 @@ set -e
 
 echo Downloading Qt
 
-wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/Qt5.13.2_mini.tar.gz -O $HOME/Qt5.13.2.tar.gz
-tar -xzf $HOME/Qt5.13.2.tar.gz -C $HOME/
+wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/Qt5.15.2_mini.tar.gz -O $PIPELINE_WORKSPACE/Qt5.15.2.tar.gz
+tar -xzf $PIPELINE_WORKSPACE/Qt5.15.2.tar.gz -C $PIPELINE_WORKSPACE/
 echo Qt installed
 
 echo "Installing Rhoconnect client"
@@ -22,7 +22,8 @@ echo "Building rhosim"
 cd $TRAVIS_BUILD_DIR
 #rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
 rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
-rake build:osx:rhosimulator
+env
+rake build:osx:rhosimulator --trace
 cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
 zip -r -y RhoSimulator.app.zip RhoSimulator.app
 # rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app

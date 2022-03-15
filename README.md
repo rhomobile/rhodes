@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/TauPlatform/rhodes/_apis/build/status/rhomobile.rhodes?branchName=master)](https://dev.azure.com/TauPlatform/rhodes/_build/latest?definitionId=1&branchName=master)
+
 [![Build Status](https://travis-ci.org/rhomobile/rhodes.svg?branch=master)](https://travis-ci.org/rhomobile/rhodes)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/4c1uqndnfau9c8hq/branch/master?svg=true)](https://ci.appveyor.com/project/alex-epifanoff/rhodes/branch/master)
