@@ -99,6 +99,10 @@ sync_poll_interval=0
 # With this capability some additional code will be added to project. That code provide unofficiall direct work with http/https requests from WKWebView and you will be able set
 # ios_direct_local_requests = 1
 
+#ios_use_old_legacy_socket = 0
+# Use old legacy socket based http server instead of CocoaServer.
+# Default value is FALSE
+
 #ios_https_local_server = 0
 #ATTENTION !!! this option works only with ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
 #default value is FALSE

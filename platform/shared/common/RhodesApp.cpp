@@ -73,6 +73,11 @@ bool rho_wmimpl_is_browser_ieforwm();
 void rho_file_set_fs_mode(int mode);
 #endif
 
+#ifdef OS_MACOSX
+void rho_cocoa_server_init();
+void rho_cocoa_server_start();
+#endif
+
 }
 
 // Copy-paste from ApplicationBase.cpp
@@ -561,14 +566,25 @@ void CRhodesApp::run()
 
 #ifdef OS_MACOSX
   bool shouldRunDirectQueue = false;
+  bool shouldUseCocoaServer = true;
+    
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
 
     if (RHOCONF().isExist("ios_direct_local_requests")) {
         shouldRunDirectQueue = RHOCONF().getBool("ios_direct_local_requests");
     }
+    if (RHOCONF().isExist("ios_use_old_legacy_socket")) {
+        shouldUseCocoaServer = !RHOCONF().getBool("ios_use_old_legacy_socket");
+    }
 #ifdef RHODES_EMULATOR
     shouldRunDirectQueue = false;
+    shouldUseCocoaServer = false;
 #endif
+
+    if ((shouldUseCocoaServer) && (!shouldRunDirectQueue)) {
+        rho_cocoa_server_init();
+    }
+
 #endif
 
 
@@ -576,8 +592,11 @@ void CRhodesApp::run()
 		if(!m_isJSFSApp)
     {
 #ifdef OS_MACOSX
-      if ( shouldRunDirectQueue )
+      if ( shouldRunDirectQueue || shouldUseCocoaServer)
       {
+          if ((shouldUseCocoaServer) && (!shouldRunDirectQueue)) {
+              rho_cocoa_server_start();
+          }
         directQueue.run();
       }
       else

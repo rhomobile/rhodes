@@ -95,6 +95,15 @@ typedef unsigned __int16 uint16_t;
 
 #endif
 
+
+#ifdef OS_MACOSX
+extern "C" {
+void rho_cocoa_server_stop();
+}
+#endif
+
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
@@ -511,6 +520,11 @@ void CHttpServer::close_listener()
 
 void CHttpServer::stop()
 {
+    
+#ifdef OS_MACOSX
+    rho_cocoa_server_stop();
+#endif
+    
     // WARNING!!! It is not enough to just close listener on Android
     // to stop server. By unknown reason accept does not unblock if
     // it was closed in another thread. However, on iPhone it works

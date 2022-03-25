@@ -2227,4 +2227,6 @@ Rhodes contains code from the following other projects:
 
  JXcore (https://github.com/jxcore/jxcore)
  License: MIT-Style (https://github.com/jxcore/jxcore/blob/master/JXCORE_LICENSE)
- 
+
+ CocoaHTTPServer (https://github.com/robbiehanson/CocoaHTTPServer)
+ License: BSD-style (https://github.com/robbiehanson/CocoaHTTPServer/blob/master/LICENSE.txt)

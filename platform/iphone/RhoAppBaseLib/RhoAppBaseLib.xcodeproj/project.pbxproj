@@ -142,6 +142,106 @@
 		FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.mm */; };
 		FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */; };
 		FAA714A01DDCAE2B00E5E7AD /* RhoWebViewFabrique.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */; };
+		FAE2F03527EC187F000DC2DA /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F02B27EC187E000DC2DA /* DDLog.m */; };
+		FAE2F03627EC187F000DC2DA /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02C27EC187E000DC2DA /* DDTTYLogger.h */; };
+		FAE2F03727EC187F000DC2DA /* DDFileLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02D27EC187E000DC2DA /* DDFileLogger.h */; };
+		FAE2F03827EC187F000DC2DA /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02E27EC187E000DC2DA /* DDLog.h */; };
+		FAE2F03927EC187F000DC2DA /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F02F27EC187F000DC2DA /* DDASLLogger.m */; };
+		FAE2F03A27EC187F000DC2DA /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03027EC187F000DC2DA /* DDTTYLogger.m */; };
+		FAE2F03B27EC187F000DC2DA /* DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F03127EC187F000DC2DA /* DDASLLogger.h */; };
+		FAE2F03C27EC187F000DC2DA /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03227EC187F000DC2DA /* DDAbstractDatabaseLogger.m */; };
+		FAE2F03D27EC187F000DC2DA /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F03327EC187F000DC2DA /* DDAbstractDatabaseLogger.h */; };
+		FAE2F03E27EC187F000DC2DA /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03427EC187F000DC2DA /* DDFileLogger.m */; };
+		FAE2F04027EC1897000DC2DA /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F02F27EC187F000DC2DA /* DDASLLogger.m */; };
+		FAE2F04127EC1897000DC2DA /* DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F03127EC187F000DC2DA /* DDASLLogger.h */; };
+		FAE2F04227EC1897000DC2DA /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02E27EC187E000DC2DA /* DDLog.h */; };
+		FAE2F04327EC1897000DC2DA /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03427EC187F000DC2DA /* DDFileLogger.m */; };
+		FAE2F04427EC1897000DC2DA /* DDFileLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02D27EC187E000DC2DA /* DDFileLogger.h */; };
+		FAE2F04527EC1897000DC2DA /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F02B27EC187E000DC2DA /* DDLog.m */; };
+		FAE2F04627EC1897000DC2DA /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03027EC187F000DC2DA /* DDTTYLogger.m */; };
+		FAE2F04727EC1897000DC2DA /* DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F03327EC187F000DC2DA /* DDAbstractDatabaseLogger.h */; };
+		FAE2F04827EC1897000DC2DA /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F03227EC187F000DC2DA /* DDAbstractDatabaseLogger.m */; };
+		FAE2F04927EC1897000DC2DA /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F02C27EC187E000DC2DA /* DDTTYLogger.h */; };
+		FAE2F04E27EC18AB000DC2DA /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F04A27EC18AB000DC2DA /* DispatchQueueLogFormatter.m */; };
+		FAE2F04F27EC18AB000DC2DA /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F04A27EC18AB000DC2DA /* DispatchQueueLogFormatter.m */; };
+		FAE2F05027EC18AB000DC2DA /* ContextFilterLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F04B27EC18AB000DC2DA /* ContextFilterLogFormatter.h */; };
+		FAE2F05127EC18AB000DC2DA /* ContextFilterLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F04B27EC18AB000DC2DA /* ContextFilterLogFormatter.h */; };
+		FAE2F05227EC18AB000DC2DA /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F04C27EC18AB000DC2DA /* ContextFilterLogFormatter.m */; };
+		FAE2F05327EC18AB000DC2DA /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F04C27EC18AB000DC2DA /* ContextFilterLogFormatter.m */; };
+		FAE2F05427EC18AB000DC2DA /* DispatchQueueLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F04D27EC18AB000DC2DA /* DispatchQueueLogFormatter.h */; };
+		FAE2F05527EC18AB000DC2DA /* DispatchQueueLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F04D27EC18AB000DC2DA /* DispatchQueueLogFormatter.h */; };
+		FAE2F05827EC18C4000DC2DA /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05627EC18C4000DC2DA /* GCDAsyncSocket.m */; };
+		FAE2F05927EC18C4000DC2DA /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05627EC18C4000DC2DA /* GCDAsyncSocket.m */; };
+		FAE2F05A27EC18C4000DC2DA /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05727EC18C4000DC2DA /* GCDAsyncSocket.h */; };
+		FAE2F05B27EC18C4000DC2DA /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05727EC18C4000DC2DA /* GCDAsyncSocket.h */; };
+		FAE2F06827EC1907000DC2DA /* HTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05C27EC1906000DC2DA /* HTTPConnection.m */; };
+		FAE2F06927EC1907000DC2DA /* HTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05C27EC1906000DC2DA /* HTTPConnection.m */; };
+		FAE2F06A27EC1907000DC2DA /* HTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05D27EC1906000DC2DA /* HTTPResponse.h */; };
+		FAE2F06B27EC1907000DC2DA /* HTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05D27EC1906000DC2DA /* HTTPResponse.h */; };
+		FAE2F06C27EC1907000DC2DA /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05E27EC1907000DC2DA /* HTTPServer.m */; };
+		FAE2F06D27EC1907000DC2DA /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F05E27EC1907000DC2DA /* HTTPServer.m */; };
+		FAE2F06E27EC1907000DC2DA /* HTTPLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05F27EC1907000DC2DA /* HTTPLogging.h */; };
+		FAE2F06F27EC1907000DC2DA /* HTTPLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F05F27EC1907000DC2DA /* HTTPLogging.h */; };
+		FAE2F07027EC1907000DC2DA /* WebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06027EC1907000DC2DA /* WebSocket.h */; };
+		FAE2F07127EC1907000DC2DA /* WebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06027EC1907000DC2DA /* WebSocket.h */; };
+		FAE2F07227EC1907000DC2DA /* HTTPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06127EC1907000DC2DA /* HTTPMessage.m */; };
+		FAE2F07327EC1907000DC2DA /* HTTPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06127EC1907000DC2DA /* HTTPMessage.m */; };
+		FAE2F07427EC1907000DC2DA /* HTTPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06227EC1907000DC2DA /* HTTPConnection.h */; };
+		FAE2F07527EC1907000DC2DA /* HTTPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06227EC1907000DC2DA /* HTTPConnection.h */; };
+		FAE2F07627EC1907000DC2DA /* HTTPMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06327EC1907000DC2DA /* HTTPMessage.h */; };
+		FAE2F07727EC1907000DC2DA /* HTTPMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06327EC1907000DC2DA /* HTTPMessage.h */; };
+		FAE2F07827EC1907000DC2DA /* HTTPAuthenticationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06427EC1907000DC2DA /* HTTPAuthenticationRequest.m */; };
+		FAE2F07927EC1907000DC2DA /* HTTPAuthenticationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06427EC1907000DC2DA /* HTTPAuthenticationRequest.m */; };
+		FAE2F07A27EC1907000DC2DA /* HTTPAuthenticationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06527EC1907000DC2DA /* HTTPAuthenticationRequest.h */; };
+		FAE2F07B27EC1907000DC2DA /* HTTPAuthenticationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06527EC1907000DC2DA /* HTTPAuthenticationRequest.h */; };
+		FAE2F07C27EC1907000DC2DA /* WebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06627EC1907000DC2DA /* WebSocket.m */; };
+		FAE2F07D27EC1907000DC2DA /* WebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F06627EC1907000DC2DA /* WebSocket.m */; };
+		FAE2F07E27EC1907000DC2DA /* HTTPServer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06727EC1907000DC2DA /* HTTPServer.h */; };
+		FAE2F07F27EC1907000DC2DA /* HTTPServer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F06727EC1907000DC2DA /* HTTPServer.h */; };
+		FAE2F08E27EC1935000DC2DA /* HTTPDynamicFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08227EC1935000DC2DA /* HTTPDynamicFileResponse.m */; };
+		FAE2F08F27EC1935000DC2DA /* HTTPDynamicFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08227EC1935000DC2DA /* HTTPDynamicFileResponse.m */; };
+		FAE2F09027EC1935000DC2DA /* HTTPDynamicFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08327EC1935000DC2DA /* HTTPDynamicFileResponse.h */; };
+		FAE2F09127EC1935000DC2DA /* HTTPDynamicFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08327EC1935000DC2DA /* HTTPDynamicFileResponse.h */; };
+		FAE2F09227EC1935000DC2DA /* HTTPDataResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08427EC1935000DC2DA /* HTTPDataResponse.h */; };
+		FAE2F09327EC1935000DC2DA /* HTTPDataResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08427EC1935000DC2DA /* HTTPDataResponse.h */; };
+		FAE2F09427EC1935000DC2DA /* HTTPFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08527EC1935000DC2DA /* HTTPFileResponse.h */; };
+		FAE2F09527EC1935000DC2DA /* HTTPFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08527EC1935000DC2DA /* HTTPFileResponse.h */; };
+		FAE2F09627EC1936000DC2DA /* HTTPFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08627EC1935000DC2DA /* HTTPFileResponse.m */; };
+		FAE2F09727EC1936000DC2DA /* HTTPFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08627EC1935000DC2DA /* HTTPFileResponse.m */; };
+		FAE2F09827EC1936000DC2DA /* HTTPRedirectResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08727EC1935000DC2DA /* HTTPRedirectResponse.h */; };
+		FAE2F09927EC1936000DC2DA /* HTTPRedirectResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08727EC1935000DC2DA /* HTTPRedirectResponse.h */; };
+		FAE2F09A27EC1936000DC2DA /* HTTPErrorResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08827EC1935000DC2DA /* HTTPErrorResponse.m */; };
+		FAE2F09B27EC1936000DC2DA /* HTTPErrorResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08827EC1935000DC2DA /* HTTPErrorResponse.m */; };
+		FAE2F09C27EC1936000DC2DA /* HTTPAsyncFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08927EC1935000DC2DA /* HTTPAsyncFileResponse.m */; };
+		FAE2F09D27EC1936000DC2DA /* HTTPAsyncFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08927EC1935000DC2DA /* HTTPAsyncFileResponse.m */; };
+		FAE2F09E27EC1936000DC2DA /* HTTPRedirectResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08A27EC1935000DC2DA /* HTTPRedirectResponse.m */; };
+		FAE2F09F27EC1936000DC2DA /* HTTPRedirectResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08A27EC1935000DC2DA /* HTTPRedirectResponse.m */; };
+		FAE2F0A027EC1936000DC2DA /* HTTPDataResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08B27EC1935000DC2DA /* HTTPDataResponse.m */; };
+		FAE2F0A127EC1936000DC2DA /* HTTPDataResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F08B27EC1935000DC2DA /* HTTPDataResponse.m */; };
+		FAE2F0A227EC1936000DC2DA /* HTTPErrorResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08C27EC1935000DC2DA /* HTTPErrorResponse.h */; };
+		FAE2F0A327EC1936000DC2DA /* HTTPErrorResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08C27EC1935000DC2DA /* HTTPErrorResponse.h */; };
+		FAE2F0A427EC1936000DC2DA /* HTTPAsyncFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08D27EC1935000DC2DA /* HTTPAsyncFileResponse.h */; };
+		FAE2F0A527EC1936000DC2DA /* HTTPAsyncFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F08D27EC1935000DC2DA /* HTTPAsyncFileResponse.h */; };
+		FAE2F0AC27EC1955000DC2DA /* DDData.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0A627EC1955000DC2DA /* DDData.h */; };
+		FAE2F0AD27EC1955000DC2DA /* DDData.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0A627EC1955000DC2DA /* DDData.h */; };
+		FAE2F0AE27EC1955000DC2DA /* DDRange.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0A727EC1955000DC2DA /* DDRange.h */; };
+		FAE2F0AF27EC1955000DC2DA /* DDRange.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0A727EC1955000DC2DA /* DDRange.h */; };
+		FAE2F0B027EC1955000DC2DA /* DDNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0A827EC1955000DC2DA /* DDNumber.m */; };
+		FAE2F0B127EC1955000DC2DA /* DDNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0A827EC1955000DC2DA /* DDNumber.m */; };
+		FAE2F0B227EC1955000DC2DA /* DDRange.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0A927EC1955000DC2DA /* DDRange.m */; };
+		FAE2F0B327EC1955000DC2DA /* DDRange.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0A927EC1955000DC2DA /* DDRange.m */; };
+		FAE2F0B427EC1955000DC2DA /* DDNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0AA27EC1955000DC2DA /* DDNumber.h */; };
+		FAE2F0B527EC1955000DC2DA /* DDNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0AA27EC1955000DC2DA /* DDNumber.h */; };
+		FAE2F0B627EC1955000DC2DA /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0AB27EC1955000DC2DA /* DDData.m */; };
+		FAE2F0B727EC1955000DC2DA /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0AB27EC1955000DC2DA /* DDData.m */; };
+		FAE2F0BA27EC20AE000DC2DA /* CCocoaServer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0B827EC20AE000DC2DA /* CCocoaServer.h */; };
+		FAE2F0BB27EC20AE000DC2DA /* CCocoaServer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0B827EC20AE000DC2DA /* CCocoaServer.h */; };
+		FAE2F0BC27EC20AE000DC2DA /* CCocoaServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0B927EC20AE000DC2DA /* CCocoaServer.m */; };
+		FAE2F0BD27EC20AE000DC2DA /* CCocoaServer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0B927EC20AE000DC2DA /* CCocoaServer.m */; };
+		FAE2F0C027EC26D9000DC2DA /* RhoHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0BE27EC26D9000DC2DA /* RhoHTTPConnection.m */; };
+		FAE2F0C127EC26D9000DC2DA /* RhoHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE2F0BE27EC26D9000DC2DA /* RhoHTTPConnection.m */; };
+		FAE2F0C227EC26D9000DC2DA /* RhoHTTPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0BF27EC26D9000DC2DA /* RhoHTTPConnection.h */; };
+		FAE2F0C327EC26D9000DC2DA /* RhoHTTPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE2F0BF27EC26D9000DC2DA /* RhoHTTPConnection.h */; };
 		FAE78BE122583F6C001A1150 /* RightViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C248182B04140036D304 /* RightViewController.h */; };
 		FAE78BE222583F6C001A1150 /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C285182B04140036D304 /* SignatureViewController.h */; };
 		FAE78BE322583F6C001A1150 /* DateTimePickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C236182B04140036D304 /* DateTimePickerViewController.h */; };
@@ -396,6 +496,56 @@
 		FAA7149B1DDCADC100E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebViewFabrique.h; sourceTree = "<group>"; };
 		FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWebViewFabrique.m; sourceTree = "<group>"; };
+		FAE2F02B27EC187E000DC2DA /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDLog.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDLog.m; sourceTree = "<group>"; };
+		FAE2F02C27EC187E000DC2DA /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDTTYLogger.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDTTYLogger.h; sourceTree = "<group>"; };
+		FAE2F02D27EC187E000DC2DA /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDFileLogger.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDFileLogger.h; sourceTree = "<group>"; };
+		FAE2F02E27EC187E000DC2DA /* DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDLog.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDLog.h; sourceTree = "<group>"; };
+		FAE2F02F27EC187F000DC2DA /* DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDASLLogger.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDASLLogger.m; sourceTree = "<group>"; };
+		FAE2F03027EC187F000DC2DA /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDTTYLogger.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDTTYLogger.m; sourceTree = "<group>"; };
+		FAE2F03127EC187F000DC2DA /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDASLLogger.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDASLLogger.h; sourceTree = "<group>"; };
+		FAE2F03227EC187F000DC2DA /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDAbstractDatabaseLogger.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		FAE2F03327EC187F000DC2DA /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDAbstractDatabaseLogger.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		FAE2F03427EC187F000DC2DA /* DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDFileLogger.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/DDFileLogger.m; sourceTree = "<group>"; };
+		FAE2F04A27EC18AB000DC2DA /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DispatchQueueLogFormatter.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		FAE2F04B27EC18AB000DC2DA /* ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextFilterLogFormatter.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/ContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		FAE2F04C27EC18AB000DC2DA /* ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContextFilterLogFormatter.m; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/ContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		FAE2F04D27EC18AB000DC2DA /* DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DispatchQueueLogFormatter.h; path = ../CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		FAE2F05627EC18C4000DC2DA /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncSocket.m; path = ../CocoaHTTPServer/Vendor/CocoaAsyncSocket/GCDAsyncSocket.m; sourceTree = "<group>"; };
+		FAE2F05727EC18C4000DC2DA /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncSocket.h; path = ../CocoaHTTPServer/Vendor/CocoaAsyncSocket/GCDAsyncSocket.h; sourceTree = "<group>"; };
+		FAE2F05C27EC1906000DC2DA /* HTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPConnection.m; path = ../CocoaHTTPServer/Core/HTTPConnection.m; sourceTree = "<group>"; };
+		FAE2F05D27EC1906000DC2DA /* HTTPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPResponse.h; path = ../CocoaHTTPServer/Core/HTTPResponse.h; sourceTree = "<group>"; };
+		FAE2F05E27EC1907000DC2DA /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPServer.m; path = ../CocoaHTTPServer/Core/HTTPServer.m; sourceTree = "<group>"; };
+		FAE2F05F27EC1907000DC2DA /* HTTPLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPLogging.h; path = ../CocoaHTTPServer/Core/HTTPLogging.h; sourceTree = "<group>"; };
+		FAE2F06027EC1907000DC2DA /* WebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebSocket.h; path = ../CocoaHTTPServer/Core/WebSocket.h; sourceTree = "<group>"; };
+		FAE2F06127EC1907000DC2DA /* HTTPMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPMessage.m; path = ../CocoaHTTPServer/Core/HTTPMessage.m; sourceTree = "<group>"; };
+		FAE2F06227EC1907000DC2DA /* HTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPConnection.h; path = ../CocoaHTTPServer/Core/HTTPConnection.h; sourceTree = "<group>"; };
+		FAE2F06327EC1907000DC2DA /* HTTPMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPMessage.h; path = ../CocoaHTTPServer/Core/HTTPMessage.h; sourceTree = "<group>"; };
+		FAE2F06427EC1907000DC2DA /* HTTPAuthenticationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPAuthenticationRequest.m; path = ../CocoaHTTPServer/Core/HTTPAuthenticationRequest.m; sourceTree = "<group>"; };
+		FAE2F06527EC1907000DC2DA /* HTTPAuthenticationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPAuthenticationRequest.h; path = ../CocoaHTTPServer/Core/HTTPAuthenticationRequest.h; sourceTree = "<group>"; };
+		FAE2F06627EC1907000DC2DA /* WebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebSocket.m; path = ../CocoaHTTPServer/Core/WebSocket.m; sourceTree = "<group>"; };
+		FAE2F06727EC1907000DC2DA /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPServer.h; path = ../CocoaHTTPServer/Core/HTTPServer.h; sourceTree = "<group>"; };
+		FAE2F08227EC1935000DC2DA /* HTTPDynamicFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPDynamicFileResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPDynamicFileResponse.m; sourceTree = "<group>"; };
+		FAE2F08327EC1935000DC2DA /* HTTPDynamicFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPDynamicFileResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPDynamicFileResponse.h; sourceTree = "<group>"; };
+		FAE2F08427EC1935000DC2DA /* HTTPDataResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPDataResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPDataResponse.h; sourceTree = "<group>"; };
+		FAE2F08527EC1935000DC2DA /* HTTPFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPFileResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPFileResponse.h; sourceTree = "<group>"; };
+		FAE2F08627EC1935000DC2DA /* HTTPFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPFileResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPFileResponse.m; sourceTree = "<group>"; };
+		FAE2F08727EC1935000DC2DA /* HTTPRedirectResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPRedirectResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPRedirectResponse.h; sourceTree = "<group>"; };
+		FAE2F08827EC1935000DC2DA /* HTTPErrorResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPErrorResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPErrorResponse.m; sourceTree = "<group>"; };
+		FAE2F08927EC1935000DC2DA /* HTTPAsyncFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPAsyncFileResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPAsyncFileResponse.m; sourceTree = "<group>"; };
+		FAE2F08A27EC1935000DC2DA /* HTTPRedirectResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPRedirectResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPRedirectResponse.m; sourceTree = "<group>"; };
+		FAE2F08B27EC1935000DC2DA /* HTTPDataResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPDataResponse.m; path = ../CocoaHTTPServer/Core/Responses/HTTPDataResponse.m; sourceTree = "<group>"; };
+		FAE2F08C27EC1935000DC2DA /* HTTPErrorResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPErrorResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPErrorResponse.h; sourceTree = "<group>"; };
+		FAE2F08D27EC1935000DC2DA /* HTTPAsyncFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPAsyncFileResponse.h; path = ../CocoaHTTPServer/Core/Responses/HTTPAsyncFileResponse.h; sourceTree = "<group>"; };
+		FAE2F0A627EC1955000DC2DA /* DDData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDData.h; path = ../CocoaHTTPServer/Core/Categories/DDData.h; sourceTree = "<group>"; };
+		FAE2F0A727EC1955000DC2DA /* DDRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDRange.h; path = ../CocoaHTTPServer/Core/Categories/DDRange.h; sourceTree = "<group>"; };
+		FAE2F0A827EC1955000DC2DA /* DDNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDNumber.m; path = ../CocoaHTTPServer/Core/Categories/DDNumber.m; sourceTree = "<group>"; };
+		FAE2F0A927EC1955000DC2DA /* DDRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDRange.m; path = ../CocoaHTTPServer/Core/Categories/DDRange.m; sourceTree = "<group>"; };
+		FAE2F0AA27EC1955000DC2DA /* DDNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDNumber.h; path = ../CocoaHTTPServer/Core/Categories/DDNumber.h; sourceTree = "<group>"; };
+		FAE2F0AB27EC1955000DC2DA /* DDData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDData.m; path = ../CocoaHTTPServer/Core/Categories/DDData.m; sourceTree = "<group>"; };
+		FAE2F0B827EC20AE000DC2DA /* CCocoaServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCocoaServer.h; path = CocoaServer/CCocoaServer.h; sourceTree = "<group>"; };
+		FAE2F0B927EC20AE000DC2DA /* CCocoaServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCocoaServer.m; path = CocoaServer/CCocoaServer.m; sourceTree = "<group>"; };
+		FAE2F0BE27EC26D9000DC2DA /* RhoHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoHTTPConnection.m; path = CocoaServer/RhoHTTPConnection.m; sourceTree = "<group>"; };
+		FAE2F0BF27EC26D9000DC2DA /* RhoHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoHTTPConnection.h; path = CocoaServer/RhoHTTPConnection.h; sourceTree = "<group>"; };
 		FAE78C5C22583F6C001A1150 /* libRhoAppBaseStandaloneLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhoAppBaseStandaloneLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAE78CE0225D0EC5001A1150 /* RhoMainViewStubImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoMainViewStubImpl.h; sourceTree = "<group>"; };
 		FAE78CE1225D0EC5001A1150 /* RhoMainViewStubImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoMainViewStubImpl.m; sourceTree = "<group>"; };
@@ -758,6 +908,7 @@
 		FA20C29B182B04140036D304 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FAE2F02627EC1785000DC2DA /* CocoaServer */,
 				FA11F2471921214A00FB1301 /* RhoExtManager */,
 				C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */,
 				FA20C21B182B04140036D304 /* Signature.old */,
@@ -810,6 +961,119 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		FAE2F02627EC1785000DC2DA /* CocoaServer */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F0BF27EC26D9000DC2DA /* RhoHTTPConnection.h */,
+				FAE2F0BE27EC26D9000DC2DA /* RhoHTTPConnection.m */,
+				FAE2F0B827EC20AE000DC2DA /* CCocoaServer.h */,
+				FAE2F0B927EC20AE000DC2DA /* CCocoaServer.m */,
+				FAE2F02727EC1793000DC2DA /* CocoaHTTPServer */,
+			);
+			name = CocoaServer;
+			sourceTree = "<group>";
+		};
+		FAE2F02727EC1793000DC2DA /* CocoaHTTPServer */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F02A27EC17D6000DC2DA /* HTTP */,
+				FAE2F02927EC17D0000DC2DA /* TCP */,
+				FAE2F02827EC17C9000DC2DA /* Logging */,
+			);
+			name = CocoaHTTPServer;
+			sourceTree = "<group>";
+		};
+		FAE2F02827EC17C9000DC2DA /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F03F27EC1883000DC2DA /* Extensions */,
+				FAE2F03327EC187F000DC2DA /* DDAbstractDatabaseLogger.h */,
+				FAE2F03227EC187F000DC2DA /* DDAbstractDatabaseLogger.m */,
+				FAE2F03127EC187F000DC2DA /* DDASLLogger.h */,
+				FAE2F02F27EC187F000DC2DA /* DDASLLogger.m */,
+				FAE2F02D27EC187E000DC2DA /* DDFileLogger.h */,
+				FAE2F03427EC187F000DC2DA /* DDFileLogger.m */,
+				FAE2F02E27EC187E000DC2DA /* DDLog.h */,
+				FAE2F02B27EC187E000DC2DA /* DDLog.m */,
+				FAE2F02C27EC187E000DC2DA /* DDTTYLogger.h */,
+				FAE2F03027EC187F000DC2DA /* DDTTYLogger.m */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
+		FAE2F02927EC17D0000DC2DA /* TCP */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F05727EC18C4000DC2DA /* GCDAsyncSocket.h */,
+				FAE2F05627EC18C4000DC2DA /* GCDAsyncSocket.m */,
+			);
+			name = TCP;
+			sourceTree = "<group>";
+		};
+		FAE2F02A27EC17D6000DC2DA /* HTTP */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F08127EC191D000DC2DA /* Categories */,
+				FAE2F08027EC190F000DC2DA /* Responses */,
+				FAE2F06527EC1907000DC2DA /* HTTPAuthenticationRequest.h */,
+				FAE2F06427EC1907000DC2DA /* HTTPAuthenticationRequest.m */,
+				FAE2F06227EC1907000DC2DA /* HTTPConnection.h */,
+				FAE2F05C27EC1906000DC2DA /* HTTPConnection.m */,
+				FAE2F05F27EC1907000DC2DA /* HTTPLogging.h */,
+				FAE2F06327EC1907000DC2DA /* HTTPMessage.h */,
+				FAE2F06127EC1907000DC2DA /* HTTPMessage.m */,
+				FAE2F05D27EC1906000DC2DA /* HTTPResponse.h */,
+				FAE2F06727EC1907000DC2DA /* HTTPServer.h */,
+				FAE2F05E27EC1907000DC2DA /* HTTPServer.m */,
+				FAE2F06027EC1907000DC2DA /* WebSocket.h */,
+				FAE2F06627EC1907000DC2DA /* WebSocket.m */,
+			);
+			name = HTTP;
+			sourceTree = "<group>";
+		};
+		FAE2F03F27EC1883000DC2DA /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F04B27EC18AB000DC2DA /* ContextFilterLogFormatter.h */,
+				FAE2F04C27EC18AB000DC2DA /* ContextFilterLogFormatter.m */,
+				FAE2F04D27EC18AB000DC2DA /* DispatchQueueLogFormatter.h */,
+				FAE2F04A27EC18AB000DC2DA /* DispatchQueueLogFormatter.m */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		FAE2F08027EC190F000DC2DA /* Responses */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F08D27EC1935000DC2DA /* HTTPAsyncFileResponse.h */,
+				FAE2F08927EC1935000DC2DA /* HTTPAsyncFileResponse.m */,
+				FAE2F08427EC1935000DC2DA /* HTTPDataResponse.h */,
+				FAE2F08B27EC1935000DC2DA /* HTTPDataResponse.m */,
+				FAE2F08327EC1935000DC2DA /* HTTPDynamicFileResponse.h */,
+				FAE2F08227EC1935000DC2DA /* HTTPDynamicFileResponse.m */,
+				FAE2F08C27EC1935000DC2DA /* HTTPErrorResponse.h */,
+				FAE2F08827EC1935000DC2DA /* HTTPErrorResponse.m */,
+				FAE2F08527EC1935000DC2DA /* HTTPFileResponse.h */,
+				FAE2F08627EC1935000DC2DA /* HTTPFileResponse.m */,
+				FAE2F08727EC1935000DC2DA /* HTTPRedirectResponse.h */,
+				FAE2F08A27EC1935000DC2DA /* HTTPRedirectResponse.m */,
+			);
+			name = Responses;
+			sourceTree = "<group>";
+		};
+		FAE2F08127EC191D000DC2DA /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				FAE2F0A627EC1955000DC2DA /* DDData.h */,
+				FAE2F0AB27EC1955000DC2DA /* DDData.m */,
+				FAE2F0AA27EC1955000DC2DA /* DDNumber.h */,
+				FAE2F0A827EC1955000DC2DA /* DDNumber.m */,
+				FAE2F0A727EC1955000DC2DA /* DDRange.h */,
+				FAE2F0A927EC1955000DC2DA /* DDRange.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -819,38 +1083,59 @@
 			files = (
 				FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */,
 				FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */,
+				FAE2F07427EC1907000DC2DA /* HTTPConnection.h in Headers */,
 				FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */,
 				C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */,
+				FAE2F07E27EC1907000DC2DA /* HTTPServer.h in Headers */,
+				FAE2F05427EC18AB000DC2DA /* DispatchQueueLogFormatter.h in Headers */,
 				FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */,
 				FA20C2E7182B07D10036D304 /* MapViewController.h in Headers */,
 				FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */,
+				FAE2F03827EC187F000DC2DA /* DDLog.h in Headers */,
 				FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */,
 				FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */,
+				FAE2F09827EC1936000DC2DA /* HTTPRedirectResponse.h in Headers */,
 				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
 				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
 				FAA714911DDCA89E00E5E7AD /* RhoWebView.h in Headers */,
 				FA20C2CA182B07BA0036D304 /* Event.h in Headers */,
+				FAE2F06E27EC1907000DC2DA /* HTTPLogging.h in Headers */,
+				FAE2F03627EC187F000DC2DA /* DDTTYLogger.h in Headers */,
 				FA11F2521921224400FB1301 /* RhoExtManagerSingletone.h in Headers */,
+				FAE2F0A227EC1936000DC2DA /* HTTPErrorResponse.h in Headers */,
 				FA20C307182B08080036D304 /* NetworkStatusMonitor.h in Headers */,
 				FAA714981DDCAB6D00E5E7AD /* RhoWKWebView.h in Headers */,
+				FAE2F03D27EC187F000DC2DA /* DDAbstractDatabaseLogger.h in Headers */,
 				FA20C2ED182B07DA0036D304 /* NVViewController.h in Headers */,
+				FAE2F09027EC1935000DC2DA /* HTTPDynamicFileResponse.h in Headers */,
 				FA20C2EF182B07DA0036D304 /* NVDelegate.h in Headers */,
 				FA20C2F7182B07EB0036D304 /* RhoCryptImpl.h in Headers */,
 				FA20C309182B08080036D304 /* Reachability.h in Headers */,
+				FAE2F06A27EC1907000DC2DA /* HTTPResponse.h in Headers */,
+				FAE2F07627EC1907000DC2DA /* HTTPMessage.h in Headers */,
+				FAE2F0BA27EC20AE000DC2DA /* CCocoaServer.h in Headers */,
 				C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */,
+				FAE2F07A27EC1907000DC2DA /* HTTPAuthenticationRequest.h in Headers */,
 				FA20C30B182B08080036D304 /* RhoDelegate.h in Headers */,
 				FA20C2C0182B07AA0036D304 /* AppManagerI.h in Headers */,
 				FA20C2DF182B07CB0036D304 /* TabbedMainView.h in Headers */,
+				FAE2F0B427EC1955000DC2DA /* DDNumber.h in Headers */,
 				FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */,
+				FAE2F07027EC1907000DC2DA /* WebSocket.h in Headers */,
+				FAE2F03727EC187F000DC2DA /* DDFileLogger.h in Headers */,
 				FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */,
+				FAE2F05A27EC18C4000DC2DA /* GCDAsyncSocket.h in Headers */,
 				FA62ACFA23425F50005E552C /* CRhoWKURLProtocol.h in Headers */,
 				FA20C311182B08080036D304 /* SplashViewController.h in Headers */,
 				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
 				FA20C2C5182B07B60036D304 /* DateTime.h in Headers */,
+				FAE2F03B27EC187F000DC2DA /* DDASLLogger.h in Headers */,
+				FAE2F0AE27EC1955000DC2DA /* DDRange.h in Headers */,
 				FA20C2E9182B07D10036D304 /* MapAnnotation.h in Headers */,
 				FA89817818917EA900AF5E39 /* SignatureView.h in Headers */,
 				FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */,
+				FAE2F09227EC1935000DC2DA /* HTTPDataResponse.h in Headers */,
 				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
 				FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */,
 				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
@@ -860,6 +1145,7 @@
 				FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */,
 				FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */,
 				FA20C2F5182B07E20036D304 /* phonebook.h in Headers */,
+				FAE2F05027EC18AB000DC2DA /* ContextFilterLogFormatter.h in Headers */,
 				FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */,
 				FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */,
 				FA20C30D182B08080036D304 /* Rhodes.h in Headers */,
@@ -872,11 +1158,15 @@
 				FA20C2FB182B07EB0036D304 /* RhoClassFactory.h in Headers */,
 				FA20C2EB182B07D50036D304 /* NativeBar.h in Headers */,
 				FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */,
+				FAE2F0C227EC26D9000DC2DA /* RhoHTTPConnection.h in Headers */,
 				FA20C2BE182B07AA0036D304 /* AppManager.h in Headers */,
 				FAA714961DDCAB6D00E5E7AD /* RhoUIWebView.h in Headers */,
+				FAE2F09427EC1935000DC2DA /* HTTPFileResponse.h in Headers */,
 				FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */,
 				FA20C2D2182B07C50036D304 /* LogOptionsController.h in Headers */,
+				FAE2F0AC27EC1955000DC2DA /* DDData.h in Headers */,
 				FA20C2CF182B07C50036D304 /* InitMemoryInfoCollector.h in Headers */,
+				FAE2F0A427EC1936000DC2DA /* HTTPAsyncFileResponse.h in Headers */,
 				FA20C302182B07F20036D304 /* RingtoneManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -892,8 +1182,13 @@
 				FAE78BE522583F6C001A1150 /* SplitViewDelegate.h in Headers */,
 				FAE78BE622583F6C001A1150 /* MapViewController.h in Headers */,
 				FAE78BE722583F6C001A1150 /* PickImageDelegate.h in Headers */,
+				FAE2F07727EC1907000DC2DA /* HTTPMessage.h in Headers */,
+				FAE2F05527EC18AB000DC2DA /* DispatchQueueLogFormatter.h in Headers */,
+				FAE2F04227EC1897000DC2DA /* DDLog.h in Headers */,
+				FAE2F0C327EC26D9000DC2DA /* RhoHTTPConnection.h in Headers */,
 				FAE78BE822583F6C001A1150 /* LeftViewController.h in Headers */,
 				FAE78BE922583F6C001A1150 /* RhoNativeViewManagerOC.h in Headers */,
+				FAE2F05B27EC18C4000DC2DA /* GCDAsyncSocket.h in Headers */,
 				FAE78BEA22583F6C001A1150 /* RhoMapViewController.h in Headers */,
 				FAE78BEB22583F6C001A1150 /* RhoAlert.h in Headers */,
 				FAE78BEC22583F6C001A1150 /* sslimpl.h in Headers */,
@@ -903,11 +1198,18 @@
 				FAE78BF022583F6C001A1150 /* NetworkStatusMonitor.h in Headers */,
 				FAE78CE2225D0EC5001A1150 /* RhoMainViewStubImpl.h in Headers */,
 				FAE78BF122583F6C001A1150 /* RhoWKWebView.h in Headers */,
+				FAE2F0A327EC1936000DC2DA /* HTTPErrorResponse.h in Headers */,
+				FAE2F04727EC1897000DC2DA /* DDAbstractDatabaseLogger.h in Headers */,
+				FAE2F09527EC1935000DC2DA /* HTTPFileResponse.h in Headers */,
+				FAE2F07F27EC1907000DC2DA /* HTTPServer.h in Headers */,
 				FAE78BF222583F6C001A1150 /* NVViewController.h in Headers */,
+				FAE2F0A527EC1936000DC2DA /* HTTPAsyncFileResponse.h in Headers */,
 				FAE78BF322583F6C001A1150 /* NVDelegate.h in Headers */,
 				FAE78BF422583F6C001A1150 /* RhoCryptImpl.h in Headers */,
 				FAE78BF522583F6C001A1150 /* Reachability.h in Headers */,
+				FAE2F04927EC1897000DC2DA /* DDTTYLogger.h in Headers */,
 				FAE78BF622583F6C001A1150 /* IAppMessageReceiver.h in Headers */,
+				FAE2F09927EC1936000DC2DA /* HTTPRedirectResponse.h in Headers */,
 				FAE78BF722583F6C001A1150 /* RhoDelegate.h in Headers */,
 				FAE78BF822583F6C001A1150 /* AppManagerI.h in Headers */,
 				FAE78BF922583F6C001A1150 /* TabbedMainView.h in Headers */,
@@ -919,7 +1221,9 @@
 				FAE78BFE22583F6C001A1150 /* DateTime.h in Headers */,
 				FAE78BFF22583F6C001A1150 /* MapAnnotation.h in Headers */,
 				FAE78C0022583F6C001A1150 /* SignatureView.h in Headers */,
+				FAE2F09127EC1935000DC2DA /* HTTPDynamicFileResponse.h in Headers */,
 				FAE78C0122583F6C001A1150 /* MapViewManager.h in Headers */,
+				FAE2F0BB27EC20AE000DC2DA /* CCocoaServer.h in Headers */,
 				FAE78C0222583F6C001A1150 /* SplittedMainView.h in Headers */,
 				FAE78C0322583F6C001A1150 /* IRhoExtension.h in Headers */,
 				FAE78C0422583F6C001A1150 /* GoogleGeocoder.h in Headers */,
@@ -928,16 +1232,28 @@
 				FAE78C0722583F6C001A1150 /* SignatureDelegate.h in Headers */,
 				FAE78C0822583F6C001A1150 /* LogViewController.h in Headers */,
 				FAE78C0922583F6C001A1150 /* NavBar.h in Headers */,
+				FAE2F0AF27EC1955000DC2DA /* DDRange.h in Headers */,
 				FAE78C0A22583F6C001A1150 /* phonebook.h in Headers */,
 				FAE78C0B22583F6C001A1150 /* IRhoExtManager.h in Headers */,
 				FAE78C0C22583F6C001A1150 /* SignatureParam.h in Headers */,
 				FAE78C0D22583F6C001A1150 /* Rhodes.h in Headers */,
+				FAE2F05127EC18AB000DC2DA /* ContextFilterLogFormatter.h in Headers */,
+				FAE2F07B27EC1907000DC2DA /* HTTPAuthenticationRequest.h in Headers */,
+				FAE2F06B27EC1907000DC2DA /* HTTPResponse.h in Headers */,
 				FAE78C0E22583F6C001A1150 /* RhoExtManagerImpl.h in Headers */,
 				FAE78C0F22583F6C001A1150 /* ParamsWrapper.h in Headers */,
 				FAE78C1022583F6C001A1150 /* SimpleMainView.h in Headers */,
+				FAE2F09327EC1935000DC2DA /* HTTPDataResponse.h in Headers */,
 				FAE78C1122583F6C001A1150 /* RhoMainView.h in Headers */,
+				FAE2F06F27EC1907000DC2DA /* HTTPLogging.h in Headers */,
+				FAE2F0AD27EC1955000DC2DA /* DDData.h in Headers */,
 				FAE78C1222583F6C001A1150 /* AppLoader.h in Headers */,
+				FAE2F07127EC1907000DC2DA /* WebSocket.h in Headers */,
 				FAE78C1322583F6C001A1150 /* DateTimePickerDelegate.h in Headers */,
+				FAE2F07527EC1907000DC2DA /* HTTPConnection.h in Headers */,
+				FAE2F04427EC1897000DC2DA /* DDFileLogger.h in Headers */,
+				FAE2F0B527EC1955000DC2DA /* DDNumber.h in Headers */,
+				FAE2F04127EC1897000DC2DA /* DDASLLogger.h in Headers */,
 				FAE78C1422583F6C001A1150 /* RhoClassFactory.h in Headers */,
 				FAE78C1522583F6C001A1150 /* NativeBar.h in Headers */,
 				FAE78C1622583F6C001A1150 /* IPushNotificationsReceiver.h in Headers */,
@@ -1049,16 +1365,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
+				FAE2F04E27EC18AB000DC2DA /* DispatchQueueLogFormatter.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
 				FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.mm in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
+				FAE2F09C27EC1936000DC2DA /* HTTPAsyncFileResponse.m in Sources */,
 				FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
+				FAE2F07C27EC1907000DC2DA /* WebSocket.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
+				FAE2F08E27EC1935000DC2DA /* HTTPDynamicFileResponse.m in Sources */,
+				FAE2F09627EC1936000DC2DA /* HTTPFileResponse.m in Sources */,
+				FAE2F03527EC187F000DC2DA /* DDLog.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
 				C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */,
 				FA20C308182B08080036D304 /* NetworkStatusMonitor.mm in Sources */,
 				FA20C2DE182B07CB0036D304 /* SimpleMainView.m in Sources */,
+				FAE2F03A27EC187F000DC2DA /* DDTTYLogger.m in Sources */,
 				FA20C2F0182B07DA0036D304 /* NVDelegate.m in Sources */,
 				FA20C305182B08000036D304 /* ParamsWrapper.m in Sources */,
 				FA20C30A182B08080036D304 /* Reachability.m in Sources */,
@@ -1074,35 +1397,52 @@
 				FA62ACF823425F4A005E552C /* CRhoWKURLProtocol.m in Sources */,
 				FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */,
 				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
+				FAE2F0B227EC1955000DC2DA /* DDRange.m in Sources */,
 				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
 				FA20C2C6182B07B60036D304 /* DateTime.m in Sources */,
 				FAA714971DDCAB6D00E5E7AD /* RhoUIWebView.m in Sources */,
 				FA20C2CD182B07BE0036D304 /* LocationController.m in Sources */,
 				FA20C2EA182B07D10036D304 /* MapAnnotation.m in Sources */,
+				FAE2F09E27EC1936000DC2DA /* HTTPRedirectResponse.m in Sources */,
+				FAE2F09A27EC1936000DC2DA /* HTTPErrorResponse.m in Sources */,
 				FA20C2E4182B07D10036D304 /* MapViewManager.m in Sources */,
+				FAE2F03C27EC187F000DC2DA /* DDAbstractDatabaseLogger.m in Sources */,
 				FA20C2D5182B07CB0036D304 /* LeftViewController.m in Sources */,
 				FA20C2F2182B07DA0036D304 /* RhoNativeViewManager.mm in Sources */,
+				FAE2F0C027EC26D9000DC2DA /* RhoHTTPConnection.m in Sources */,
 				FA20C2F1182B07DA0036D304 /* NVViewController.m in Sources */,
+				FAE2F06827EC1907000DC2DA /* HTTPConnection.m in Sources */,
 				FA20C2E2182B07D10036D304 /* RhoMapViewController.m in Sources */,
 				FA89817B18917EB200AF5E39 /* SignatureDelegate.m in Sources */,
+				FAE2F06C27EC1907000DC2DA /* HTTPServer.m in Sources */,
+				FAE2F07227EC1907000DC2DA /* HTTPMessage.m in Sources */,
 				FA20C2F4182B07DE0036D304 /* NavBar.m in Sources */,
+				FAE2F07827EC1907000DC2DA /* HTTPAuthenticationRequest.m in Sources */,
+				FAE2F0B627EC1955000DC2DA /* DDData.m in Sources */,
+				FAE2F0BC27EC20AE000DC2DA /* CCocoaServer.m in Sources */,
+				FAE2F05827EC18C4000DC2DA /* GCDAsyncSocket.m in Sources */,
 				FA20C2BD182B07AA0036D304 /* AppLoader.m in Sources */,
 				FA20C306182B08040036D304 /* WebView.m in Sources */,
 				FA20C2CB182B07BA0036D304 /* Event.m in Sources */,
 				FA20C310182B08080036D304 /* RhoViewController.m in Sources */,
 				FA20C2E6182B07D10036D304 /* GoogleGeocoder.m in Sources */,
+				FAE2F03927EC187F000DC2DA /* DDASLLogger.m in Sources */,
+				FAE2F05227EC18AB000DC2DA /* ContextFilterLogFormatter.m in Sources */,
 				FA20C301182B07EE0036D304 /* NetRequestImpl.m in Sources */,
 				FA20C312182B08080036D304 /* SplashViewController.m in Sources */,
 				FA20C2BF182B07AA0036D304 /* AppManager.m in Sources */,
 				FA20C2D3182B07C50036D304 /* LogOptionsController.m in Sources */,
 				FA20C2FA182B07EB0036D304 /* RhoClassFactory.cpp in Sources */,
+				FAE2F03E27EC187F000DC2DA /* DDFileLogger.m in Sources */,
 				FA20C30E182B08080036D304 /* Rhodes.m in Sources */,
 				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
+				FAE2F0A027EC1936000DC2DA /* HTTPDataResponse.m in Sources */,
 				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
 				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,
 				C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */,
 				FA20C2BB182B07A50036D304 /* RhoAlert.m in Sources */,
 				FA20C2B9182B07A10036D304 /* CRhoURLProtocol.m in Sources */,
+				FAE2F0B027EC1955000DC2DA /* DDNumber.m in Sources */,
 				FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */,
 				FA20C2D9182B07CB0036D304 /* SplittedMainView.m in Sources */,
 				FA20C2E8182B07D10036D304 /* MapViewController.m in Sources */,
@@ -1114,6 +1454,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAE78C1E22583F6C001A1150 /* DateTimePickerViewController.m in Sources */,
+				FAE2F0B127EC1955000DC2DA /* DDNumber.m in Sources */,
 				FAE78C1F22583F6C001A1150 /* RhoExtManagerSingletone.m in Sources */,
 				FAE78C2022583F6C001A1150 /* RhoWKWebView.mm in Sources */,
 				FAE78C2122583F6C001A1150 /* RhoExtManagerImpl.m in Sources */,
@@ -1122,42 +1463,64 @@
 				FAE78C2422583F6C001A1150 /* NativeBar.m in Sources */,
 				FAE78C2522583F6C001A1150 /* InitMemoryInfoCollector.mm in Sources */,
 				FAE78C2622583F6C001A1150 /* RunnableWrapper.mm in Sources */,
+				FAE2F0BD27EC20AE000DC2DA /* CCocoaServer.m in Sources */,
 				FAE78C2722583F6C001A1150 /* NetworkStatusMonitor.mm in Sources */,
 				FAE78C2822583F6C001A1150 /* SimpleMainView.m in Sources */,
+				FAE2F09D27EC1936000DC2DA /* HTTPAsyncFileResponse.m in Sources */,
 				FAE78CE3225D0EC5001A1150 /* RhoMainViewStubImpl.m in Sources */,
+				FAE2F04627EC1897000DC2DA /* DDTTYLogger.m in Sources */,
 				FAE78C2922583F6C001A1150 /* NVDelegate.m in Sources */,
 				FAE78C2A22583F6C001A1150 /* ParamsWrapper.m in Sources */,
 				FAE78C2B22583F6C001A1150 /* Reachability.m in Sources */,
 				FAE78C2C22583F6C001A1150 /* TabbedMainView.m in Sources */,
+				FAE2F05327EC18AB000DC2DA /* ContextFilterLogFormatter.m in Sources */,
+				FAE2F05927EC18C4000DC2DA /* GCDAsyncSocket.m in Sources */,
 				FAE78C2D22583F6C001A1150 /* RhoDelegate.m in Sources */,
 				FAE78C2E22583F6C001A1150 /* RhoCryptImpl.mm in Sources */,
+				FAE2F06D27EC1907000DC2DA /* HTTPServer.m in Sources */,
+				FAE2F04527EC1897000DC2DA /* DDLog.m in Sources */,
+				FAE2F0B327EC1955000DC2DA /* DDRange.m in Sources */,
+				FAE2F07927EC1907000DC2DA /* HTTPAuthenticationRequest.m in Sources */,
 				FAE78C2F22583F6C001A1150 /* DateTimePicker.m in Sources */,
 				FAE78C3022583F6C001A1150 /* RhoWebViewFabrique.m in Sources */,
 				FA62ACF923425F4D005E552C /* CRhoWKURLProtocol.m in Sources */,
 				FAE78C3122583F6C001A1150 /* SplashScreenImpl.cpp in Sources */,
+				FAE2F07327EC1907000DC2DA /* HTTPMessage.m in Sources */,
 				FAE78C3222583F6C001A1150 /* SignatureView.m in Sources */,
 				FAE78C3322583F6C001A1150 /* RightViewController.m in Sources */,
 				FAE78C3422583F6C001A1150 /* SignatureViewController.m in Sources */,
 				FAE78C3522583F6C001A1150 /* sslimpl.cpp in Sources */,
 				FAE78C3622583F6C001A1150 /* phonebook.m in Sources */,
 				FAE78C3722583F6C001A1150 /* LogViewController.m in Sources */,
+				FAE2F04F27EC18AB000DC2DA /* DispatchQueueLogFormatter.m in Sources */,
 				FAE78C3822583F6C001A1150 /* DateTime.m in Sources */,
 				FAE78C3922583F6C001A1150 /* RhoUIWebView.m in Sources */,
+				FAE2F06927EC1907000DC2DA /* HTTPConnection.m in Sources */,
+				FAE2F09F27EC1936000DC2DA /* HTTPRedirectResponse.m in Sources */,
 				FAE78C3A22583F6C001A1150 /* LocationController.m in Sources */,
+				FAE2F09B27EC1936000DC2DA /* HTTPErrorResponse.m in Sources */,
 				FAE78C3B22583F6C001A1150 /* MapAnnotation.m in Sources */,
 				FAE78C3C22583F6C001A1150 /* MapViewManager.m in Sources */,
+				FAE2F0C127EC26D9000DC2DA /* RhoHTTPConnection.m in Sources */,
 				FAE78C3D22583F6C001A1150 /* LeftViewController.m in Sources */,
 				FAE78C3E22583F6C001A1150 /* RhoNativeViewManager.mm in Sources */,
+				FAE2F09727EC1936000DC2DA /* HTTPFileResponse.m in Sources */,
 				FAE78C3F22583F6C001A1150 /* NVViewController.m in Sources */,
+				FAE2F04827EC1897000DC2DA /* DDAbstractDatabaseLogger.m in Sources */,
 				FAE78C4022583F6C001A1150 /* RhoMapViewController.m in Sources */,
 				FAE78C4122583F6C001A1150 /* SignatureDelegate.m in Sources */,
 				FAE78C4222583F6C001A1150 /* NavBar.m in Sources */,
 				FAE78C4322583F6C001A1150 /* AppLoader.m in Sources */,
 				FAE78C4422583F6C001A1150 /* WebView.m in Sources */,
+				FAE2F0B727EC1955000DC2DA /* DDData.m in Sources */,
 				FAE78C4522583F6C001A1150 /* Event.m in Sources */,
 				FAE78C4622583F6C001A1150 /* RhoViewController.m in Sources */,
+				FAE2F07D27EC1907000DC2DA /* WebSocket.m in Sources */,
 				FAE78C4722583F6C001A1150 /* GoogleGeocoder.m in Sources */,
+				FAE2F04027EC1897000DC2DA /* DDASLLogger.m in Sources */,
 				FAE78C4822583F6C001A1150 /* NetRequestImpl.m in Sources */,
+				FAE2F04327EC1897000DC2DA /* DDFileLogger.m in Sources */,
+				FAE2F0A127EC1936000DC2DA /* HTTPDataResponse.m in Sources */,
 				FAE78C4922583F6C001A1150 /* SplashViewController.m in Sources */,
 				FAE78C4A22583F6C001A1150 /* AppManager.m in Sources */,
 				FAE78C4B22583F6C001A1150 /* LogOptionsController.m in Sources */,
@@ -1168,6 +1531,7 @@
 				FAE78C5022583F6C001A1150 /* RhoFileImpl.m in Sources */,
 				FAE78C5122583F6C001A1150 /* IPhoneNetRequest.mm in Sources */,
 				FAE78C5222583F6C001A1150 /* RhoAlert.m in Sources */,
+				FAE2F08F27EC1935000DC2DA /* HTTPDynamicFileResponse.m in Sources */,
 				FAE78C5322583F6C001A1150 /* CRhoURLProtocol.m in Sources */,
 				FAE78C5422583F6C001A1150 /* RhoThreadImpl.m in Sources */,
 				FAE78C5522583F6C001A1150 /* SplittedMainView.m in Sources */,
