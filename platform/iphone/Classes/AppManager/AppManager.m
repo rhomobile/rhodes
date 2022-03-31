@@ -1523,7 +1523,9 @@ void rho_title_change(const int tabIndex, const char* strTitle) {
 
 // this method called from logging system - loggins system add logmessage to log and also copy it to iOS console by NSLog()
 void rho_ios_log_console_output(const char* message) {
-    NSLog(@"%@", [NSString stringWithUTF8String:message]);
+    NSString* str = [[NSString  alloc] initWithUTF8String:message];
+    NSLog(@"%@", str);
+    [str release];
 }
 
 void rho_startup_logging(const char* message) {

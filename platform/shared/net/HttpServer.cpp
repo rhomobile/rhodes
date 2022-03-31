@@ -96,12 +96,16 @@ typedef unsigned __int16 uint16_t;
 #endif
 
 
-#ifdef OS_MACOSX
-extern "C" {
-void rho_cocoa_server_stop();
-}
-#endif
 
+#ifdef OS_MACOSX
+#ifndef RHODES_EMULATOR
+
+extern "C" {
+    void rho_cocoa_server_stop();
+}
+
+#endif
+#endif
 
 
 #undef DEFAULT_LOGCATEGORY
@@ -522,7 +526,9 @@ void CHttpServer::stop()
 {
     
 #ifdef OS_MACOSX
+#ifndef RHODES_EMULATOR
     rho_cocoa_server_stop();
+#endif
 #endif
     
     // WARNING!!! It is not enough to just close listener on Android

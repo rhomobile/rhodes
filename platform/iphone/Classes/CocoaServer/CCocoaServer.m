@@ -30,7 +30,7 @@ static CCocoaServer* ourSharedInstance = nil;
 }
 
 -(id)init {
-    [super init];
+    self = [super init];
     httpServer = nil;
     return self;
 }

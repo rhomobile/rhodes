@@ -53,10 +53,38 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 }
 */
 
+- (void)startConnection
+{
+    mBodyLen = 0;
+    mBody = nil;
+    mResponseData = nil;
+    [super startConnection];
+}
+
+- (void)prepareForBodyWithSize:(UInt64)contentLength {
+    if (mBody != nil) {
+        //[mBody release];
+        mBody = nil;
+    }
+    mBodyLen = contentLength;
+    mBody = [[NSMutableData alloc] initWithCapacity:contentLength];
+}
+
 - (void)processBodyData:(NSData *)postDataChunk {
     // only up to 256 Kb !!! - if larger we must accumulate data !
-    [request setBody:postDataChunk];
+    if (mBody == nil) {
+        mBody = [[NSMutableData alloc] initWithCapacity:(128*1024)];
+    }
+    [mBody appendData:postDataChunk];
 }
+
+- (void)finishBody
+{
+    if (mBody != nil) {
+        [request setBody:mBody];
+    }
+}
+
 
 - (void)replyToHTTPRequest {
     
@@ -98,6 +126,14 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, bodylen, &len);
     
     rho_http_free_headers_list(cHeaders);
+    if (mBody != nil) {
+        //int c = [mBody retainCount];
+        //[mBody release];
+        mBody = nil;
+        mBodyLen = 0;
+        //[request setBody:nil];
+    }
+
     
     //CRhoURLResponse* resp = nil;
     
@@ -134,16 +170,26 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
       free(parser);
        */
         
-        NSData* responseData = [[NSData dataWithBytes:response length:len] copy];
+        //NSMutableData* responseData = [NSMutableData dataWithCapacity:len];
+        //[responseData appendBytes:response length:len];
+        if (mResponseData != nil) {
+            //[mResponseData release];
+            mResponseData = nil;
+        }
+        mResponseData = [[NSData alloc] initWithBytes:response length:len];
+        //[(NSMutableData*)mResponseData appendBytes:response length:len];
         rho_http_free_response(response);
+
         
-        char a[1];
-        a[0] = 0;
-        NSData* zz = [NSData dataWithBytes:a length:1];
+        //char a[1];
+        //a[0] = 0;
+        //NSData* zz = [NSData dataWithBytes:a length:1];
 
-        [asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_BODY tag:HTTP_FINAL_RESPONSE];
+        [asyncSocket writeData:mResponseData withTimeout:TIMEOUT_WRITE_BODY tag:HTTP_FINAL_RESPONSE];
 
-        [self finishResponse];
+        //[mResponseData release];
+
+        //[self finishResponse];
     }
     else {
         [self handleResourceNotFound];
@@ -153,5 +199,28 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     //[super replyToHTTPRequest];
 }
 
+
+- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
+{
+    // Inform the http response that we're done
+    if ([httpResponse respondsToSelector:@selector(connectionDidClose)])
+    {
+        [httpResponse connectionDidClose];
+    }
+    
+    if (tag == HTTP_FINAL_RESPONSE)
+    {
+        // Cleanup after the last request
+        [self finishResponse];
+        
+        // Terminate the connection
+        [asyncSocket disconnect];
+        
+        mResponseData = nil;
+         
+        // Explictly return to ensure we don't do anything after the socket disconnects
+        return;
+    }
+}
 
 @end

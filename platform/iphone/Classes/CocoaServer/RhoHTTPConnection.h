@@ -5,6 +5,9 @@
 
 @interface RhoHTTPConnection : HTTPConnection
 {
+    UInt64         mBodyLen;
+    NSMutableData* mBody;
+    NSData* mResponseData;
 }
 
 - (void)replyToHTTPRequest;

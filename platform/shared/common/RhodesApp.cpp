@@ -74,8 +74,10 @@ void rho_file_set_fs_mode(int mode);
 #endif
 
 #ifdef OS_MACOSX
+#ifndef RHODES_EMULATOR
 void rho_cocoa_server_init();
 void rho_cocoa_server_start();
+#endif
 #endif
 
 }
@@ -582,7 +584,9 @@ void CRhodesApp::run()
 #endif
 
     if ((shouldUseCocoaServer) && (!shouldRunDirectQueue)) {
+#ifndef RHODES_EMULATOR
         rho_cocoa_server_init();
+#endif
     }
 
 #endif
@@ -595,7 +599,9 @@ void CRhodesApp::run()
       if ( shouldRunDirectQueue || shouldUseCocoaServer)
       {
           if ((shouldUseCocoaServer) && (!shouldRunDirectQueue)) {
+#ifndef RHODES_EMULATOR
               rho_cocoa_server_start();
+#endif
           }
         directQueue.run();
       }
