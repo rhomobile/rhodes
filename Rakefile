@@ -4296,9 +4296,9 @@ namespace "run" do
         end
 
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-          path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+          path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.exe" )
         else
-          path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+          path = File.join( $startdir, "platform/win32/RhoSimulator/RhoSimulator.exe" )
         end
 
         oldDir = File.join( $startdir, "platform/win32/RhoSimulator" )
@@ -4307,7 +4307,7 @@ namespace "run" do
         qtdir = ENV['QTDIR']
         args << "-remote-debugging-port=9090"
 
-        cmd = File.join(newDir, 'rhosimulator.exe')
+        cmd = File.join(newDir, 'RhoSimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
 
         path = File.join( $startdir, "platform/osx/bin/RhoSimulator" )
