@@ -3985,11 +3985,11 @@ namespace "build" do
 
     rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
     argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
-      '/p:VisualStudioVersion=14.0', '/t:Clean']
+      '/p:VisualStudioVersion=14.2', '/t:Clean']
     Jake.run(msbuild, argsClean)
 
     argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
-      '/p:VisualStudioVersion=14.0', '/t:Build']
+      '/p:VisualStudioVersion=14.2', '/t:Build']
     Jake.run(msbuild, argsBuild)
     puts "RhoRuby rebuilded"
   end

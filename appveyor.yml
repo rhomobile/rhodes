@@ -117,8 +117,8 @@ environment:
       target_artefact_file_name: kitchensinkRuby-setup.exe
 
     - win32_rho_ruby:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13\msvc2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      QTDIR: C:\Qt\5.15\msvc2019
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
