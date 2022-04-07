@@ -2437,7 +2437,7 @@ static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 static void
 set_pioinfo_extra(void)
 {
-#if RUBY_MSVCRT_VERSION >= 140
+#if RUBY_MSVCRT_VERSION >= 140 
 # define FUNCTION_RET 0xc3 /* ret */
 
 //RHO start : trying to get _asatty address from both debug and release crt dlls
@@ -2477,18 +2477,25 @@ set_pioinfo_extra(void)
 //   vvv
 
 #define FUNCTION_BEFORE_RET_MARK "\x5d"
+#define FUNCTION_BEFORE_RET_MARK_2 "\xc9"
 
 #  define FUNCTION_SKIP_BYTES 0
     /* mov eax,dword ptr [eax*4+100EB430h] */
 #  define PIOINFO_MARK "\x8B\x04\x85"
 # endif
     if (p) {
-        for (pend += 10; pend < p + 300; pend++) {
+        for (pend += 10; pend < p + 500; pend++) {
 
 			int beforeRetFound = (memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0);
 			char* pret = (pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES);
 			int retFound = ( (*(pret) & FUNCTION_RET ) == FUNCTION_RET);
-			
+
+#ifdef FUNCTION_BEFORE_RET_MARK_2
+			if (!(beforeRetFound && retFound)) {
+				beforeRetFound = (memcmp(pend, FUNCTION_BEFORE_RET_MARK_2, sizeof(FUNCTION_BEFORE_RET_MARK_2) - 1) == 0);
+				pret = (pend + (sizeof(FUNCTION_BEFORE_RET_MARK_2) - 1) + FUNCTION_SKIP_BYTES);
+			}
+#endif			
             // find end of function
 			if ( beforeRetFound && retFound ) {
 			/*

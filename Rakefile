@@ -3985,11 +3985,11 @@ namespace "build" do
 
     rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
     argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
-      '/p:VisualStudioVersion=14.0', '/t:Clean']
+      '/p:VisualStudioVersion=14.2', '/t:Clean']
     Jake.run(msbuild, argsClean)
 
     argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
-      '/p:VisualStudioVersion=14.0', '/t:Build']
+      '/p:VisualStudioVersion=14.2', '/t:Build']
     Jake.run(msbuild, argsBuild)
     puts "RhoRuby rebuilded"
   end
@@ -4296,9 +4296,9 @@ namespace "run" do
         end
 
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-          path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+          path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.exe" )
         else
-          path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+          path = File.join( $startdir, "platform/win32/RhoSimulator/RhoSimulator.exe" )
         end
 
         oldDir = File.join( $startdir, "platform/win32/RhoSimulator" )
@@ -4307,7 +4307,7 @@ namespace "run" do
         qtdir = ENV['QTDIR']
         args << "-remote-debugging-port=9090"
 
-        cmd = File.join(newDir, 'rhosimulator.exe')
+        cmd = File.join(newDir, 'RhoSimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
 
         path = File.join( $startdir, "platform/osx/bin/RhoSimulator" )
