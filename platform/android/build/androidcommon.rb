@@ -65,7 +65,7 @@ def setup_ndk(ndkpath,apilevel,abi)
 
   $ndkgccver = ndk.gccver
   $ndk_rev_major = ndk.rev_major
-  $target_toolchain = ndk.toolchain
+  $target_toolchain = ndk.toolchain_name
   $androidndkpath = ndkpath unless $androidndkpath
 
   $sysincludes = ndk.sysincludes apilevel, abi
@@ -367,7 +367,10 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   if($ndk_rev_major >= 18)
     args << "-v"  
     args << "--target=#{$target_toolchain}#{$apilevel}"
-    args << "-fuse-ld=gold"
+
+    if($ndk_rev_major < 22)
+      args << "-fuse-ld=gold"
+    end
   end
 
   localabi = "unknown"
@@ -399,13 +402,21 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-z,defs"
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
-  args << "--sysroot"
-  args << $link_sysroot
+
+  
+  if $ndk_rev_major < 22 #sysroot is auto detected by target when using NDK >= 22
+    args << "--sysroot"
+    args << $link_sysroot
+  end
+  
   args << "-o"
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  if($ndk_rev_major >= 18)
+
+  if $ndk_rev_major>=22
+    #do nothing. clang will detect all needed linker flags by target setting
+  elsif($ndk_rev_major >= 18)
     args << "-L#{$link_sysroot}"
     args << "-Wl,-rpath-link=#{$link_sysroot}"
     args << "-L#{$link_sysroot_ext}"

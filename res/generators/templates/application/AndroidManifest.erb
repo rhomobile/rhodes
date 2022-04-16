@@ -47,6 +47,7 @@
               android:launchMode='singleTask'
               android:configChanges='orientation|screenSize|fontScale|smallestScreenSize|keyboard|keyboardHidden'
               android:screenOrientation='<%= @screenOrientation %>'
+              android:exported='true'
               <% if @hardwareAcceleration %>
               android:hardwareAccelerated='true'
               <% end %> >
@@ -68,7 +69,7 @@
       <grant-uri-permission android:pathPrefix='/rhodata/apps/'/>
     </provider>
 
-	<receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false">
+	<receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false" android:exported='true'>
      <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />
      </intent-filter>

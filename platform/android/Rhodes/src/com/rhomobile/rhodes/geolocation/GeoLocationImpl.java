@@ -87,13 +87,17 @@ public class GeoLocationImpl {
 				}
 			}
 			if(this.provider != null) {
-				if (exMode) {
-					this.manager.requestLocationUpdates(providerName, minTime, (float)minDistance, this);
+				try {
+					if (exMode) {
+						this.manager.requestLocationUpdates(providerName, minTime, (float)minDistance, this);
+					}
+					else {
+						this.manager.requestLocationUpdates(providerName, UPDATE_PERIOD_IN_MILLISECONDS, 0, this, Looper.getMainLooper());
+					}
+					available = this.manager.isProviderEnabled(this.providerName);
+				} catch ( SecurityException e ) {
+					Logger.E(TAG,e);					
 				}
-				else {
-					this.manager.requestLocationUpdates(providerName, UPDATE_PERIOD_IN_MILLISECONDS, 0, this, Looper.getMainLooper());
-				}
-				available = this.manager.isProviderEnabled(this.providerName);
 			}
 			return available;
 		}
@@ -102,7 +106,7 @@ public class GeoLocationImpl {
 			available = false;
 			if (this.provider != null && this.manager != null) {
 				Logger.T(TAG, "Unregistering location listener for '" + this.providerName + "'.");
-				this.manager.removeUpdates(this);
+				this.manager.removeUpdates(this);				
 				this.provider = null;
 				return true;
 			}
@@ -112,8 +116,13 @@ public class GeoLocationImpl {
 		
 		void requestLastLocation() {
 			if (this.provider != null && this.manager != null) {
-				Location location = this.manager.getLastKnownLocation(this.providerName);
-				onLocationChanged(location);
+				try
+				{				
+					Location location = this.manager.getLastKnownLocation(this.providerName);
+					onLocationChanged(location);
+				} catch ( SecurityException e ) {
+					Logger.E(TAG,e);	
+				}				
 			}
 		}
 		

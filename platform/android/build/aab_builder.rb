@@ -59,7 +59,7 @@ class AabBuilder
 
         @base_zip = File.join( @intermediate, 'base.zip' )
         Zip::File.open( @base_zip, Zip::File::CREATE) { |z|
-            Dir[File.join(@prep_bundle_dir,'**','*')].filter{|f| File.file? f}.each{ |f|
+            Dir[File.join(@prep_bundle_dir,'**','*')].select{|f| File.file? f}.each{ |f|
                 p = Pathname.new(f)
                 z.add( p.relative_path_from(root) ,f)
             }
@@ -101,7 +101,7 @@ class AabBuilder
             zip_file.extract('AndroidManifest.xml', File.join( @prep_bundle_dir,'manifest', 'AndroidManifest.xml') )
             zip_file.extract('resources.pb', File.join( @prep_bundle_dir,'resources.pb') )
 
-            zip_file.filter {|f| f.name.start_with?('res/') }.each { |f|            
+            zip_file.select {|f| f.name.start_with?('res/') }.each { |f|            
                 fpath = File.join( @prep_bundle_dir,f.name)
                 dir = File.dirname(fpath)
                 mkdir_p dir unless File.directory? dir
@@ -131,7 +131,7 @@ class AabBuilder
         mkdir_p target
 
         Dir[File.join(dir,'**','*')]
-            .filter { |f| File.file?(f) }
+            .select { |f| File.file?(f) }
                 .map { |f| PathToWindowsWay(f) }
                     .each { |f|
                         Jake.run( @aapt2, ['compile', f, '-o', target ] )    

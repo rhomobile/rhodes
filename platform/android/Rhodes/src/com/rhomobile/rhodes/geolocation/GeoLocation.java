@@ -166,9 +166,9 @@ public class GeoLocation {
 		return false;
 	}
 	
-	public static double getLatitude() {
-		onUpdateLocation();
+	public static double getLatitude() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getLatitude");
 			return ourLatitude;
@@ -179,9 +179,9 @@ public class GeoLocation {
 		return 0.0;
 	}
 	
-	public static double getSpeed() {
-		onUpdateLocation();
+	public static double getSpeed() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getSpeed");
 			return ourSpeed;
@@ -192,9 +192,9 @@ public class GeoLocation {
 		return 0.0;
 	}
 	
-	public static int getSatellities() {
-		onUpdateLocation();
+	public static int getSatellities() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getSatellities");
 			return ourSatellities;
@@ -206,9 +206,9 @@ public class GeoLocation {
 	}
 	
 
-	public static double getLongitude() {
-		onUpdateLocation();
+	public static double getLongitude() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getLongitude");
 			return ourLongitude;
@@ -219,9 +219,9 @@ public class GeoLocation {
 		return 0.0;
 	}
 	
-	public static double getAltitude() {
-		onUpdateLocation();
+	public static double getAltitude() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getAltitude");
 			return ourAltitude;
@@ -232,9 +232,9 @@ public class GeoLocation {
 		return 0.0;
 	}
 	
-	public static float getAccuracy() {
-		onUpdateLocation();
+	public static float getAccuracy() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "getAccuracy");
 			return (float)ourAccuracy;
@@ -245,9 +245,9 @@ public class GeoLocation {
 		return 0;
 	}
 
-	public static boolean isKnownPosition() {
-		onUpdateLocation();
+	public static boolean isKnownPosition() {		
 		try {
+			onUpdateLocation();
 			checkState();
 			Logger.T(TAG, "isKnownPosition");
 			return ourIsKnownPosition;
