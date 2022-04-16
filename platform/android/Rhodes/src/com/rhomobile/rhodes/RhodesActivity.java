@@ -636,7 +636,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		mHandler.postDelayed(r, delay);
 	}
 	
-	public SplashScreen getSplashScreen() {
+	public SplashScreen getRhodesSplashScreen() {
 		return mSplashScreen;
 	}
 

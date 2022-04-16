@@ -34,6 +34,10 @@ require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
 require File.dirname(__FILE__) + '/android_debug.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
+
+require_relative 'dex_builder'
+require_relative 'build_tools_finder'
+
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
@@ -58,7 +62,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
 ANDROID_MIN_SDK_LEVEL = 21 #21 is the minimum API that supports arm64
-ANDROID_SDK_LEVEL = 29
+ANDROID_SDK_LEVEL = 31
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -748,7 +752,8 @@ namespace "config" do
     $srcdir = File.join $tmpdir,'assets' #File.join($bindir, "RhoBundle")
 
     $rhomanifesterb = File.join($app_path, $app_config['android']['manifest_template']) unless $app_config["android"].nil? || $app_config['android']['manifest_template'].nil?
-    $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb" if $rhomanifesterb.nil?
+    #$rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb" if $rhomanifesterb.nil?
+    $rhomanifesterb = File.join $startdir, 'res', 'generators', 'templates', 'application', 'AndroidManifest.erb' if $rhomanifesterb.nil?
 
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
@@ -787,7 +792,7 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
-    build_tools_path = nil
+    build_tools_ver = nil
 
     if !$skip_checking_Android_SDK
 
@@ -795,58 +800,21 @@ namespace "config" do
       AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
       AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
 
-      if File.exist?(File.join($androidsdkpath, "build-tools"))
+      toolsver = $app_config['android']['buildtools'] if ($app_config['android'] and $app_config['android']['buildtools'])
+      build_tools_path = AndroidTools::findBuildToolsPath(toolsver,$androidsdkpath,$androidplatform)
 
+      $logger.info "Detected Android build tools at #{build_tools_path}"
 
+      $aapt2 = File.join(build_tools_path, "aapt2#{$exe_ext}")
 
-        toolsver = $app_config['android']['buildtools'] if ($app_config['android'] and $app_config['android']['buildtools'])
+      $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
+      $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
 
-        if toolsver
-          #will try to find user-specified build tools
-          path = File.join($androidsdkpath,'build-tools',toolsver)
-          if File.directory?(path)
-            build_tools_path = toolsver
-          else
-            $logger.warn("Android build tools v#{toolsver} specified in build.yml were not found, will use latest")
-          end
-        end
-
-
-        build_tools = {}
-
-        if !build_tools_path
-          Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
-            next if entry == '.' or entry == '..'
-
-            #Lets read source.properties file to get highest available build-tools
-            src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
-            next unless File.file?(src_prop_path)
-
-            File.open(src_prop_path) do |f|
-              f.each_line do |line|
-                build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
-              end
-            end
-          end
-
-          latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
-          build_tools_path = latest_build_tools[0]
-        end
-      end
-
-      $aapt2 = nil
-      if build_tools_path
-        puts "Using Android SDK build-tools: #{build_tools_path}"
-        build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
-        $dxjar = File.join(build_tools_path,'lib','dx.jar')
-        $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
-        $aapt2 = File.join(build_tools_path, "aapt2#{$exe_ext}")
-      else
-        $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
-        $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
-        $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
-        $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
-      end
+      AndroidTools::DexBuilder.instance.logger = $logger
+      AndroidTools::DexBuilder.instance.sdk_path = $androidsdkpath
+      AndroidTools::DexBuilder.instance.build_tools_path = build_tools_path
+      AndroidTools::DexBuilder.instance.androidplatform = $androidplatform
+      AndroidTools::DexBuilder.instance.javabin = File.join($java, 'java'+$exe_ext)
 
       $bundletool = File.join($startdir, "res", "build-tools", "bundletool.jar")
 
@@ -1448,10 +1416,16 @@ namespace "build" do
         ENV["FCM_PROJECT_ID"] = $app_config["android"]["fcm"]["project_id"]
       end
       
-      if $app_config['android'] != nil && $app_config['android']['barcode_engine'] == "google"
-        ENV["BARCODE_ENGINE"] = 'google'
-      else
-        ENV["BARCODE_ENGINE"] = 'zxing'
+      ENV["BARCODE_ENGINE"] = 'google' #by default
+
+      unless $app_config['android']&.[]('barcode_engine').nil?
+        engine = $app_config['android']['barcode_engine']
+        case engine
+        when 'zxing'
+          ENV["BARCODE_ENGINE"] = 'zxing'
+        else
+          raise 'Only supported barcode engines are: google(default) and zxing'
+        end
       end
       
       $ext_android_build_scripts.each do |ext, builddata|
@@ -2922,16 +2896,12 @@ namespace "package" do
       next
     end
     
-    puts "Running dx utility"
-    args = []
-    args << "-Xmx1024m"
-    args << "-jar"
-    args << $dxjar
-    args << "--dex"
-    args << "--output=#{$bindir}/classes.dex"
+    $logger.info "Running DEX builder"    
 
     alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
     alljars += AndroidTools::MavenDepsExtractor.instance.jars
+
+    jarsForDX = []
 
     require 'set'
     unique_jars = Set.new
@@ -2977,7 +2947,7 @@ namespace "package" do
       isFromMaven = (basename == 'classes.jar')# && Pathname.new(jar).split.include?('.m2')
       if (!unique_jars.member?(basename)) || isFromMaven
         if !useProguard
-          args << jar
+          jarsForDX << jar
         else
           jarNamesCounter += 1
           cp jar, File.join(proguardPreBuild, jarNamesCounter.to_s + '.jar')
@@ -2992,18 +2962,16 @@ namespace "package" do
       progArgs << File.join(proguardDir, 'proguard.jar')
       progArgs << '@' + proguardRules
       Jake.run(File.join($java, 'java'+$exe_ext), progArgs)
-      args << File.join(proguardPostBuild, "classes-processed.jar")
+      jarsForDX << File.join(proguardPostBuild, "classes-processed.jar")
     end
 
-    Jake.run(File.join($java, 'java'+$exe_ext), args)
-
-    unless $?.success?
-      raise "Error running DX utility"
+    unless AndroidTools::DexBuilder.instance.build( jarsForDX, "#{File.join($bindir,'classes.dex')}")
+      raise "Error running DEX builder"
     end
 
     resourcepkg = $bindir + "/rhodes.ap_"
 
-    puts "Packaging Assets and Jars"
+    $logger.info "Packaging Assets and Jars"
 
     # this task already caaled during build "build:android:all"
     #set_app_name_android($appname)
