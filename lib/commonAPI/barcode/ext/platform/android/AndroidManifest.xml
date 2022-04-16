@@ -10,7 +10,9 @@
               android:screenOrientation="landscape"
               android:configChanges="orientation|keyboardHidden|screenSize"
               android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-              android:windowSoftInputMode="stateAlwaysHidden">
+              android:windowSoftInputMode="stateAlwaysHidden"
+              android:exported='true'
+              >
       <intent-filter>
         <action android:name="com.google.zxing.client.android.SCAN"/>
         <category android:name="android.intent.category.DEFAULT"/>

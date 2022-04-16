@@ -436,7 +436,7 @@ public class RhodesService extends Service {
 
         try {
             // Show splash screen only if we have active activity
-            SplashScreen splashScreen = RhodesActivity.safeGetInstance().getSplashScreen();
+            SplashScreen splashScreen = RhodesActivity.safeGetInstance().getRhodesSplashScreen();
             if (splashScreen != null) {
                 splashScreen.start();
             }

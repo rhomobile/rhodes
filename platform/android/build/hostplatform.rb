@@ -23,6 +23,15 @@ module HostPlatform
 	end
 	module_function :exe_ext
 
+	def bat_ext
+		if HostPlatform.windows?
+			'.bat'
+		else
+			''
+		end
+	end
+	module_function :bat_ext
+
 	def num_cpus
 		num = nil
 	 	if HostPlatform.linux?
