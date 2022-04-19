@@ -73,7 +73,7 @@ module AndroidTools
                     args = []
                     args << '--output'
                     args << "#{File.dirname(outdex)}"
-                    args << '--no-desugaring'
+                    #args << '--no-desugaring'
                     args.concat jarlist
 
                     return d8, args

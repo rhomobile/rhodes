@@ -760,6 +760,9 @@ def read_manifest_package(path)
 end
 module_function :read_manifest_package
 
+  def self.jarbin= v
+    @@jarbin=v
+  end
 
   def self.jarsigner= v
     @@jarsigner=v
@@ -973,19 +976,16 @@ module_function :read_manifest_package
 
   def apk_build(sdk, apk_name, res_name, dex_name, debug)
     puts "Building APK file..."
-    prev_dir = Dir.pwd
-    Dir.chdir File.join(sdk, "tools")
+    
+    #just put dex file to a copy of already prepared intermediate APK
+    cp res_name, apk_name    
+    params = [ '-uf', apk_name, '-C', File.dirname(dex_name), File.basename(dex_name) ]
+    Jake.run( @@jarbin, params)
 
-    params = ['-Xmx1024m', '-classpath', findSdkLibJar(sdk), 'com.android.sdklib.build.ApkBuilderMain', apk_name]
-
-    params += ['-u', '-z', res_name, '-f', dex_name]
-
-    Jake.run File.join($java, "java#{HostPlatform.exe_ext}"), params
     unless $?.success?
-        Dir.chdir prev_dir
         raise 'Error building APK file'
     end
-    Dir.chdir prev_dir
+    
   end
   module_function :apk_build
 
