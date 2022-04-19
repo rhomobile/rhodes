@@ -27,7 +27,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/apk_builder.rb'
-require File.dirname(__FILE__) + '/aab_builder.rb'
+require File.dirname(__FILE__) + '/aapt2_helper.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
@@ -41,6 +41,7 @@ require_relative 'build_tools_finder'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
 require 'tempfile'
+require 'zip'
 
 include FileUtils
 
@@ -574,29 +575,30 @@ def select_aapt2
 end
 
 
-def init_aab_builder
-  builder = AabBuilder.instance
+def init_aapt2_helper
+  helper = Aapt2Helper.instance
 
-  builder.logger = $logger
-  builder.res_dir = $appres
-  builder.output_path = $targetdir
-  builder.dex_path = File.join( $bindir, 'classes.dex' )
-  builder.apk_path = File.join( $bindir, 'rhodes.ap_')
+  helper.logger = $logger
+  helper.res_dir = $appres
+  helper.output_path = $targetdir
+  helper.dex_path = File.join( $bindir, 'classes.dex' )
+  helper.apk_path = File.join( $bindir, 'rhodes.ap_')
   #builder.res_dirs << AndroidTools::MavenDepsExtractor.instance.res_dirs
 
-  builder.build_dir = $tmpdir
-  builder.androidjar = $androidjar
-  builder.manifest = $appmanifest
+  helper.build_dir = $tmpdir
+  helper.androidjar = $androidjar
+  helper.manifest = $appmanifest
 
-  builder.aapt2 = select_aapt2
-  builder.bundletool = $bundletool
-  builder.javabin = File.join( $java, 'java' + $exe_ext )
-  builder.rjava_dir = $app_rjava_dir
-  builder.maven_deps = AndroidTools::MavenDepsExtractor.instance
+  helper.aapt2 = select_aapt2
+  helper.bundletool = $bundletool
+  helper.javabin = File.join( $java, 'java' + $exe_ext )
+  helper.rjava_dir = $app_rjava_dir
+  helper.maven_deps = AndroidTools::MavenDepsExtractor.instance
+  helper.assets_dir = $appassets
 
-  builder.no_compress_exts = $no_compression
+  helper.no_compress_exts = $no_compression
 
-  builder.init
+  helper.init
 end
 
 namespace "config" do
@@ -839,6 +841,7 @@ namespace "config" do
       $keytool = File.join($java, "keytool" + $exe_ext)
       $jarsigner = File.join($java, "jarsigner" + $exe_ext)
       $jarbin = File.join($java, "jar" + $exe_ext)
+      $javabin = File.join( $java, 'java' + $exe_ext )
 
       $keystore = nil
       $keystore = $app_config["android"]["production"]["certificate"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
@@ -863,6 +866,7 @@ namespace "config" do
       AndroidTools.jarsigner = $jarsigner
       AndroidTools.zipalign = $zipalign
       AndroidTools.keytool = $keytool
+      AndroidTools.jarbin = $jarbin
       AndroidTools.apksigner = File.join(build_tools_path,'apksigner'+$bat_ext)
     end
 
@@ -1010,7 +1014,7 @@ namespace "config" do
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
 
-    init_aab_builder if $build_bundle
+    init_aapt2_helper
 
     print_timestamp('config:android FINISH')
 
@@ -2344,7 +2348,9 @@ namespace "build" do
       $logger.debug $appres.to_s
       $logger.debug $app_rjava_dir.to_s
 
-      if ( $rhodes_as_lib )
+      unless ($rhodes_as_lib)
+        Aapt2Helper.instance.build_resources( $build_bundle )
+      else
         mkdir_p $appres_flats
 
         #walkthrough resources dir
@@ -2391,28 +2397,17 @@ namespace "build" do
           "-R", "@" + PathToWindowsWay(flaten_list_file_path),
           "--auto-add-overlay"
         ]
+        
+        args << "--output-text-symbols"
+        args << PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
+        args << '-v' if Rake.application.options.trace
 
-        if $rhodes_as_lib
-          args << "--output-text-symbols"
-          args << PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
-        end
-
-      else  #no bundle and no lib so we use old AAPT
-
-        args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
-        args += AndroidTools::MavenDepsExtractor.instance.aapt_args
-      end
-
-      args << '-v' if Rake.application.options.trace
-
-      if ($rhodes_as_lib )
         require 'nokogiri'
         
-        if($rhodes_as_lib) 
-          FormatManifestToAarCompat($appmanifest)
-        end
+        FormatManifestToAarCompat($appmanifest)
+        
         Jake.run($aapt2, args)
-        raise 'Error in AAPT: ' + $aapt2 + " " + args.join(' ') unless $?.success?
+        raise 'Error in AAPT2: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
         #how about some comments on this magic?
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
@@ -2427,16 +2422,9 @@ namespace "build" do
         res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
         res_dirs.each do |dir|
           clear_flats(dir)
-        end
-        
-      elsif ($build_bundle)
-          AabBuilder.instance.build_resources
-      else
-        Jake.run($aapt, args)
-        raise 'Error in AAPT: R.java' unless $?.success?
-      end
-
-
+        end            
+      end            
+      
       #We should've generated R.java at this point. Now let's duplicate it for our dependencies substituting package names
       packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
       packs.each do |p|
@@ -2788,7 +2776,7 @@ def prepare_aar_package
   args = ['cvf', 'classes.jar', '-C', '.', '.']
   jarNamesCounter = 0
   
-  $allclasses = File.join($tmpdir, 'allclasses')
+  $allclasses = File.join($tmpdir, '.allclasses')
   mkdir_p $allclasses
 
   puts "Creating classes.jar for aar package"
@@ -2871,11 +2859,11 @@ end
 def create_bundle()
   $logger.info "Creating android bundle"
 
-  builder = AabBuilder.instance
+  builder = Aapt2Helper.instance
 
-  builder.build
+  bundle = builder.build_aab
 
-  signed_bundle = File.join($targetdir,"#{$appname}-bundle-signed.aab")
+  signed_bundle = File.join($targetdir,"#{$appname}-bundle-signed.aab")  
 
   builder.debug = $debug
   if $debug
@@ -2884,7 +2872,18 @@ def create_bundle()
     builder.storepass = $storepass
     builder.storealias = $storealias
   end
-  builder.sign( signed_bundle )  
+  builder.sign_aab( bundle, signed_bundle )  
+
+  apk = File.join($targetdir,"#{$appname}-universal.apk")
+  apks = File.join($targetdir,"#{$appname}.apks")
+  Jake.run( $javabin, ["-jar", $bundletool, "build-apks","--bundle=#{signed_bundle}", "--output=#{apks}", "--mode=universal"] )
+  rm apk if File.file? apk
+  Zip::File.open(apks) { |zip|
+    e = zip.get_entry('universal.apk')
+    zip.extract(e,apk)
+  }
+
+
 end
 
 namespace "package" do
@@ -2973,45 +2972,8 @@ namespace "package" do
 
     $logger.info "Packaging Assets and Jars"
 
-    # this task already caaled during build "build:android:all"
-    #set_app_name_android($appname)
-
-    args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-F", resourcepkg]
-    args += AndroidTools::MavenDepsExtractor.instance.aapt_args
-    if $no_compression
-      $no_compression.each do |ext|
-        args << '-0'
-        args << ext
-      end
-    end
-
-    args << "--no-version-vectors"
-
-    Jake.run($aapt, args)
-    unless $?.success?
-      raise "Error running AAPT (1)"
-    end
-
-    # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
-    args = [ Rake.application.options.trace ? "uvf" : "uf", resourcepkg]
-
-    skip_underscores = true
-
-    Dir.glob(File.join($appassets, "**/*")).each do |f|
-      next unless File.basename(f) =~ /^_/
-      relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
-      puts "Add #{relpath} to #{resourcepkg}..."
-      args << relpath
-      skip_underscores = false
-    end
-
-    unless skip_underscores
-      Jake.run($jarbin, args, $tmpdir)
-      unless $?.success?
-        raise "Error packaging assets"
-      end
-    end
-
+    Aapt2Helper.instance.build_intermediate_apk(resourcepkg)
+   
     puts "Packaging Native Libs"
 
     args = ["uf", resourcepkg]
