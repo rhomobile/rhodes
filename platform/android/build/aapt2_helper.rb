@@ -7,10 +7,25 @@ require 'singleton'
 require 'securerandom'
 require 'json'
 
-class AabBuilder
+class Aapt2Helper
     include Singleton
 
-    attr_accessor :output_path, :res_dir, :dex_path, :apk_path, :manifest, :logger, :aapt2, :build_dir, :androidjar, :bundletool, :javabin, :rjava_dir, :maven_deps, :no_compress_exts
+    attr_accessor :output_path
+    attr_accessor :res_dir
+    attr_accessor :dex_path
+    attr_accessor :apk_path
+    attr_accessor :manifest
+    attr_accessor :logger
+    attr_accessor :aapt2
+    attr_accessor :build_dir
+    attr_accessor :androidjar
+    attr_accessor :bundletool
+    attr_accessor :javabin
+    attr_accessor :rjava_dir
+    attr_accessor :maven_deps
+    attr_accessor :no_compress_exts
+    attr_accessor :assets_dir
+
     attr_accessor :keystore, :storealias, :storepass, :keypass, :debug
 
     #This is the final step, run it from android.rake after all is done:
@@ -20,9 +35,9 @@ class AabBuilder
     #- java code
     #- dependencies and extensions
     #
-    # Provide old-style APK for input, we'll take SOs, assets and other files from there. Also provide compiled DEX.
+    # Provide APK for input, we'll take SOs, assets and other files from there. Also provide compiled DEX.
     # Manifest and resources will be taken from build_resources step
-    def build
+    def build_aab
         validate
 
         prepare_bundle_folder_struct
@@ -36,9 +51,11 @@ class AabBuilder
         create_config_file
 
         #Finally build AAB archive from prepared base.zip
-        @bundle = File.join(@intermediate,'bundle.aab')
-        args = [ '-jar', @bundletool, 'build-bundle', "--modules=#{@base_zip}", "--output=#{@bundle}" , "--config=#{@config_file}"]
+        bundle = File.join(@intermediate,'bundle.aab')
+        args = [ '-jar', @bundletool, 'build-bundle', "--modules=#{@base_zip}", "--output=#{bundle}" , "--config=#{@config_file}"]
         Jake.run( @javabin, args )
+
+        bundle
     end
 
     def create_config_file       
@@ -143,10 +160,12 @@ class AabBuilder
 
     #This is the first step to run. Builder must be initialized at this point
     #It will compile resources and generate/put R.java to specified dir so android.rake can use it for other build steps
-    def build_resources
+
+    #It will also build an intermediate APK
+    def build_resources( build_also_for_bundle )
         validate
 
-        @logger.debug "Resource dirs for AAB builder: #{@res_dir}"
+        @logger.debug "Resource dirs for AAPT2 builder: #{@res_dir}"
 
         flat_list = []
 
@@ -158,37 +177,63 @@ class AabBuilder
         }
 
         reslist = File.join(@intermediate,'flat.txt')
-        File.open( reslist, 'w' ) { |f| f.write flat_list.join(' ') }
+        File.open( reslist, 'w' ) { |f| f.write flat_list.join(' ') }    
+        
 
-        #prepared archive name with protobuf data
-        @pbprep = File.join(@intermediate,'output.apk')
-
-        #make a dir to put generated R.java
-        rdir = File.join(@intermediate,'rjava')
-        mkdir_p (rdir)
-
-        args = [ 'link', 
-            '--proto-format', 
-            '-o', @pbprep, 
+        args_common = [ 'link', 
             '-I', @androidjar, 
             '--manifest', @manifest, 
             '-R', '@'+File.join(reslist),
-            '--auto-add-overlay',
-            '--java',            
-            PathToWindowsWay(rdir)
+            '--auto-add-overlay'
         ]        
 
         if @no_compress_globs
             @no_compress_globs.each do |ext|
-              args << '-0'
-              args << ext
+                args_common << '-0'
+                args_common << ext
             end
-          end
-        
-        #Finally run link to generate R.java for compiled resources. We need manifest ready at this point
-        Jake.run( @aapt2, args )       
+        end
 
-        mkdir_p @rjava_dir
+        @intermediate_apk = File.join(@intermediate,'output.apk')
+        #make a dir to put generated R.java
+        rdir = File.join(@intermediate,'rjava')
+        mkdir_p (rdir)
+
+        args = args_common.clone
+        args << '-o'
+        args << @intermediate_apk  
+        args << '--java'
+        args << PathToWindowsWay(rdir)
+        args << '--output-text-symbols'
+        args << PathToWindowsWay(File.join(@rjava_dir, 'R.txt'))        
+
+        mkdir_p @rjava_dir        
+        #Finally run link to generate R.java for compiled resources. We need manifest ready at this point
+        run_aapt2(args) 
+
+        #-A option is buggy at least on Windows. It writes \\ instead of / to path separators which will affect MANIFEST.MF in target APK and break access to assets
+        #So we'll use zip to add assets manually
+        #args << "-A"
+        #args << @assets_dir
+        Zip::File.open( @intermediate_apk, create: false ) { |z|
+            root = Pathname.new(@assets_dir)
+            Dir[File.join(@assets_dir,'**','*')].select{|f| File.file? f}.each{ |f|
+                p = Pathname.new(f)
+                z.add( File.join('assets',p.relative_path_from(root)) ,f )
+            }
+        }
+
+        if ( build_also_for_bundle )
+             #prepared archive name with protobuf data
+            @pbprep = File.join(@intermediate,'output_for_bundle.apk')
+
+            args_for_bundle = args_common.clone
+            args_for_bundle << '-o'
+            args_for_bundle << @pbprep            
+            args_for_bundle << '--proto-format'      
+            run_aapt2(args_for_bundle)       
+        end
+        
         #We don't really care of package name and relative path where R.java is located
         #We just need to put generated R.java to specified @rjava_dir, so let's just find generated R.java and put it to target dir
         Dir[ File.join(rdir,'**','R.java') ].each { |f|
@@ -196,19 +241,30 @@ class AabBuilder
         }        
     end
 
+    #We should've generated an intermediate APK on the first step, so just copy it where it is expected
+    def build_intermediate_apk( target )        
+        cp @intermediate_apk, target
+    end
+
+    def run_aapt2(args)
+        args << '-v' if Rake.application.options.trace
+        Jake.run( @aapt2, args )     
+        raise 'Error in AAPT2: ' + @aapt2 + " " + args.join(' ') unless $?.success?  
+    end
+
     def init
         init_dirs
     end
 
     def init_dirs
-        @intermediate = File.join( @build_dir, '.bundle')
+        @intermediate = File.join( @build_dir, '.aapt2_intermedidate')
         FileUtils.rm_r @intermediate if File.directory? @intermediate
         FileUtils.mkdir_p @intermediate
 
     end
 
     def validate
-        raise 'AAB Builder set up incorrectly' unless defined? @res_dir and
+        raise 'AAPT2 helper set up incorrectly' unless defined? @res_dir and
             defined? @output_path and
             defined? @dex_path and
             defined? @apk_path and
@@ -221,14 +277,15 @@ class AabBuilder
             defined? @javabin and
             defined? @rjava_dir and
             defined? @maven_deps and
-            defined? @no_compress_exts
+            defined? @no_compress_exts and
+            defined? @assets_dir
     end
 
-    def sign(target)
+    def sign_aab(source, target)
         if @debug
-            AndroidTools.signAabDebug @bundle, target
+            AndroidTools.signAabDebug source, target
           else
-            AndroidTools.signAab @bundle, target, $keystore, $keypass, $storepass, $storealias
+            AndroidTools.signAab source, target, $keystore, $keypass, $storepass, $storealias
           end
     end
 end
