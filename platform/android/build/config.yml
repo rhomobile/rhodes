@@ -1,4 +1,5 @@
 maven_deps:  
+  - 'androidx.core:core:1.7.0'
   - 'androidx.lifecycle:lifecycle-common:2.3.1'
   - 'androidx.lifecycle:lifecycle-common-java8:2.3.1'
   - 'org.conscrypt:conscrypt-android:2.5.1'
