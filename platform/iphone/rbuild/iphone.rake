@@ -1854,6 +1854,10 @@ namespace "build" do
         framework_build_dir = File.join(framework_dir, "build")
         rm_rf framework_build_dir
 
+
+        ENV["TAU_DEV_ARCHS"] = get_archs_string_device
+        ENV["TAU_SIM_ARCHS"] = get_archs_string_simulator
+
         args = ['clean', 'install', '-target', "Framework",'-project', "Rhodes.xcodeproj"]
         Dir.chdir framework_dir
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
