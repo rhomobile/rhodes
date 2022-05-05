@@ -912,7 +912,7 @@ module_function :read_manifest_package
   def generateKeystore( keystore, storealias, storepass, keypass )
     @@logger.info "Generating private keystore..."
     
-    mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
+    mkdir_p File.dirname(keystore) unless File.directory? File.dirname(keystore)
 
     args = []
     args << "-genkey"
