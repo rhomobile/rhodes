@@ -7,9 +7,9 @@
 ;======================================================
 ; Installer Information
  
-  Name %APPNAME%
+  Name "%APPNAME%"
   OutFile "%OUTPUTFILE%"
-  InstallDir %APPINSTALLDIR%
+  InstallDir "%APPINSTALLDIR%"
   BrandingText " "
   Caption "%APPNAME% - RhoMobile Suite Windows Application"
   ShowInstDetails show
@@ -155,7 +155,7 @@ Section %SECTION_NAME% appSection
   %LICENSE_FILE%
   %README_FILE%
   File /r "rho"
-  File %APP_EXECUTABLE%
+  File "%APP_EXECUTABLE%"
   File *.dll
   File /r *.pak
   File /r *.qm

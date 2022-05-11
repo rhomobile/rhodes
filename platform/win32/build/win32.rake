@@ -295,7 +295,7 @@ namespace "build" do
 		
 		$logger.debug "Looking for app executable: #{targetFile}"                  
 		raise "#{targetFile} not found" unless File.file?(targetFile)
-		Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
+		Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} \"#{targetFile}\"")
 		
 		rescue Exception => e
 			$logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
