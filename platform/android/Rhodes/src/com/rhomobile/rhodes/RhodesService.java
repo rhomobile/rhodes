@@ -491,6 +491,7 @@ public class RhodesService extends Service {
 
 	@Override
 	public void onDestroy() {
+		unregisterReceiver(mConnectionChangeReceiver);
 
 		if(DEBUG)
 			Log.d(TAG, "+++ onDestroy");
