@@ -1,3 +1,322 @@
+Please see here to know more about Rho versioning - http://forums.tau-technologies.com/thread/32/branch-version-management
+
+7.5 - May 2022
+- Android: dependencies updated to use androidx instead of support packaga
+- Android: support for new build v32.0.0 and refactored build system
+- Android: Support for Android 11
+- Android: Support for NDK up to v24
+- Android: updated FCM extension
+- Android: allow preload java classes for extensions
+- Android: fix CommonAPI ruby lambda callback issue (#1087)
+- Android: refactor building AAB bundle and add AAPT2 to local toolchain (#1086)
+- iOS: fix Rhodes as lib mode issue
+- iOS: fix issues with CocoaServer
+- iOS: remade local server on CocoaHTTPServer
+- iOS: add another methods for provide direct http/https request with WKWebView
+- iOS: fix issue with multiple choose images from Gallery
+- Win32: added callback on close button pressed
+- Win32: Support for Windows 11 (#1090)
+- General: multiple fixes
+
+7.4
+- General: replace main domain to tau-platform.com
+- iOS: support for iOS 15
+- iOS: support bitcode
+- iOS: force rebuild openssl.o extension for every build
+- iOS: fix CLI build
+- iOS: support cocoapods
+- iOS: upgrade fcm-push
+- Android: fix Camera for Android 10 and higher
+- Android: upgraded network stack
+- Android: support for custom network stacks ( via extensions )
+- Android: support SSL pinning for upgraded network stack
+- Android: fix occasional crashes on Android 9+
+- Android: fix bug with undefined conscrypt class for rhodes as libs
+- Android: remove usage java.nio.file.Paths for backward compatibility
+- Android: allow preload java classes for extensions
+- Win32/RhoSim: enabled Rho::Config
+- Win32: update for MSVC version setting in build.yml
+- WM: fix for windows mobile build on rhodes 7.x.x (#1071)
+- CommonAPI: fix Network: clear input request headers map before saving response headers
+
+7.3
+- General: support for new debugger in VSCode extension ( https://marketplace.visualstudio.com/items?itemName=Tau-Technologies.rhomobile-dev-tools )
+- General: bootstrap version increased to 4.4.1
+- General: multiple fixes and improvements
+- Android: support for Android 11
+- Android: barcode recognizer that uses Google API
+- Android: fix for granding access for sharing files from directory /rhodata/apps/ (Rho::Application.userFolder) to another applications
+- Android: fixing camera crash on API 29 and higher
+- Android: fixing double casting in arrays and hashes
+- Android: reverting usage of requestLegacyExternalStorage flag in manifest
+- Android: suppressing unnecessary calls for start foreground function
+- Android: improve emulator startup
+- Android: fix notification in foreground service for android 10
+- Android: support maven deps as aar
+- iOS: support for iOS 14
+- iOS: control ARCHS of build
+- iOS: extension build script refactoring
+- iOS: fcm-push do not remove Frameworks.zip after unzip
+- iOS: fix Bluetooth ext build
+- iOS: fix build from XCode
+- iOS: fix compilation issue in ZXing barcode lib
+- iOS: fix image rotation issue
+- iOS: fix native lib build
+- iOS: use only active Arch for Debug
+- iOS: openssl.so support M1 - arm64 simulator arch
+- iOS: support only actual architectures
+- iOS: support WebView.allowsInlineMediaPlayback rhoconfig option
+- iOS: tune replacing screenshot for task 
+- Win32: VS 2019 supported for build environment
+- Linux: adding setup guide for Rosa-X4
+- Linux: fix remote debugging
+- Linux: rosa rpm changes
+- Linux: ubuntu guide update
+- Sailfish: supporting Sailfish and Aurora both
+- Sailfish: barcode fix
+- RhoLib: fix build errors
+- RhoLib: correct init RhoRuby API after ruby started
+- RhoSim: more extensions in RhoSim
+
+7.2
+- New OS support: ROSA Linux
+- New OS support: Astra Linux
+- New OS support: Red OS
+- Aurora OS: support for v3.2.1.20
+- Android: Git Issue 1029 Start inner service foregorund for prevent kill by OS
+- Android: Support SSL for local server
+- Android: OpenSSL updated to 1.1.1
+- Android: Fix some NPE crashes
+- Android: Fix crash on audio capture and GPS if no permission on Android (#1020)
+- iOS: fcm-push extension compress Google Frameworks for win32 maxpath issue
+- iOS: update Google Firebase libraries in fcm-push extension
+- iOS: support Frameworks and resources from extensions
+- iOS: implement UI delegate for WKWebView - alert and other UI
+- Common: remove non-UTF8 symbols from log messages
+
+7.1.19
+- Android: RhodesLib: add call NativeCallback from Ruby API
+- Android: fix image sharing via intent
+- Android: fix merge resource for app_name param 
+- Android: remove network_securiy_config for low api versions
+- iOS: fix setting app badge
+- iOS: fix issue with crash set_sleep on SDk >= 13.2
+- iOS: remove ZBar library from barcode extension binary for fix of UIWebView issue and remove ZBAR support for iOS Barcode engine
+- iOS: fix UIWebView issue with AppStore
+- iOS: RhodesLib: fix framework build issue 
+- iOS: fix WKWebView issues with CommonAPI
+- iOS: Migrate to WKWebView by default
+- iOS: fix issues related to Citrix
+- RhoSim, OS X, Win32: Migration to Qt 5.13 and msvs2017 (#1031)
+- Http server: fixing socket leakage
+- Win32: fixing toolbar issue
+- Security: support WebView.replaceContentBySplashWhenSnapshotBySystem for secure recent
+
+7.1.4
+- Android: lots of fixes for ARM64 support
+- Android: build system updates
+- DB fix issue with dropped encryption key after new installation and DB reset
+- restore selected last api level, if current level not available
+- Android: added fcm v18 support extention ( tho-tau-extensions )
+- Android: added rexml-edge for Ruby 2.3 ( rho-tau-extensions )
+- Android: updated enterprise-barcode for ARM64 ( rho-tau-extensions )
+
+7.1.1
+- Android: updated integrated Maven to latest version
+- Android: improved resolution for Maven dependencies
+- Android: some fixes for arm64
+- iOS: removed redunant insecure HTTP links
+- iOS: updated prebuilt openssl libs
+
+7.1.0.beta1
+- RhoLib: support building of Rhodes as standalone library
+- NodeJS: add RubyNodeJS mixed application type and support it on iOS
+- Android: support ARM64 architecture
+- Android: support CLang as native compiler
+- Android: support NDKs up to 20
+- Android: enable cleartext connections to local server with network security
+- Android: fix support for API level above 28 for content file provider
+- Android, iOS: scheduled notification API
+- Android: fix crash when access to Camera after manually disable permission
+- Android: fix crash on KitKat
+- Android: fix CURL when downloading file
+- Android: download external APKs to download dir with private permissions
+- Android: fix build on Windows 10 returning invalid UTF for OS name
+- Android: support Zebra TC51/52
+- Android: some fixes for EMDK Barcode scanner
+- Android: implement X509TrustManagerExtensions for SSL connections
+- iOS: Add applePush extension automatically when push capability enabled
+- iOS: fix crash on iOS < 10.0 in Notification API
+- iOS: add and support Apple's barcode recognizing as default in barcode extension
+- iOS: add rake option for use security tool with temporary keychain
+- iOS: fix Node.JS JS API call from WebView
+- iOS: fix archive issue with public header
+- Win32: Rho::Keyboard.setOpenKeyboard API added
+- Win32: support for start_maximized option in rhoconfig
+- Win32: support for w32_hide_menu_bar option in rhoconfig
+- Win32: fix for fullscreen mode
+- SQLite: fix error when migrating app to new SQLite version
+- RhoSim: fix Rho::Application.rhoPlatformVersion
+- RubyVM: fix deadlock when acquiring GVL
+
+7.0.0.beta10
+- Android: support HTTP for local Ruby server
+- Android: accept third-party cookies when targeted to SDK>=21
+- Android: fix issue with removing image from gallery after choosePicture
+- iOS: fix issue with capture volume keys
+- iOS: prefer old key when use_deprecated_encryption
+- Build: fix Rhoruby crash on Windows 10
+
+7.0.0.beta5
+- Sailfish: Rhodes now supports building apps for Sailfish OS on Win32 and OSX
+- Sailfish: Camera extension supported
+- Sailfish: Barcode extension supported
+- Sailfish: RhoConnect client extension supported
+- Sailfish: Bluetooth extension supported
+- Sailfish: SignatureCapture extension supported
+- Ruby/common: Updated serialport extension to v1.4.0
+- Ruby/common: Updated Ruby Date extension
+- Win32: Bluetooth lock fix
+- Win32: CURL fix
+- Android: Support NDK 16 and 17
+- Android: Build system fixes/updates for new build tools
+- Common: Bluetooth API extracted to separate extension
+- Common: Added System.getRhoPlatformVersion API
+- Android: Running WebView.currentURL in UI thread
+- iOS: Add Image frameworks to project template
+- SQLite: Changing sqlite page size with encryption for back compatibility. For using old page size in DB type 'use_deprecated_encryption: 1' in build.yml
+- Android: Security fixes
+- iOS: Fix invalid PPI value
+- Build: Fix potential deadlock invoking minifier
+- Rhoconnect Push: some additional checks and fixes for new Androids
+- Ruby/common: Bundle encryption some fixes and Ruby helper for reading encrypted files
+- Ruby/common: Added Sensors.readData API
+- iOS: Added 'emulatortarget' setting for build.yml
+- Android: Encrypt schema files with BundleEncryption
+- iOS: Support for iPhone XS, XS Max, XR
+- Android: Updated default min/target SDK levels for generated apps
+- iOS: Fix WebView.navigate with long URL query
+- iOS: Fix issue with missing DB encryption key when restoring from backup
+- Win32: Threading fix
+- Android: Implemented bsd_signal to run with openssl.so on some Androids
+- Common: Various fixes
+
+6.0.58
+- iOS: XCode 10 support
+- iOS: Support for iOS 12
+- Rho: added Application.getRhoPlatformVersion property
+- fix: skip encryption for empty bundle files
+- fix: correctly parse int64 values for Ruby JSON
+- Win32: fixing threading for RhoSim
+- Rho: increase logging performance
+- Android: updating ProGuard rules
+- Win32: cancel uninstalling until app is closed
+- Android: reduce logging spam from file API
+- Android: support prebuilt jars for extensions
+- Rho: increase SQLite3 performance
+- Win32: fixing RhoSim JS bridge
+
+6.0.55
+- iOS: support FCM Push
+- iOS: support ZXing engine
+- iOS: support video resolution options in videocapture
+- iOS: fix Node.js build
+- iOS: remove context methods use from OpenSSL libs by Apple's requirements for AppStore
+- iOS: add NSPhotoLibraryAddUsageDescription key to default Info.plist
+- iOS: support Media.asset icons
+- RhoSimulator: binaries are updated for every further release
+- RhoSimulator: updated QT version to 5.9.5 LTS
+- RhoSimulator: fix user-agents
+- Win32: updated QT version to 5.9.5 LTS
+- Win32: fixes in thread for timers and some other stuff
+- Ruby VM: fix - prevent VM crash if Common API object is not available. Raise Ruby exception instead
+- Ruby VM: adding missing IO methods
+- Android: improve support of Android Studio
+- Android: escape 4-byte UTF sequences as binary for JSON
+- Android : Added intent chooser option
+- json: fix escaping. Treat invalid UTF bytes as binary, leave valid UTF8 intact
+- DB: fix updating source model in source model table
+- DB: fix couple of multithreading issues
+- DB: support AES-256 encryption
+- lots of fixes
+
+6.0.30
+- Rhodes gem: updating nokogiri dependency version to 1.8.2
+- Android: setting android:exported to 'false' for services in manifest.
+- Android: adding "allowBackup" to build.yml. True by default. Using: "allowBackup: false" in android section.
+- update sqlite3 to 3.22
+- fix memory corruption for issue in sqlite3
+- Win32: updating rhosimulator
+- iOS: updating Ruby config for better support of 32/64bit archs
+- iOS: fixing Ruby Date and Time capacity issues
+- Win32: thread force closing modification
+- http server: fix Ruby multithreading by releasing GVL lock on listening socket select
+- minor fixes
+
+6.0.22
+- libOpenSSL updated to v1.1.0h
+- libSQLite updated to v3.20.1
+- libCurl updated to v7.55.1
+- libJson-C updated to v0.8
+- Ruby: adding thread.rb stub to allow requires
+- FCM: support cold start callbacks
+- iOS: allow system language in system UI elements inside application (copy/paste buttons etc.)
+- Android: supporting both old and new AVD creation CLI
+- UWP: fixing async JS invoking
+- Gemspec: updating rest-client version
+- Gemspec: updating rubyzip version
+- iOS, Android: System info APIs
+- iOS, Android: added UTF-16/32 encoders and transcoders to Ruby VM
+- iOS, Android: WebView cookie management APIs
+- Build: fix build script for make gem
+- iOS: Decrease log output during iOS building without --trace
+- Ruby: force UTF-8 encoding for returned strings in SQLite and CommonAPI
+- Android: support native debug for android studio
+- Android: fixing apk upload error handling
+- Android: fixing intent issue with video capture path
+- Win32: updating Rhosimulator
+- iOS: remove restricted API usage - fix AppStore submit issue
+- Build: fix exception when no rhobuild.yml in root gem folder
+- Android: videocapture fix
+- Android: adding Barcode.ReleaseEMDKOnPause setting
+- Android: refactor AVD creation; will use most recent available AVD image if requested was not found
+- iOS: fix build on system where no any provisioning installed
+- Android: changes to support SDK updates
+- Tau extensions: update openssl-edge to openssl 1.1.0h
+- Tau extensions: update crosswalk to version 23-53-589-4
+- Continuous integration support added for Travis and AppVeyor
+- internal platform updates
+
+6.0.11
+- iOS: fix direct net request issue when app activate/deactivate
+- iOS: fix Barcode extension build
+- Win32: timer fix
+- RhoRuby: fixes
+- UWP: Camera extension
+
+6.0.5
+- iOS: optimize time of building
+- Win32: fix alert_play_file
+- iOS, Android, win32, RhoSim: bigdecimal Ruby API
+- iOS,Android: catch invalid characters in percent encoded query
+- iOS: add new option for prevent screenshot making by multitasking switcher
+- Android: iOS: add enableDragAndDrop WebView option
+- Android: don't break build if Google APIs not found
+- win32: fixing RhoRuby.exe
+- android: removing proguard annoying messages
+- iOS: fix issue with lost AES DB key stored in keychain when upgrade iOS
+- iOS: fix invalid thread for network activity indicator using
+- iOS: add iPhone X new splash for use full screen resolution
+- UWP: timer extention
+- Win32: fixing sound notification
+- iOS: support receive push after application open by tap on notification
+- iOS: fix iOS 11 SDK compilation issue
+- iOS,Android: fix decypt bug
+- Android: fixing Camera onCancel result
+- UWP: sensors extension
+- Android: Fixed google maps crash Bug #1129
+- Android: fix getting mime types for external locations
+
 6.0.5:
 - iOS: optimize time of building
 - Win32: fix alert_play_file
