@@ -613,3 +613,8 @@ public static final android.os.Parcelable$Creator *;
 -dontwarn android.support.design.internal.**
 -dontwarn com.google.android.gms.**
 -dontwarn android.support.v4.**
+
+-keep public class androidx.**
+-keep public class kotlin.**
+-dontwarn androidx.**
+-dontwarn kotlin.**
