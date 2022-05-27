@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.extmanager;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import android.graphics.Rect;
+
 
 public interface IRhoExtManager {
 
@@ -103,6 +105,8 @@ public interface IRhoExtManager {
      * @param requestCode value to erase from map
      */
     void dropActivityResultRequestCode(int requestCode);
+
+    void onInputMethod(View view, boolean enabled, String type, Rect area);
 }
 
 

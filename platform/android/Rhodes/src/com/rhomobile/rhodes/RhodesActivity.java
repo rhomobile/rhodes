@@ -801,6 +801,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 					new ViewTreeObserver.OnGlobalLayoutListener() {
 						public void onGlobalLayout() {
 							resizeChildOfContent();
+
+                            Rect r = new Rect();
+                            //r will be populated with the coordinates of your view that area still visible.
+                            mChild.getWindowVisibleDisplayFrame(r);
+                            
+                            RhoExtManager.getInstance().onInputMethod( mChild, false, "", r);
+
 						}
 					});
 			frameLayoutParams = (FrameLayout.LayoutParams) mChild.getLayoutParams();

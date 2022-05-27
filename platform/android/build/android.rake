@@ -602,6 +602,29 @@ def init_aapt2_helper
 end
 
 namespace "config" do
+
+  namespace "android" do
+    task :enable_custom_manifest => 'config:load' do
+      
+      unless $app_config['android']&.[]('manifest_template')
+
+        default_manifest_file = File.join $startdir, 'res', 'generators', 'templates', 'application', 'AndroidManifest.erb'
+        
+        custom_manifest_file = File.join($app_path,'AndroidManifest.erb')
+        
+        cp default_manifest_file, custom_manifest_file
+
+        $app_config['android']['manifest_template'] = 'AndroidManifest.erb'
+
+        buildyml = File.join( $app_path, 'build.yml' )
+        cp buildyml,buildyml+'.bak'
+
+        File.open(buildyml, 'w') {|f| f.write $app_config.to_yaml }
+
+      end
+    end
+  end
+
   task :set_android_platform do
     $current_platform = "android"
   end
@@ -1429,6 +1452,8 @@ namespace "build" do
           ENV["BARCODE_ENGINE"] = 'google'
         when 'zxing'
           ENV["BARCODE_ENGINE"] = 'zxing'
+        when 'google'
+          ENV["BARCODE_ENGINE"] = 'google'
         else
           raise 'Only supported barcode engines are: google(default) and zxing'
         end
