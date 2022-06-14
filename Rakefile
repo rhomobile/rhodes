@@ -4055,6 +4055,7 @@ namespace "run" do
 
   namespace :rhosimulator do
 
+    # run:rhosimulator:build
     task :build => ["config:common"] do
 
       RhoPackages.request 'rhosimulator'
@@ -4273,6 +4274,7 @@ namespace "run" do
       end
     end
 
+    # run:rhosimulator:run
     task :run, [:wait] => ["config:common"] do |t, args|
       wait = args[:wait] == 'wait'
 
@@ -4351,6 +4353,7 @@ namespace "run" do
 
 
   #desc "Run application on RhoSimulator"
+  # run:rhosimulator
   task :rhosimulator => ["run:rhosimulator:build", "run:rhosimulator:run"]
 end
 
