@@ -210,10 +210,13 @@ public class Nfc extends AbstractRhoListener implements IRhoListener {
 			IntentFilter[] filters = new IntentFilter[1];
 			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
 			
+			int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 
+				(PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE) : 
+				PendingIntent.FLAG_UPDATE_CURRENT;
 			PendingIntent intent = 
 	            PendingIntent.getActivity(activity, 0,
 	              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 
-	              0);
+	              flags);
 			
 			nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
 			if (ourP2PNdefMessage != null) {
