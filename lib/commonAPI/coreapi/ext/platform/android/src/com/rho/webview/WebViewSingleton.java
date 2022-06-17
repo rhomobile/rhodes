@@ -561,23 +561,23 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     @Override
     public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res) {
 
-        if(name.equalsIgnoreCase("rhoelementsext")) {
+        /*if(name.equalsIgnoreCase("rhoelementsext")) {
             readRhoelementsConfig(config);
-            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
-                @Override public void run() {
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandlerInUIThread(true) {
+                @Override public void runInUI() {
                     MainView mainView = RhodesActivity.safeGetInstance().getMainView();
                     for (int i = 0; i < mainView.getTabsCount(); ++i) {
                         Logger.T(TAG, "Set WebView config: tab " + i);
                         mainView.getWebView(i).setConfig(mConfig);
                     }
                 }});
-        } else
+        } else*/
         if (name.equalsIgnoreCase("rhoconfig")) {
             
             readRhoConfig(config);
 
-            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
-                @Override public void run() {
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandlerInUIThread(true) {
+                @Override public void runInUI() {
                     MainView mainView = RhodesActivity.safeGetInstance().getMainView();
                     for (int i = 0; i < mainView.getTabsCount(); ++i) {
                         Logger.T(TAG, "Set WebView config: tab " + i);
