@@ -63,7 +63,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
 ANDROID_MIN_SDK_LEVEL = 21 #21 is the minimum API that supports arm64
-ANDROID_SDK_LEVEL = 31
+ANDROID_SDK_LEVEL = 29
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
