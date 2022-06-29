@@ -190,7 +190,7 @@ install:
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --update
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --list
-  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944"
+  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944"  > nul
 
 
 #  - Tree "C:\Program Files (x86)\Android\android-sdk\add-ons" /F
