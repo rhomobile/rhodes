@@ -15,7 +15,7 @@ environment:
       target_os: android
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
       target_artefact_file_name: framework_spec-debug.apk
-      JAVA_HOME: C:\Program Files\Java\jdk15
+      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
       ANDROID_NDK_HOME: C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944
 
     - android_system-api-samples_2022:
@@ -29,7 +29,7 @@ environment:
       target_os: android
       target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
       target_artefact_file_name: SAS-debug.apk
-      JAVA_HOME: C:\Program Files\Java\jdk15
+      JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
       ANDROID_NDK_HOME: C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944
 
     - win32_rhosimulator:
@@ -190,8 +190,8 @@ install:
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --update
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --list
-  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944"  > nul
-
+  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944" "build-tools;29.0.3" "ndk-bundle" > nul
+  - IF %target_os%==android set PATH=%PATH%;C:\Program Files (x86)\Android\android-sdk\ndk-bundle;C:\Program Files (x86)\Android\android-sdk\build-tools\29.0.3
 
 #  - Tree "C:\Program Files (x86)\Android\android-sdk\add-ons" /F
 #  - gem install rest-client --no-document -f
