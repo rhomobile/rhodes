@@ -188,7 +188,7 @@ install:
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
-  
+  - IF %target_os%==android Get-ChildItem -Path C:\ -Include sdkmanager.bat -File -Recurse -ErrorAction SilentlyContinue
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "platforms;android-29" > nul
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "platform-tools" > nul
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "build-tools;29.0.3" > nul
