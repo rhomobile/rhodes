@@ -189,9 +189,6 @@ install:
   - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
   
-  - IF %target_os%==android appveyor DownloadFile https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip
-  - IF %target_os%==android 7z x sdk-tools-windows-4333796.zip -oC:\android-sdk-windows > nul
-  - IF %target_os%==android yes | C:\android-sdk-windows\tools\bin\sdkmanager.bat --licenses > nul
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "platforms;android-29" > nul
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "platform-tools" > nul
   - IF %target_os%==android C:\android-sdk-windows\tools\bin\sdkmanager.bat "build-tools;29.0.3" > nul
