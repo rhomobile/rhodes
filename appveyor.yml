@@ -16,7 +16,7 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
       target_artefact_file_name: framework_spec-debug.apk
       JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-      ANDROID_NDK_HOME: C:\Microsoft\AndroidNDK64\android-ndk-r16b
+      ANDROID_NDK_HOME: C:\Program Files (x86)\Android\android-sdk\ndk\22.0.7026061
 
     - android_system-api-samples_2017:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
@@ -30,7 +30,7 @@ environment:
       target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
       target_artefact_file_name: SAS-debug.apk
       JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-      ANDROID_NDK_HOME: C:\Microsoft\AndroidNDK64\android-ndk-r16b
+      ANDROID_NDK_HOME: C:\Program Files (x86)\Android\android-sdk\ndk\22.0.7026061
 
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -188,7 +188,7 @@ install:
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
-#  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "platforms;android-29" "platform-tools" "build-tools;29.0.3" "ndk;22.0.7026061"
+  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;22.0.7026061"
 
 
 #  - Tree "C:\Program Files (x86)\Android\android-sdk\add-ons" /F
