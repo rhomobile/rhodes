@@ -16,7 +16,7 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\android\
       target_artefact_file_name: framework_spec-debug.apk
       JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-      ANDROID_NDK_HOME: C:\Program Files (x86)\Android\android-sdk\ndk\20.1.5948944
+      ANDROID_NDK_HOME: C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944
 
     - android_system-api-samples_2017:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
@@ -30,7 +30,7 @@ environment:
       target_artefact_path: C:\TAU\rhodes-system-api-samples\bin\target\android\
       target_artefact_file_name: SAS-debug.apk
       JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
-      ANDROID_NDK_HOME: C:\Program Files (x86)\Android\android-sdk\ndk\20.1.5948944
+      ANDROID_NDK_HOME: C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944
 
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
