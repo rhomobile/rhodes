@@ -3,9 +3,9 @@ platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
   matrix:
-    - android_framework_spec_2022:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      QTDIR: C:\Qt\5.15.2\msvc2019
+    - android_framework_spec_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
@@ -18,9 +18,9 @@ environment:
       JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
       ANDROID_NDK_HOME: C:\PROGRA~2\Android\android-sdk\ndk\17.2.4988734
 
-    - android_system-api-samples_2022:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      QTDIR: C:\Qt\5.15.2\msvc2019
+    - android_system-api-samples_2017:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.13\msvc2017
       testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
       test_app_folder: C:\TAU\rhodes-system-api-samples\
       build_command: "device:android:debug"
