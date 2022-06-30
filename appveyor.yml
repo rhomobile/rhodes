@@ -190,8 +190,9 @@ install:
   - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --update
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --list
-  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944" "build-tools;29.0.3" "ndk-bundle" "cmake;3.18.1" > nul
+  - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;20.1.5948944" "build-tools;29.0.3" "ndk-bundle" "cmake;3.18.1"
   - IF %target_os%==android set PATH=%PATH%;C:\PROGRA~2\Android\android-sdk\ndk-bundle;C:\PROGRA~2\Android\android-sdk\build-tools\29.0.3;C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944\sysroot\usr\include
+  - ps: Get-Childitem –Path C:\PROGRA~2\Android\android-sdk\ -Include select.h -File -Recurse -ErrorAction SilentlyContinue
 
 #  - Tree "C:\Program Files (x86)\Android\android-sdk\add-ons" /F
 #  - gem install rest-client --no-document -f
@@ -223,7 +224,6 @@ before_test:
   - rmdir /Q /S rhoconnect-client
 
 test_script:
-  - IF %target_os%==android set PATH=%PATH%;C:\PROGRA~2\Android\android-sdk\ndk-bundle;C:\PROGRA~2\Android\android-sdk\build-tools\29.0.3;C:\PROGRA~2\Android\android-sdk\ndk\20.1.5948944\sysroot\usr\include
   - git clone -b master %testable_application_repository% %test_app_folder%
   - cd %test_app_folder%
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
