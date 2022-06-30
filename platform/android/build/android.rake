@@ -62,7 +62,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_MIN_SDK_LEVEL = 21 #21 is the minimum API that supports arm64
+ANDROID_MIN_SDK_LEVEL = 26 #21 is the minimum API that supports arm64
 ANDROID_SDK_LEVEL = 29
 
 ANDROID_PERMISSIONS = {
