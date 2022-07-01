@@ -9,7 +9,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "device:android:production"
+      build_command: "device:android:debug"
       #after_build_command: "run:win32:spec"
       app_name: framework_spec
       target_os: android
@@ -23,7 +23,7 @@ environment:
       QTDIR: C:\Qt\5.15\msvc2019
       testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
       test_app_folder: C:\TAU\rhodes-system-api-samples\
-      build_command: "device:android:production"
+      build_command: "device:android:debug"
       #after_build_command: "run:win32:spec"
       app_name: SAS
       target_os: android
@@ -187,7 +187,7 @@ install:
 
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
-  - IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
+  #- IF %target_os%==android keytool -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
   - yes | "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --licenses > nul
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --update
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --list
