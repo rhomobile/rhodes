@@ -1,9 +1,9 @@
 env:
   #app: C:/rhodes-app
   paths:
-    java: C:/Program Files/Java/jdk11/bin
-    android: C:/Program Files (x86)/Android/android-sdk
-    android-ndk: C:/ProgramData/Microsoft/AndroidNDK64/android-ndk-r17
+    java: C:/Program Files (x86)/Java/jdk1.8.0/bin
+    android: C:/PROGRA~2/Android/android-sdk
+    android-ndk: C:/PROGRA~2/Android/android-sdk/ndk/17.2.4988734
     cabwiz:  C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
     msbuild: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe
     vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
