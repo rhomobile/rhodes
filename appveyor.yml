@@ -188,7 +188,7 @@ install:
   - IF %target_os%==android appveyor DownloadFile https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -FileName C:\TAU\emdk.zip
   - IF %target_os%==android 7z x -y C:\TAU\emdk.zip -oC:\PROGRA~2\Android\android-sdk\add-ons\ -r
   - IF %target_os%==android "C:\Program Files (x86)\Java\jdk1.8.0\bin\keytool" -genkey -v -keystore %USERPROFILE%\.android\debug.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -noprompt -dname "CN=Rho-Android-appveyor-build" -storepass android -keypass android
-  - yes | "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --licenses > nul
+  - IF %target_os%==android yes | "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --licenses > nul
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --update
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" --list
   - IF %target_os%==android "C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat" "ndk;17.2.4988734" "build-tools;33.0.0" "ndk-bundle" "cmake;3.18.1" > nul
