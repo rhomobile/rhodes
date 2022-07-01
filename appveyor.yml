@@ -9,7 +9,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "device:android:debug"
+      build_command: "device:android:production"
       #after_build_command: "run:win32:spec"
       app_name: framework_spec
       target_os: android
@@ -23,7 +23,7 @@ environment:
       QTDIR: C:\Qt\5.15\msvc2019
       testable_application_repository: https://github.com/tauplatform/rhodes-system-api-samples.git
       test_app_folder: C:\TAU\rhodes-system-api-samples\
-      build_command: "device:android:debug"
+      build_command: "device:android:production"
       #after_build_command: "run:win32:spec"
       app_name: SAS
       target_os: android
