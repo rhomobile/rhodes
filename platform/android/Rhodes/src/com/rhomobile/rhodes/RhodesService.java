@@ -1197,9 +1197,9 @@ public class RhodesService extends Service {
 		//min API = 24
 		//builder.setCustomContentView(expandedView);
 		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
-		builder.setContentIntent(PendingIntent.getBroadcast(context, 0, intent, 0));
+		builder.setContentIntent(PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE));
 		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
-		builder.setDeleteIntent(PendingIntent.getBroadcast(context, 0, intent, 0));
+		builder.setDeleteIntent(PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE));
 
 		mNM.notify(DOWNLOAD_PACKAGE_ID, builder.build() );
 	}
