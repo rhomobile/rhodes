@@ -100,7 +100,8 @@ public class ZebraPrintingProviderImpl implements IZebraPrintingProvider {
 		        }
 		    };	
 			mUsbManager = (UsbManager) RhodesActivity.safeGetInstance().getSystemService(Context.USB_SERVICE);
-        	mPermissionIntent = PendingIntent.getBroadcast(RhodesActivity.safeGetInstance(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+        	mPermissionIntent = PendingIntent.getBroadcast(RhodesActivity.safeGetInstance(), 0, new Intent(ACTION_USB_PERMISSION), 
+        		PendingIntent.FLAG_IMMUTABLE);
         	IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         	RhodesActivity.safeGetInstance().registerReceiver(mUsbReceiver, filter);	
 		}
