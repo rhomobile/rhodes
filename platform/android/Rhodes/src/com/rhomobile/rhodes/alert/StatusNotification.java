@@ -47,7 +47,7 @@ public class StatusNotification
 	public static Notification simpleNotification(String tag, int notificationId, Context ctx, Intent intent, String title, String text)
 	{
 		Notification notification = makeNotification(text);
-		PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, intent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 		
 		notification.setLatestEventInfo(ctx, title, text, contentIntent);
 		notification.defaults = Notification.DEFAULT_ALL;
