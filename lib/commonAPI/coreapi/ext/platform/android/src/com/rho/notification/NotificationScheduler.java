@@ -175,7 +175,7 @@ public class NotificationScheduler {
 
         Intent new_intent = new Intent(context, cls);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
         if (interval < 0) {
