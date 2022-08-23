@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.UUID;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -46,7 +47,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     private static final String TAG = CameraObject.class.getSimpleName();
     public static boolean deprecated_take_pic;
     private Map<String, String> mActualPropertyMap;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
     void setActualPropertyMap(Map<String, String> props) { mActualPropertyMap = props; }
     Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
 
@@ -170,9 +171,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 }
 
                 String filePath = null;
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
+
                 if(!propertyMap.containsKey("fileName")){
-                    filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+                    filePath = "/sdcard/DCIM/Camera/IMG_"+ createFileName();
                     userFilePath = filePath;
                 }
                 else{
@@ -220,7 +221,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                         propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
                         String strUri = null;
                         if (!propertyMap.containsKey("fileName")) {
-                            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+                            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ createFileName(), "Camera");
                         }
                         else{
                             strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
@@ -326,7 +327,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
                         propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
                         String strUri = null;
                         if (!propertyMap.containsKey("fileName"))
-                        strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+                        strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ createFileName(), "Camera");
                         else
                         strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
                         if (strUri != null) {
@@ -646,13 +647,16 @@ public class CameraObject extends CameraBase implements ICameraObject {
     }
 
 
+    public static String createFileName(){
+        return dateFormat.format(new Date(System.currentTimeMillis())) + "_" + UUID.randomUUID().toString();
+    }
+
 
     String currentPhotoPath;
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date(System.currentTimeMillis()));
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "JPEG_" + createFileName() + "_";
         File storageDir = RhodesActivity.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
             imageFileName,  /* prefix */
@@ -703,7 +707,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             String fname = actualPropertyMap.get("fileName");
 
             //if(!actualPropertyMap.containsKey("fileName")){
-                fname = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+                fname = "IMG_" + createFileName();
             //}
 
             filePath = fdir + "/" + fname + ".jpg";
