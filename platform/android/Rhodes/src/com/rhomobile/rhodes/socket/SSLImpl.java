@@ -640,6 +640,7 @@ public class SSLImpl {
             String host = st.nextToken();
 
             SSLSocket aSock = (SSLSocket)f.createSocket(s, host, remote.port, true);
+            aSock.setEnabledProtocols(new String[] {"TLSv1", "TLSv1.1","TLSv1.2"});
             aSock.setUseClientMode(true);
 
             synchronized (this) {
