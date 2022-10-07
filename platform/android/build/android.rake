@@ -1448,6 +1448,8 @@ namespace "build" do
       unless $app_config['android']&.[]('barcode_engine').nil?
         engine = $app_config['android']['barcode_engine']
         case engine
+        when 'google'
+          ENV["BARCODE_ENGINE"] = 'google'
         when 'zxing'
           ENV["BARCODE_ENGINE"] = 'zxing'
         when 'google'
