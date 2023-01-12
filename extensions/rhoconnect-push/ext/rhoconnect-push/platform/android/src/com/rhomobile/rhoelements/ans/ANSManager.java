@@ -96,7 +96,7 @@ public class ANSManager {
 
         // The pending intent provides a spoof-proof way to pass the
         // package-name string
-        intent.putExtra("app", PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        intent.putExtra("app", PendingIntent.getBroadcast(context, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE));
         // The sender ID needs to be passed along for identification purposes
         intent.putExtra(ANSConstants.ANS_EXTRA_APP_NAME, appName);
         intent.putExtra(ANSConstants.ANS_EXTRA_USER_NAME, userName);
