@@ -26,6 +26,8 @@
 
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
+require_relative 'aurora_sdk_manager'
+
 require 'pathname'
 require 'tempfile'
 
@@ -187,53 +189,20 @@ namespace "config" do
       $current_target = $app_config["sailfish"]["target_sdk"]
     end
 
-    if isWindows?
-      if Dir.exist?(File.join($sailfishdir, "settings", "AuroraOS-SDK"))
-        $auroraSDK = true
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishSDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishOS-SDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
-      else
-        puts "Can't recognize build SDK!"
-        exit 1
-      end
-      $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
-    else
-      if Dir.exist?(File.join(File.expand_path('~'), ".config", "AuroraOS-SDK"))
-        $auroraSDK = true
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishSDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishOS-SDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
-      else
-        puts "Can't recognize build SDK!"
-        exit 1
-      end
-    end
+    $logger.debug "Looking for SDK in #{$sailfishdir}, current target: #{$current_target}"
 
-    if $auroraSDK
-      $sysName = "Aurora OS"
-    else
-      $sysName = "Sailfish OS"
-    end
+    $sdkmgr = Aurora::SDKManager.new $sailfishdir, $current_target
 
-    if !File.exists?($current_build_sdk_dir)
+    if !File.exists?( $sdkmgr.current_build_sdk_dir )
       puts "No such target (" + $current_target + ") exists"
       exit 1
     end
 
-    if $current_build_sdk_dir == ""
+    if $sdkmgr.current_build_sdk_dir == ""
       raise "Build arch sdk not found!"
     end
 
-    puts "Current building sdk: " + $current_build_sdk_dir
+    puts "Current building sdk: " + $sdkmgr.current_build_sdk_dir
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
     $rho_path =  File.join($app_path, "data", "rho")
     $srcdir = $rho_path
@@ -264,7 +233,7 @@ namespace "config" do
         "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
         "For list device use: sailfish:device:list\n"
       elsif $dev_type == "vbox"
-          $dev_name = "#{$sysName} Emulator"
+          $dev_name = "#{$sdkmgr.sysName} Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -605,7 +574,7 @@ def vm_is_started?
     end
     output = stdout.read
   end
-  return output.include?("#{$sysName} Build Engine")
+  return output.include?("#{$sdkmgr.sysName} Build Engine")
 end
 
 def deploy_bundle(session)
@@ -644,7 +613,7 @@ namespace "build"  do
       end
 
       if !vm_is_started?
-        system("\"" + $virtualbox_path + "\"" + " startvm \"#{$sysName} Build Engine\" --type headless") 
+        system("\"" + $virtualbox_path + "\"" + " startvm \"#{$sdkmgr.sysName} Build Engine\" --type headless") 
         puts "Waiting 40 seconds vm..."
         sleep 40.0
       end 
@@ -654,7 +623,7 @@ namespace "build"  do
       if $virtualbox_path.empty? 
         raise "Please, set VirtualBox variable environment..."
       end
-      system("\"" + $virtualbox_path + "\"" + " controlvm \"#{$sysName} Build Engine\" poweroff")
+      system("\"" + $virtualbox_path + "\"" + " controlvm \"#{$sdkmgr.sysName} Build Engine\" poweroff")
     end
     
     task :rhobundle => ["project:sailfish:qt"] do
@@ -916,7 +885,7 @@ namespace 'project' do
       build_script_generator.merPort = 2222
       build_script_generator.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
       build_script_generator.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
-      build_script_generator.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
+      build_script_generator.merSdkTools = QuotedStrNixWay(PathToWindowsWay($sdkmgr.current_build_sdk_dir))
       build_script_generator.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
       build_script_generator.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
       build_script_generator.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
@@ -926,14 +895,14 @@ namespace 'project' do
 
       #TODO: windows paths way - temporary
       cmd_suffix = isWindows? ? '.cmd' : ''
-      build_script_generator.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
+      build_script_generator.qmakePath = PathToWindowsWay(File.join($sdkmgr.current_build_sdk_dir, "qmake" + cmd_suffix))
       build_script_generator.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
       build_script_generator.buildMode = $connf_build.downcase
       build_script_generator.qmlMode = "qml_#{$connf_build.downcase}" 
-      build_script_generator.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
-      build_script_generator.rpmPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpm" + cmd_suffix))
-      build_script_generator.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
-      build_script_generator.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
+      build_script_generator.makePath = PathToWindowsWay(File.join($sdkmgr.current_build_sdk_dir, "make" + cmd_suffix))
+      build_script_generator.rpmPath =  PathToWindowsWay(File.join($sdkmgr.current_build_sdk_dir, "rpm" + cmd_suffix))
+      build_script_generator.rpmvalPath =  PathToWindowsWay(File.join($sdkmgr.current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
+      build_script_generator.deployPath =  PathToWindowsWay(File.join($sdkmgr.current_build_sdk_dir, "deploy" + cmd_suffix))
       build_script_generator.nThreads = $build_threads
 
       File.open(File.join($project_path, "build.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( build_erb_path ) }
