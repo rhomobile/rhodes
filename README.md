@@ -6,24 +6,12 @@
 
 # Current state of Rhomobile solution
 
-Currently Rhomobile solution supported and improved by TAU Technologies Inc (partner of Zebra Technologies).
+Currently Rhomobile solution supported and improved by TAU Technologies.
 For questions on commercial support contact [contact mail](mailto:info@tau-platform.com) or reach out to the [TAU Technologies website](http://tau-platform.com).
 
 Current actual version is Rhomobile Suite 7.5. [Download RMS 7.5](http://tau-platform.com/developers/downloads/)
 
 Actual documentation located on [RMS 7.5 documentation](http://docs.tau-platform.com/en/7.5/home)
-
-
-# RhoMobile Open Source Documentation
-
-This page contains links to documentation and source-code repositories for the RhoMobile Suite, which has been released by Zebra Technologies to the open source community.
-
-For access to prior documentation, please visit **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)**.
-
-
-## Getting RhoMobile source code
-
-[Getting Source Code](https://github.com/rhomobile/rhodes/blob/master/doc/oss/getting_source_code.md) - How to use git to download all the source code that Zebra is making available.
 
 ## RhoMobile versions
 
