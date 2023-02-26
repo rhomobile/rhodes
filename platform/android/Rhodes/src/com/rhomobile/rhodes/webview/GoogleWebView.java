@@ -2,6 +2,8 @@ package com.rhomobile.rhodes.webview;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -18,20 +20,556 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Picture;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.URLUtil;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import android.webkit.CookieManager;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import android.widget.EditText;
+import android.widget.TextView;
+import android.text.InputType;
+
+import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputConnectionWrapper;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.ExtractedTextRequest;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.CompletionInfo;
+import android.view.inputmethod.CorrectionInfo;
+import android.view.inputmethod.InputContentInfo;
+
+
+import android.content.Context;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.Display;
+import android.view.MotionEvent;
+
+import android.content.SharedPreferences;
+import android.provider.Settings;
+
+import android.os.Looper;
+import android.os.Handler;
+import android.util.TypedValue;
+import android.os.Bundle;
+import android.view.KeyEvent;
+
+//import android.annotation.IntRange;
+//import android.annotation.NonNull;
+//import android.annotation.Nullable;
+
+//import android.os.LocaleList;
+//import 	java.util.Locale;
 
 
 public class GoogleWebView implements IRhoWebView {
-    private static final String TAG = GoogleWebView.class.getSimpleName(); 
+    private static final String TAG = GoogleWebView.class.getSimpleName();
+
+    //private static final String ekbSipValue = "com.symbol.mxmf.csp.enterprisekeyboard/com.android.inputmethod.latin.LatinIME";
+    //private static final String tauSipValue = "com.androiddvlpr.androiddvlprkeyboard/.AndroidDvlprKeyboard";
+    private static final String tauSipValue = "com.tau.taubrowser/com.tau.TauKeyboard";
+    //private static final String invalidSipValue = "a/a";
+    //public static final String mypreference = "mypref";
+
+    public static String mSavedEnabledInputMethods = null;
+    public static String mSavedDefaultInputMethod = null;
+
+    private boolean mIsCanRunAgain = true;
+
+    private boolean mIsShouldKillKeyboardMethodUse = true;
+
+    Timer mKillKeyboardTimer = null;
+
+    private static final boolean ourShouldDisableKeyboard = true;
+
+    private OnGlobalLayoutListener mOnGlobalLayoutListener = null;
+
+
+    public class RhoInputConnectionWrapper extends InputConnectionWrapper {
+        private String TAG = RhoInputConnectionWrapper.class.getSimpleName();
+
+        public RhoInputConnectionWrapper(InputConnection connection) {
+            super(connection, true);
+        }
+
+
+        @Override
+        public CharSequence getTextBeforeCursor(int n, int flags) {
+            Logger.I(this.TAG, ".getTextBeforeCursor()");
+            hideAnyKeyboard();
+            return super.getTextBeforeCursor(n, flags);
+        }
+
+        @Override
+        public CharSequence getTextAfterCursor(int n, int flags) {
+            Logger.T(this.TAG, ".getTextAfterCursor()");
+            hideAnyKeyboard();
+            return super.getTextAfterCursor(n, flags);
+        }
+
+        @Override
+        public CharSequence getSelectedText(int flags) {
+            Logger.T(this.TAG, ".getSelectedText()");
+            hideAnyKeyboard();
+            return super.getSelectedText(flags);
+        }
+
+        @Override
+        public SurroundingText getSurroundingText(int beforeLength, int afterLength, int flags) {
+            Logger.T(this.TAG, ".getSurroundingText()");
+            hideAnyKeyboard();
+            return super.getSurroundingText(beforeLength, afterLength, flags);
+        }
+
+        @Override
+        public int getCursorCapsMode(int reqModes) {
+            Logger.T(this.TAG, ".getCursorCapsMode()");
+            hideAnyKeyboard();
+            return super.getCursorCapsMode(reqModes);
+        }
+
+        @Override
+        public ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
+            Logger.T(this.TAG, ".getExtractedText()");
+            hideAnyKeyboard();
+            return super.getExtractedText(request, flags);
+        }
+
+        @Override
+        public boolean setComposingText(CharSequence text, int newCursorPosition) {
+            Logger.T(this.TAG, ".setComposingText()");
+            hideAnyKeyboard();
+            return super.setComposingText(text, newCursorPosition);
+        }
+
+        //@Override
+        //public boolean setComposingText(@NonNull CharSequence text,
+        //            int newCursorPosition, @Nullable TextAttribute textAttribute) {
+        //    hideAnyKeyboard();
+        //    return super.setComposingText(text, newCursorPosition, textAttribute);
+        //}
+
+        @Override
+        public boolean setComposingRegion(int start, int end) {
+            Logger.T(this.TAG, ".setComposingRegion()");
+            hideAnyKeyboard();
+            return super.setComposingRegion(start, end);
+        }
+
+        //@Override
+        //public boolean setComposingRegion(int start, int end, @Nullable TextAttribute textAttribute) {
+        //    hideAnyKeyboard();
+        //    return super.setComposingRegion(start, end, textAttribute);
+        //}
+
+        @Override
+        public boolean finishComposingText() {
+            Logger.T(this.TAG, ".finishComposingText()");
+            hideAnyKeyboard();
+            return super.finishComposingText();
+        }
+
+        @Override
+        public boolean commitText(CharSequence text, int newCursorPosition) {
+            Logger.T(this.TAG, ".commitText()");
+            hideAnyKeyboard();
+            return super.commitText(text, newCursorPosition);
+        }
+
+        //@Override
+        //public boolean commitText(@NonNull CharSequence text, int newCursorPosition,
+        //                            @Nullable TextAttribute textAttribute) {
+        //    hideAnyKeyboard();
+        //    return super.commitText(text, newCursorPosition, textAttribute);
+        //}
+
+        @Override
+        public boolean commitCompletion(CompletionInfo text) {
+            Logger.T(this.TAG, ".commitCompletion()");
+            hideAnyKeyboard();
+            return super.commitCompletion(text);
+        }
+
+        @Override
+        public boolean commitCorrection(CorrectionInfo correctionInfo) {
+            Logger.T(this.TAG, ".commitContent()");
+            hideAnyKeyboard();
+            return super.commitCorrection(correctionInfo);
+        }
+
+        @Override
+        public boolean setSelection(int start, int end) {
+            Logger.T(this.TAG, ".setSelection()");
+            hideAnyKeyboard();
+            return super.setSelection(start, end);
+        }
+
+        @Override
+        public boolean performEditorAction(int editorAction) {
+            Logger.T(this.TAG, ".performEditorAction()");
+            hideAnyKeyboard();
+            return super.performEditorAction(editorAction);
+        }
+
+        @Override
+        public boolean performContextMenuAction(int id) {
+            Logger.T(this.TAG, ".performContextMenuAction()");
+            hideAnyKeyboard();
+            return super.performContextMenuAction(id);
+        }
+
+        @Override
+        public boolean beginBatchEdit() {
+            Logger.T(this.TAG, ".beginBatchEdit()");
+            hideAnyKeyboard();
+            return super.beginBatchEdit();
+        }
+
+        @Override
+        public boolean endBatchEdit() {
+            Logger.T(this.TAG, ".endBatchEdit()");
+            hideAnyKeyboard();
+            return super.endBatchEdit();
+        }
+
+        @Override
+        public boolean sendKeyEvent(KeyEvent event) {
+            Logger.T(this.TAG, ".sendKeyEvent()");
+            hideAnyKeyboard();
+            return super.sendKeyEvent(event);
+        }
+
+        @Override
+        public boolean clearMetaKeyStates(int states) {
+            Logger.T(this.TAG, ".clearMetaKeyStates()");
+            hideAnyKeyboard();
+            return super.clearMetaKeyStates(states);
+        }
+
+        @Override
+        public boolean reportFullscreenMode(boolean enabled) {
+            Logger.T(this.TAG, ".reportFullscreenMode()");
+            hideAnyKeyboard();
+            return super.reportFullscreenMode(enabled);
+        }
+
+        @Override
+        public boolean performSpellCheck() {
+            Logger.T(this.TAG, ".performSpellCheck()");
+            hideAnyKeyboard();
+            return super.performSpellCheck();
+        }
+
+        @Override
+        public boolean performPrivateCommand(String action, Bundle data) {
+            Logger.T(this.TAG, ".performPrivateCommand()");
+            hideAnyKeyboard();
+            return super.performPrivateCommand(action, data);
+        }
+
+        @Override
+        public boolean requestCursorUpdates(int cursorUpdateMode) {
+            Logger.T(this.TAG, ".requestCursorUpdates()");
+            hideAnyKeyboard();
+            return super.requestCursorUpdates(cursorUpdateMode);
+        }
+
+        @Override
+        public Handler getHandler() {
+            Logger.T(this.TAG, ".getHandler()");
+            //hideAnyKeyboard();
+            Handler h = null;
+            try {
+                h = super.getHandler();
+            }
+            catch (Exception ex) {
+                Logger.E(this.TAG, ".getHandler() ERROR = "+ex.getMessage());
+            }
+            if (h == null) {
+                h = new Handler(Looper.getMainLooper());
+            }
+            return h;
+        }
+
+        @Override
+        public void closeConnection() {
+            Logger.T(this.TAG, ".closeConnection()");
+            //hideAnyKeyboard();
+            try {
+                super.closeConnection();
+            }
+            catch (Exception ex) {
+                Logger.E(this.TAG, ".closeConnection() ERROR = "+ex.getMessage());
+            }
+        }
+
+        @Override
+        public boolean commitContent(InputContentInfo inputContentInfo, int flags, Bundle opts) {
+            Logger.T(this.TAG, ".commitContent()");
+            hideAnyKeyboard();
+            return super.commitContent(inputContentInfo, flags, opts);
+        }
+
+        @Override
+        public boolean setImeConsumesInput(boolean imeConsumesInput) {
+            Logger.T(this.TAG, ".setImeConsumesInput()");
+            hideAnyKeyboard();
+            return super.setImeConsumesInput(imeConsumesInput);
+        }
+
+        private void hideAnyKeyboard() {
+            if (ourShouldDisableKeyboard) {
+                if (mIsShouldKillKeyboardMethodUse) {
+                    hideKeyboard();
+                    /*
+                    //hideKeyboardNow();
+                    if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                        hideKeyboardNow();
+                    }
+                    PerformOnUiThread.exec(new Runnable() {
+                         @Override
+                         public void run() {
+                             hideKeyboardNow();
+                         }
+                    });
+                    */
+                }
+            }
+        }
+
+    }
+
+    public class RhoKeyboardWebView extends android.webkit.WebView {
+
+        private String TAG = RhoKeyboardWebView.class.getSimpleName();
+
+        public RhoKeyboardWebView(Activity activity) {
+            super(activity);
+
+            if (ourShouldDisableKeyboard) {
+                setupOurTauKeyboard();
+                RhodesActivity.safeGetInstance().getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+                if (mIsShouldKillKeyboardMethodUse ) {
+                    final RhoKeyboardWebView me = this;
+                    setOnTouchListener(new View.OnTouchListener() {
+                        public boolean onTouch(View v, MotionEvent event) {
+                            ViewGroup activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content));
+                            //recursiveLoopChildrenForTextEdit(activityRootView);
+                            //RhodesActivity.safeGetInstance().getWindow().setFlags(  WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
+                            //                                                        WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                            hideKeyboard();
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+
+        public void loadUrl(String url) {
+            Logger.I(this.TAG, "RhoKbWebView.loadUrl url = " + url);
+            super.loadUrl(url);
+        }
+
+
+        public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+            if (ourShouldDisableKeyboard) {
+                outAttrs.privateImeOptions = "tau browser!";
+                if (mIsShouldKillKeyboardMethodUse) {
+                    //recursiveLoopChildrenForTextEdit(this);
+                    hideKeyboard();
+                    outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
+                    outAttrs.inputType = EditorInfo.TYPE_NULL;
+                    //outAttrs.hintLocales = new LocaleList(new Locale("en", "US"));
+                }
+            }
+            InputConnection super_connection = super.onCreateInputConnection(outAttrs);
+            InputConnection connection = new RhoInputConnectionWrapper(super_connection);
+
+            if (ourShouldDisableKeyboard) {
+                if (mIsShouldKillKeyboardMethodUse) {
+                    //outAttrs.hintLocales = new LocaleList(new Locale("en", "US"));
+                    outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
+                    outAttrs.inputType = EditorInfo.TYPE_NULL;
+                    hideKeyboard();
+                    //ViewGroup activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content));
+                    //recursiveLoopChildrenForTextEdit(activityRootView);
+                }
+            }
+            return connection;
+        }
+
+        public void recursiveLoopChildrenForTextEdit(ViewGroup parent) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            final View child = parent.getChildAt(i);
+
+            //child.setBackgroundColor(0xFF00FF00);
+            if (child instanceof TextView) {
+                TextView et = (TextView)child;
+                et.setRawInputType(InputType.TYPE_CLASS_TEXT);
+                et.setTextIsSelectable(true);
+                et.setBackgroundColor(0xFF00FF00);
+                //et.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+
+            if (child instanceof ViewGroup) {
+                recursiveLoopChildrenForTextEdit((ViewGroup) child);
+            } else {
+                if (child != null) {
+                }
+            }
+        }
+    }
+    }
+
+
+
+    private void setupOurTauKeyboard() {
+        if (ourShouldDisableKeyboard) {
+            try {
+                mIsShouldKillKeyboardMethodUse = true;
+                RhodesActivity.safeGetInstance();
+                Context context = RhodesActivity.getContext();
+                String enabledInputmethods = Settings.Secure.getString(context.getContentResolver(), "enabled_input_methods");
+                Logger.I(this.TAG, "TAU KEYBOARD enabled_input_methods = " + enabledInputmethods);
+
+                String default_input_method_local = Settings.Secure.getString(context.getContentResolver(), "default_input_method");
+                Logger.I(this.TAG, "TAU KEYBOARD default_input_method = " + default_input_method_local);
+
+                boolean hasError = false;
+                if (!enabledInputmethods.contains(tauSipValue)) {
+                    // should be added !
+                    boolean res_added = Settings.Secure.putString(context.getContentResolver(), "enabled_input_methods", enabledInputmethods+":"+tauSipValue);
+                    Logger.I(this.TAG, "TAU KEYBOARD add our keyboard to enabled_input_methods res_added = " + res_added);
+                    if (res_added) {
+                        mSavedEnabledInputMethods = enabledInputmethods;
+                    }
+                    else {
+                        hasError = true;
+                    }
+                }
+                else {
+                    Logger.I(this.TAG, "TAU KEYBOARD enabled_input_methods already has tau keyboard");
+                }
+
+                if (!hasError) {
+                    boolean res_def = Settings.Secure.putString(context.getContentResolver(), "default_input_method", tauSipValue);
+                    Logger.I(this.TAG, "TAU KEYBOARD set our keyboard to default_input_method res_def = " + res_def);
+                    if (res_def) {
+                        mSavedDefaultInputMethod = default_input_method_local;
+                        //if (mSavedDefaultInputMethod == null) {
+                            mSavedDefaultInputMethod = "com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME";
+                        //}
+                    }
+                    else {
+                        hasError = true;
+                    }
+                }
+                if (!hasError) {
+                    mIsShouldKillKeyboardMethodUse = false;
+                }
+
+            } catch (Exception e) {
+                Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+            }
+
+            if (mIsShouldKillKeyboardMethodUse) {
+                Logger.E(this.TAG, "TAU KEYBOARD no android.permission.WRITE_SECURE_SETTINGS permission - use alternative method !");
+
+                if (mKillKeyboardTimer != null) {
+                    mKillKeyboardTimer.cancel();
+                }
+
+                mKillKeyboardTimer = new Timer();
+
+                //Update the elapsed time every second
+                mKillKeyboardTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //hideKeyboardNow();
+                        ///*
+                        if (mIsCanRunAgain) {
+                            mIsCanRunAgain = false;
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideKeyboardNow();
+                                    mIsCanRunAgain = true;
+                                }
+                            });
+                        }
+                        //*/
+                    }
+                }, 100, 5);
+            }
+            setKeyboardListener();
+        }
+    }
+
+
+    private void restoreKeyboardSettings() {
+        if (mKillKeyboardTimer != null) {
+            mKillKeyboardTimer.cancel();
+            mKillKeyboardTimer = null;
+        }
+        if (mSavedEnabledInputMethods != null) {
+            String to_restore = mSavedEnabledInputMethods;
+            mSavedEnabledInputMethods = null;
+            Logger.I(this.TAG, "TAU KEYBOARD restore saved enabled_input_methods");
+            try {
+                RhodesActivity.safeGetInstance();
+                Context context = RhodesActivity.getContext();
+                Settings.Secure.putString(context.getContentResolver(), "enabled_input_methods", to_restore);
+            } catch (Exception e) {
+                Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+            }
+        }
+        if (mSavedDefaultInputMethod != null) {
+            String to_restore = mSavedDefaultInputMethod;
+            mSavedDefaultInputMethod = null;
+            Logger.I(this.TAG, "TAU KEYBOARD restore saved default_input_method");
+            try {
+                RhodesActivity.safeGetInstance();
+                Context context = RhodesActivity.getContext();
+                Settings.Secure.putString(context.getContentResolver(), "default_input_method", to_restore);
+            } catch (Exception e) {
+                Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+            }
+        }
+        removeKeyboardListener();
+    }
+
+
+    public final void setKeyboardListener() {
+        final View activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content)).getChildAt(0);
+
+        //removeOnGlobalLayoutListener
+        if (mOnGlobalLayoutListener != null) {
+            activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+        }
+    }
+
+    public final void removeKeyboardListener() {
+        final View activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content)).getChildAt(0);
+
+        if (mOnGlobalLayoutListener != null) {
+            activityRootView.getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+        }
+    }
+
+
 
     private WebChromeClient mChromeClient;
     private WebViewClient mWebViewClient;
@@ -43,9 +581,35 @@ public class GoogleWebView implements IRhoWebView {
     private IRhoConfig mConfig;
 
     public GoogleWebView(Activity activity) {
-        mWebView = new android.webkit.WebView(activity);
+        mWebView = new RhoKeyboardWebView(activity);
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
+
+
+
+        if (ourShouldDisableKeyboard) {
+            mOnGlobalLayoutListener = new OnGlobalLayoutListener() {
+
+                @Override
+                public void onGlobalLayout() {
+                    hideKeyboard();
+                }
+
+            };
+
+
+            mWebView.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideKeyboard();
+                    return false;
+                }
+            });
+
+
+            if (mIsShouldKillKeyboardMethodUse) {
+                setKeyboardListener();
+            }
+        }
 
         synchronized(mInitialized) {
             if (!mInitialized) {
@@ -57,10 +621,56 @@ public class GoogleWebView implements IRhoWebView {
         mChromeClient = new RhoWebChromeClient(activity, this);
     }
 
+    private void hideKeyboardNow() {
+        ///*
+        try {
+            Activity ctx = RhodesActivity.safeGetInstance();
+            if (ctx != null) {
+                InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(getView().getApplicationWindowToken(), 0);
+
+                    //Logger.T(this.TAG, "EBZSP imm.setInputMethod BEFORE");
+                    //imm.setInputMethod(getView().getApplicationWindowToken(), "com.androiddvlpr.androiddvlprkeyboard/.AndroidDvlprKeyboard");
+                    //Logger.T(this.TAG, "EBZSP imm.setInputMethod AFTER");
+
+                    if (ctx.getCurrentFocus() != null) {
+                        imm.hideSoftInputFromWindow(ctx.getCurrentFocus().getWindowToken(), 0);
+                    }
+                }
+            }
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+        }
+        //*/
+    }
+
+    private void hideKeyboard() {
+       if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
+           hideKeyboardNow();
+       }
+       else {
+           PerformOnUiThread.exec(new Runnable() {
+                @Override
+                public void run() {
+                    hideKeyboardNow();
+                }
+           });
+       }
+       PerformOnUiThread.exec(new Runnable() {
+            @Override
+            public void run() {
+                hideKeyboardNow();
+            }
+       }, 10);
+    }
+
+
     private static void initWebStuff(Activity activity) {
 
         Logger.I(TAG, "Initialize Google WEbView staff");
-        
+
         OsVersionManager.registerSelector(IWebSettingsProvider.class, WebSettingsProviderBase.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR, IWebSettingsProvider.class, WebSettingsProviderEclair.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR_MR1, IWebSettingsProvider.class, WebSettingsProviderEclairMR1.class.getCanonicalName());
@@ -71,14 +681,14 @@ public class GoogleWebView implements IRhoWebView {
 
         mInitialized = true;
     }
-    
+
     private void applyWebSettings() {
         Logger.I(TAG, "applyWebSettings");
 //        PerformOnUiThread.exec(new Runnable() {
 //            @Override
 //            public void run() {
                 Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                
+
                 double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
                 mWebView.setInitialScale((int)(z * 100));
                 mWebView.setVerticalScrollBarEnabled(true);
@@ -87,7 +697,7 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
                 int sdkVersion = Build.VERSION.SDK_INT;
-                
+
                 if ( sdkVersion >= 21 ) {
                     Logger.I(TAG, "Enabling third-party cookies");
                     CookieManager cm = CookieManager.getInstance();
@@ -95,23 +705,23 @@ public class GoogleWebView implements IRhoWebView {
                         java.lang.reflect.Method mtdAllow3Party = cm.getClass().getMethod("setAcceptThirdPartyCookies", android.webkit.WebView.class, boolean.class);
                         mtdAllow3Party.invoke(cm,mWebView,true);
                         Logger.I(TAG, "Enabling third-party cookies done");
-                    } catch (SecurityException e) { 
+                    } catch (SecurityException e) {
                         Logger.W(TAG, "Can't allow third-party cookies explicily due to SecurityException");
-                    } catch (NoSuchMethodException e) { 
+                    } catch (NoSuchMethodException e) {
                         Logger.W(TAG, "Can't allow third-party cookies explicily due to NoSuchMethodException");
                     } catch ( Exception e ) {
                         Logger.E(TAG, "Can't allow third-party cookies explicily due to exception: " + e.toString() );
                     }
                 }
-                
+
     		  /*  if(sdkVersion <19){
     		    	  mWebView.getSettings().setLoadWithOverviewMode(true);
     		    	  mWebView.getSettings().setUseWideViewPort(true);
     		    }*/
-    		    
+
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
-                
+
                 RhodesActivity.safeGetInstance().notifyUiCreated();
 //            }
 //        });
@@ -128,13 +738,13 @@ public class GoogleWebView implements IRhoWebView {
             }
         });
     }
-    
+
     @Override
     public void setConfig(IRhoConfig config) {
         mConfig = config;
         applyWebSettings();
     }
-    
+
     public IRhoConfig getConfig() {
         return mConfig;
     }
@@ -190,7 +800,7 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void loadUrl(String url) {
         Logger.profStart("BROWSER_PAGE");
-        
+
         RhoExtManager.getImplementationInstance().onBeforeNavigate(mWebView, url);
 
         Uri uri = LocalFileProvider.overrideUri(Uri.parse(url));
@@ -252,7 +862,7 @@ public class GoogleWebView implements IRhoWebView {
         }
         mWebView.getSettings().setTextSize(googleTextZoom);
     }
-    
+
     @Override
     public TextZoom getTextZoom()
     {
@@ -266,19 +876,26 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void onPause() {
+        // lost foreground - restore keyboard settings !
+        restoreKeyboardSettings();
+
+
         //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
     }
 
     @Override
     public void onResume() {
+        setupOurTauKeyboard();
+
         //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
     }
 
     @Override
     public void destroy() {
+        restoreKeyboardSettings();
         mWebView.destroy();
     }
-    
+
     @Override
     public WebBackForwardList copyBackForwardList() {
     	return mWebView.copyBackForwardList();
