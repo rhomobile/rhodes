@@ -29,23 +29,23 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setSupportZoom(enableZoom);
         settings.setBuiltInZoomControls(enableZoom);
-        settings.setAppCacheEnabled(true);
+        //settings.setAppCacheEnabled(true);
         if(!RhoConf.getString("fontFamily").isEmpty())
         settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
         //customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
         //settings.setUserAgentString(customUA);
-        if(RhoConf.isExist("ApplicationCachePath")){
-        	if(!RhoConf.getString("ApplicationCachePath").isEmpty())
-        		settings.setAppCachePath(RhoConf.getString("ApplicationCachePath"));
-        }
-        if(RhoConf.isExist("ApplicationCacheQuota")){
-        	if(!RhoConf.getString("ApplicationCacheQuota").isEmpty())
-        		try{
-        		settings.setAppCacheMaxSize(Long.valueOf(RhoConf.getString("ApplicationCacheQuota")).longValue()); 
-        		}
-        		catch(NumberFormatException exp){
-        		}
-        }	
+        //if(RhoConf.isExist("ApplicationCachePath")){
+        //	if(!RhoConf.getString("ApplicationCachePath").isEmpty())
+        //		settings.setAppCachePath(RhoConf.getString("ApplicationCachePath"));
+        //}
+        //if(RhoConf.isExist("ApplicationCacheQuota")){
+       // 	if(!RhoConf.getString("ApplicationCacheQuota").isEmpty())
+       // 		try{
+       // 		settings.setAppCacheMaxSize(Long.valueOf(RhoConf.getString("ApplicationCacheQuota")).longValue()); 
+       // 		}
+       // 		catch(NumberFormatException exp){
+       // 		}
+        //}	
         Logger.T(TAG, "Enable Zoom: " + enableZoom);
         
         if (enableCache) {

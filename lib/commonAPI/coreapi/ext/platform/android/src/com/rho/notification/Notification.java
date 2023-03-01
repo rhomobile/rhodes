@@ -320,8 +320,9 @@ public class Notification {
         }
 
         builder.setSmallIcon(R.drawable.ic_notification);
+
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), 
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
         builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
 
