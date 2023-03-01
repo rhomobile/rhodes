@@ -1520,6 +1520,7 @@ public class RhodesService extends Service {
 					uuid = reader.readLine();
 				}catch (IOException e) {
 					Logger.E(TAG, "Error on reading UUID from file: " + e.getMessage());
+					uuid = computeUUID();
 				}finally{
 					reader.close();
 				}

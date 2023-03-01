@@ -2112,15 +2112,18 @@ public class ElementsCore implements IActivityListener, IElementsCore,
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-                    doc.getDocumentElement().normalize();
-                    NodeList nList = doc.getElementsByTagName("IntentAction");
-                    for (int temp = 0; temp < nList.getLength(); temp++) {
-                    	intentfilter.addAction(nList.item(temp).getAttributes().getNamedItem("value").getTextContent());
-                    }
-                    NodeList nList_cat = doc.getElementsByTagName("IntentCategory");
-                    for (int i = 0; i < nList_cat.getLength(); i++) {
-                    	intentfilter.addCategory(nList_cat.item(i).getAttributes().getNamedItem("value").getTextContent());
-                	}
+					if ( doc != null )
+					{
+						doc.getDocumentElement().normalize();
+						NodeList nList = doc.getElementsByTagName("IntentAction");
+						for (int temp = 0; temp < nList.getLength(); temp++) {
+							intentfilter.addAction(nList.item(temp).getAttributes().getNamedItem("value").getTextContent());
+						}
+						NodeList nList_cat = doc.getElementsByTagName("IntentCategory");
+						for (int i = 0; i < nList_cat.getLength(); i++) {
+							intentfilter.addCategory(nList_cat.item(i).getAttributes().getNamedItem("value").getTextContent());
+						}
+					}
 			RhodesActivity.getContext().registerReceiver(mReceiver, intentfilter);
                     	RECEIVER_REGISTER_STATUS = 1;
 				}

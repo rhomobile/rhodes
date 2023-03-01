@@ -323,6 +323,23 @@ public class RhodesApplication extends Application{
         public abstract void run();
     }
 
+    public static abstract class StateHandlerInUIThread extends StateHandler
+    {
+        public StateHandlerInUIThread(boolean once) { super(once); }
+
+        public abstract void runInUI();
+
+        final public void run()
+        {
+            PerformOnUiThread.exec(new Runnable() {
+                @Override
+                public void run() {
+                    StateHandlerInUIThread.this.runInUI();
+                } }
+            );
+        }
+    }
+
     /**
      * 
      * @author lexis_tikh

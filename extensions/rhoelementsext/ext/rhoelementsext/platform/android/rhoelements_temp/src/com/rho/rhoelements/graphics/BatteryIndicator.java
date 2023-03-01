@@ -381,7 +381,7 @@ public class BatteryIndicator extends Indicator
 		    display = ((WindowManager)RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		}
 		catch (Exception e) {
-            Logger.E(TAG, e);
+            Common.logger.add(new LogEntry(LogEntry.PB_LOG_ERROR, e.toString()));
         }
 		int width = display.getWidth();  // deprecated
 		int height = display.getHeight();  // deprecated
@@ -425,7 +425,7 @@ public class BatteryIndicator extends Indicator
 		  }
 		}
 		catch (Exception e) {
-            Logger.E(TAG, e);
+            Common.logger.add(new LogEntry(LogEntry.PB_LOG_ERROR, e.toString()));
         }
 
 	}

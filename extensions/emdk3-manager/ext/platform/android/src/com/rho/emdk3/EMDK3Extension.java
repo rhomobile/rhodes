@@ -37,15 +37,24 @@ public class EMDK3Extension extends AbstractRhoExtension implements EMDKListener
 	private void aquireEmdkManager()
 	{
 		Logger.D(TAG, "aquireEmdkManager+ Context: " + RhoExtManager.getImplementationInstance().getContext());
-		statusCode = EMDKManager.getEMDKManager(RhoExtManager.getImplementationInstance().getContext(), this).statusCode;
-		if(statusCode != EMDKResults.STATUS_CODE.SUCCESS)
+		try
 		{
-			Logger.E(TAG, "EMDKManager could not be aquired: " + statusCode.name());
+			statusCode = EMDKManager.getEMDKManager(RhoExtManager.getImplementationInstance().getContext(), this).statusCode;
+			if(statusCode != EMDKResults.STATUS_CODE.SUCCESS)
+			{
+				Logger.E(TAG, "EMDKManager could not be aquired: " + statusCode.name());
+			}
+			else
+			{
+				isAquiringEmdkManager = true;
+			}
 		}
-		else
+		catch( Exception e )
 		{
-			isAquiringEmdkManager = true;
+			statusCode = EMDKResults.STATUS_CODE.FAILURE;
+			Logger.E(TAG, "EMDKManager could not be aquired: " + e.getMessage());
 		}
+
 		Logger.D(TAG, "aquireEmdkManager- Status Code: " + statusCode);
 	}
 	
