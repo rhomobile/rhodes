@@ -320,9 +320,9 @@ public class Notification {
         }
 
         builder.setSmallIcon(R.drawable.ic_notification);
-        Intent i = new Intent(ctx, RhodesActivity.class);
-        i.addFlags(PendingIntent.FLAG_IMMUTABLE);
-        builder.setContentIntent(PendingIntent.getActivity(ctx, id, i, PendingIntent.FLAG_UPDATE_CURRENT));
+
+        builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), 
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
         builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
 
@@ -349,7 +349,8 @@ public class Notification {
                     resId = R.drawable.ic_action_cancel;
                 }
                 
-                builder.addAction(resId, action.title, PendingIntent.getService(ctx, id, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                builder.addAction(resId, action.title, PendingIntent.getService(ctx, id, actionIntent, 
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
             }
         }
         

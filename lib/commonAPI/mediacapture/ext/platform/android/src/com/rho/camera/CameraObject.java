@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.ArrayList;
+import java.util.UUID;
  
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,7 +50,7 @@ import com.rho.camera.ICameraSingleton;
 
 public class CameraObject extends CameraBase implements ICamera{
     private static final String TAG = CameraObject.class.getSimpleName();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
 
     private Camera mCamera = null;
     private int mCameraUsers;   
@@ -189,9 +190,12 @@ public class CameraObject extends CameraBase implements ICamera{
         }
     }
 
+    public static String createFileName(){
+        return dateFormat.format(new Date(System.currentTimeMillis())) + "_" + UUID.randomUUID().toString();
+    }
+
     private File createImageFile() throws IOException {
-        String timeStamp = dateFormat.format(new Date(System.currentTimeMillis()));
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "JPEG_" + createFileName() + "_";
         File storageDir = RhodesActivity.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         return image;
@@ -223,7 +227,7 @@ public class CameraObject extends CameraBase implements ICamera{
             String fileDir = storageDir.getAbsolutePath();
             String fileName = actualPropertyMap.get(ICameraSingleton.PROPERTY_FILE_NAME);
             if (fileName == null || fileName.isEmpty()){
-               fileName = "IMG_" + dateFormat.format(new Date(System.currentTimeMillis()));
+               fileName = "IMG_" + createFileName();
             }
             String filePath = fileDir + "/" + fileName + ".jpg";
 

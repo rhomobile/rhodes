@@ -31,7 +31,7 @@ public class ANSManager {
         Intent intent = createExplicitFromImplicitIntent( context, new Intent(ANSConstants.ANS_REGISTER_ACTION));
         // The pending intent provides a spoof-proof way to pass the
         // package-name string
-        intent.putExtra(ANSConstants.ANS_EXTRA_APP, PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        intent.putExtra(ANSConstants.ANS_EXTRA_APP, PendingIntent.getBroadcast(context, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE));
 
         // send the sender ID to the reg service
         intent.putExtra(ANSConstants.ANS_EXTRA_APP_NAME, appName);
@@ -66,7 +66,7 @@ public class ANSManager {
         Intent intent = createExplicitFromImplicitIntent( context, new Intent( ANSConstants.ANS_CHECK_REGISTRATION_ACTION) );
         // The pending intent provides a spoof-proof way to pass the
         // package-name string
-        intent.putExtra(ANSConstants.ANS_EXTRA_APP, PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        intent.putExtra(ANSConstants.ANS_EXTRA_APP, PendingIntent.getBroadcast(context, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE));
 
         // send the sender ID to the reg service
         intent.putExtra(ANSConstants.ANS_EXTRA_APP_NAME, appName);
@@ -96,7 +96,7 @@ public class ANSManager {
 
         // The pending intent provides a spoof-proof way to pass the
         // package-name string
-        intent.putExtra("app", PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        intent.putExtra("app", PendingIntent.getBroadcast(context, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE));
         // The sender ID needs to be passed along for identification purposes
         intent.putExtra(ANSConstants.ANS_EXTRA_APP_NAME, appName);
         intent.putExtra(ANSConstants.ANS_EXTRA_USER_NAME, userName);
