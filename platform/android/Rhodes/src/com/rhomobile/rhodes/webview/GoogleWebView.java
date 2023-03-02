@@ -397,7 +397,7 @@ public class GoogleWebView implements IRhoWebView {
             InputConnection super_connection = super.onCreateInputConnection(outAttrs);
             InputConnection connection = super_connection;
             if (ourShouldDisableKeyboard && mIsShouldKillKeyboardMethodUse) {
-                connection = new RhoInputConnectionWrapper(super_connection);
+                //connection = new RhoInputConnectionWrapper(super_connection);
             }
 
             if (ourShouldDisableKeyboard) {
