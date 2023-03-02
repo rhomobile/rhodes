@@ -257,8 +257,15 @@ public class GoogleWebView implements IRhoWebView {
         @Override
         public boolean reportFullscreenMode(boolean enabled) {
             Logger.T(this.TAG, ".reportFullscreenMode()");
-            hideAnyKeyboard();
-            return super.reportFullscreenMode(enabled);
+            //hideAnyKeyboard();
+            boolean h = false;
+            try {
+                h = super.reportFullscreenMode(enabled);
+            }
+            catch (Exception ex) {
+                Logger.E(this.TAG, ".reportFullscreenMode() ERROR = "+ex.getMessage());
+            }
+            return h;
         }
 
         @Override
@@ -388,7 +395,10 @@ public class GoogleWebView implements IRhoWebView {
                 }
             }
             InputConnection super_connection = super.onCreateInputConnection(outAttrs);
-            InputConnection connection = new RhoInputConnectionWrapper(super_connection);
+            InputConnection connection = super_connection;
+            if (ourShouldDisableKeyboard && mIsShouldKillKeyboardMethodUse) {
+                connection = new RhoInputConnectionWrapper(super_connection);
+            }
 
             if (ourShouldDisableKeyboard) {
                 if (mIsShouldKillKeyboardMethodUse) {
