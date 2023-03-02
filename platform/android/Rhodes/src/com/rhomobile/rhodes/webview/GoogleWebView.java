@@ -77,11 +77,7 @@ import android.view.KeyEvent;
 public class GoogleWebView implements IRhoWebView {
     private static final String TAG = GoogleWebView.class.getSimpleName();
 
-    //private static final String ekbSipValue = "com.symbol.mxmf.csp.enterprisekeyboard/com.android.inputmethod.latin.LatinIME";
-    //private static final String tauSipValue = "com.androiddvlpr.androiddvlprkeyboard/.AndroidDvlprKeyboard";
     private static final String tauSipValue = "com.tau.taubrowser/com.tau.TauKeyboard";
-    //private static final String invalidSipValue = "a/a";
-    //public static final String mypreference = "mypref";
 
     public static String mSavedEnabledInputMethods = null;
     public static String mSavedDefaultInputMethod = null;
@@ -92,7 +88,7 @@ public class GoogleWebView implements IRhoWebView {
 
     Timer mKillKeyboardTimer = null;
 
-    private static final boolean ourShouldDisableKeyboard = true;
+    private static boolean ourShouldDisableKeyboard = false;
 
     private OnGlobalLayoutListener mOnGlobalLayoutListener = null;
 
@@ -333,49 +329,45 @@ public class GoogleWebView implements IRhoWebView {
             if (ourShouldDisableKeyboard) {
                 if (mIsShouldKillKeyboardMethodUse) {
                     hideKeyboard();
-                    /*
-                    //hideKeyboardNow();
-                    if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                        hideKeyboardNow();
-                    }
-                    PerformOnUiThread.exec(new Runnable() {
-                         @Override
-                         public void run() {
-                             hideKeyboardNow();
-                         }
-                    });
-                    */
                 }
             }
         }
 
     }
 
-    public class RhoKeyboardWebView extends android.webkit.WebView {
+    public class TauWebView extends android.webkit.WebView {
 
-        private String TAG = RhoKeyboardWebView.class.getSimpleName();
+        private String TAG = TauWebView.class.getSimpleName();
 
-        public RhoKeyboardWebView(Activity activity) {
+
+        public void setDisableKeyboard(boolean disable) {
+            ourShouldDisableKeyboard = disable;
+            setupOurTauKeyboard();
+        }
+
+        public TauWebView(Activity activity) {
             super(activity);
 
-            if (ourShouldDisableKeyboard) {
+            //if (ourShouldDisableKeyboard) {
                 setupOurTauKeyboard();
                 RhodesActivity.safeGetInstance().getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-                if (mIsShouldKillKeyboardMethodUse ) {
-                    final RhoKeyboardWebView me = this;
+                //if (mIsShouldKillKeyboardMethodUse ) {
+                    final TauWebView me = this;
                     setOnTouchListener(new View.OnTouchListener() {
                         public boolean onTouch(View v, MotionEvent event) {
                             ViewGroup activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content));
                             //recursiveLoopChildrenForTextEdit(activityRootView);
                             //RhodesActivity.safeGetInstance().getWindow().setFlags(  WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
                             //                                                        WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                            hideKeyboard();
+                            if ( ourShouldDisableKeyboard && mIsShouldKillKeyboardMethodUse) {
+                                hideKeyboard();
+                            }
                             return false;
                         }
                     });
-                }
-            }
+                //}
+            //}
         }
 
         public void loadUrl(String url) {
@@ -554,8 +546,6 @@ public class GoogleWebView implements IRhoWebView {
 
     public final void setKeyboardListener() {
         final View activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content)).getChildAt(0);
-
-        //removeOnGlobalLayoutListener
         if (mOnGlobalLayoutListener != null) {
             activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
         }
@@ -581,18 +571,20 @@ public class GoogleWebView implements IRhoWebView {
     private IRhoConfig mConfig;
 
     public GoogleWebView(Activity activity) {
-        mWebView = new RhoKeyboardWebView(activity);
+        mWebView = new TauWebView(activity);
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
 
 
 
-        if (ourShouldDisableKeyboard) {
+        //if (ourShouldDisableKeyboard) {
             mOnGlobalLayoutListener = new OnGlobalLayoutListener() {
 
                 @Override
                 public void onGlobalLayout() {
-                    hideKeyboard();
+                    if (ourShouldDisableKeyboard) {
+                        hideKeyboard();
+                    }
                 }
 
             };
@@ -600,7 +592,9 @@ public class GoogleWebView implements IRhoWebView {
 
             mWebView.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
-                    hideKeyboard();
+                    if (ourShouldDisableKeyboard) {
+                        hideKeyboard();
+                    }
                     return false;
                 }
             });
@@ -609,7 +603,7 @@ public class GoogleWebView implements IRhoWebView {
             if (mIsShouldKillKeyboardMethodUse) {
                 setKeyboardListener();
             }
-        }
+        //}
 
         synchronized(mInitialized) {
             if (!mInitialized) {
@@ -622,18 +616,12 @@ public class GoogleWebView implements IRhoWebView {
     }
 
     private void hideKeyboardNow() {
-        ///*
         try {
             Activity ctx = RhodesActivity.safeGetInstance();
             if (ctx != null) {
                 InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.hideSoftInputFromWindow(getView().getApplicationWindowToken(), 0);
-
-                    //Logger.T(this.TAG, "EBZSP imm.setInputMethod BEFORE");
-                    //imm.setInputMethod(getView().getApplicationWindowToken(), "com.androiddvlpr.androiddvlprkeyboard/.AndroidDvlprKeyboard");
-                    //Logger.T(this.TAG, "EBZSP imm.setInputMethod AFTER");
-
                     if (ctx.getCurrentFocus() != null) {
                         imm.hideSoftInputFromWindow(ctx.getCurrentFocus().getWindowToken(), 0);
                     }
@@ -643,7 +631,6 @@ public class GoogleWebView implements IRhoWebView {
         catch (Throwable e) {
             Logger.E(TAG, e);
         }
-        //*/
     }
 
     private void hideKeyboard() {
@@ -918,26 +905,26 @@ public class GoogleWebView implements IRhoWebView {
             break;
         }
     }
-    
+
     private void saveJpeg(String path) {
         Picture picture = mWebView.capturePicture();
-        
+
         if ( ( picture == null ) || ( picture.getWidth() == 0 ) || picture.getHeight() == 0 ) {
             Logger.E(TAG, "Can't capture picture from WebView.");
             return;
         }
-        
-        Bitmap bitmap = Bitmap.createBitmap( picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888); 
-        Canvas canvas = new Canvas(bitmap); 
-        picture.draw(canvas); 
-        FileOutputStream fos = null; 
-        try { 
-            fos = new FileOutputStream(path); 
-            if ( fos != null ) 
-            { 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos ); 
-                fos.close(); 
-            } 
+
+        Bitmap bitmap = Bitmap.createBitmap( picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        picture.draw(canvas);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(path);
+            if ( fos != null )
+            {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos );
+                fos.close();
+            }
         }
         catch (Throwable e){
             Logger.E(TAG, e);

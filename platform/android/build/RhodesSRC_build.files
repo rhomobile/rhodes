@@ -105,6 +105,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderHone
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderJellyBean.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebSettingsProviderKitKat.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebViewConfig.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/TauWebViewOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoConfig.java
