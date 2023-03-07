@@ -43,7 +43,6 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.SurroundingText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.CompletionInfo;
@@ -65,6 +64,8 @@ import android.os.Handler;
 import android.util.TypedValue;
 import android.os.Bundle;
 import android.view.KeyEvent;
+
+//import android.view.inputmethod.SurroundingText;
 
 //import android.annotation.IntRange;
 //import android.annotation.NonNull;
@@ -93,6 +94,7 @@ public class GoogleWebView implements IRhoWebView {
     private OnGlobalLayoutListener mOnGlobalLayoutListener = null;
 
 
+    /*
     public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         private String TAG = RhoInputConnectionWrapper.class.getSimpleName();
 
@@ -341,6 +343,7 @@ public class GoogleWebView implements IRhoWebView {
         }
 
     }
+    */
 
     public class TauWebView extends android.webkit.WebView {
 
