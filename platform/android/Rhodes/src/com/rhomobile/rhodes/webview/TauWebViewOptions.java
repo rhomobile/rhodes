@@ -20,6 +20,9 @@ public class TauWebViewOptions {
     public final static String TAU_WEBVIEW_OPTIONS_DISABLE_KEYBOARD = "DisableKeyboard";
     public final static String TAU_WEBVIEW_OPTIONS_DISABLE_SCROLL = "DisableScroll";
     public final static String TAU_WEBVIEW_OPTIONS_INJECT_META_VIEWPORT = "InjectMetaViewport";
+    public final static String TAU_WEBVIEW_OPTIONS_SCREN_ORIENTATION = "ScreenOrientation";
+    public final static String TAU_WEBVIEW_OPTIONS_INJECT_JAVASCRIPT = "InjectJavascript";
+
 
     private static final String TAG = TauWebViewOptions.class.getSimpleName();
 
@@ -81,6 +84,24 @@ public class TauWebViewOptions {
     public String getMetaViewport(String url) {
         Map<String, String> opt = getOptionsForUrl(url);
         String value = opt.get(TAU_WEBVIEW_OPTIONS_INJECT_META_VIEWPORT);
+        if (value != null) {
+            return value;
+        }
+        return null;
+    }
+
+    public String getScreenOrientation(String url) {
+        Map<String, String> opt = getOptionsForUrl(url);
+        String value = opt.get(TAU_WEBVIEW_OPTIONS_SCREN_ORIENTATION);
+        if (value != null) {
+            return value;
+        }
+        return null;
+    }
+
+    public String getInjectJavascript(String url) {
+        Map<String, String> opt = getOptionsForUrl(url);
+        String value = opt.get(TAU_WEBVIEW_OPTIONS_INJECT_JAVASCRIPT);
         if (value != null) {
             return value;
         }

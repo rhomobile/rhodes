@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.URLUtil;
 import android.webkit.WebBackForwardList;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
@@ -352,7 +353,12 @@ public class GoogleWebView implements IRhoWebView {
 
         public void setDisableKeyboard(boolean disable) {
             ourShouldDisableKeyboard = disable;
-            setupOurTauKeyboard();
+            if (disable) {
+                setupOurTauKeyboard();
+            }
+            else {
+                restoreKeyboardSettings();
+            }
         }
 
         public TauWebView(Activity activity) {
@@ -443,6 +449,7 @@ public class GoogleWebView implements IRhoWebView {
 
     private void setupOurTauKeyboard() {
         if (ourShouldDisableKeyboard) {
+            Logger.I(this.TAG, "TAU KEYBOARD setupOurTauKeyboard() ourShouldDisableKeyboard == true");
             try {
                 mIsShouldKillKeyboardMethodUse = true;
                 RhodesActivity.safeGetInstance();
@@ -525,6 +532,7 @@ public class GoogleWebView implements IRhoWebView {
 
 
     private void restoreKeyboardSettings() {
+        Logger.I(this.TAG, "TAU KEYBOARD restoreKeyboardSettings()");
         if (mKillKeyboardTimer != null) {
             mKillKeyboardTimer.cancel();
             mKillKeyboardTimer = null;
@@ -771,11 +779,47 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void goBack() {
+        try {
+            WebBackForwardList history = mWebView.copyBackForwardList();
+            int current_index = history.getCurrentIndex();
+            if (current_index > 0) {
+                // can go back
+                WebHistoryItem item = history.getItemAtIndex(current_index-1);
+                if (item != null) {
+                    String url = item.getUrl();
+                    if (url != null) {
+                        // inform about back with this url
+                        RhoExtManager.getImplementationInstance().onGoBack(mWebView, getUrl(), url);
+                    }
+                }
+            }
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+        }
         mWebView.goBack();
     }
 
     @Override
     public void goForward() {
+        try {
+            WebBackForwardList history = mWebView.copyBackForwardList();
+            int current_index = history.getCurrentIndex();
+            if (current_index > 0) {
+                // can go back
+                WebHistoryItem item = history.getItemAtIndex(current_index-1);
+                if (item != null) {
+                    String url = item.getUrl();
+                    if (url != null) {
+                        // inform about back with this url
+                        RhoExtManager.getImplementationInstance().onGoForward(mWebView, getUrl(), url);
+                    }
+                }
+            }
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+        }
         mWebView.goForward();
     }
 

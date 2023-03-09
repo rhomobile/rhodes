@@ -36,6 +36,8 @@ public interface IRhoExtension {
     boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res);
     boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
     boolean onDocumentComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
+    boolean onGoBack(IRhoExtManager extManager, String current_url, String back_url, IRhoWebView ext, boolean res);
+    boolean onGoForward(IRhoExtManager extManager, String current_url, String forward_url, IRhoWebView ext, boolean res);
     boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult alertResult, boolean res);
     boolean onConfirm(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult confirmResult, boolean res);
     boolean onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoWebView ext, IPromptResult promptResult, boolean res);
@@ -45,16 +47,15 @@ public interface IRhoExtension {
     boolean onConsole(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res);
     boolean onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect area, IRhoWebView ext, boolean res);
     boolean onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoWebView ext, boolean res);
-    boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res); 
+    boolean onAuthRequest(IRhoExtManager extManager, IAuthRequest request, IRhoWebView ext, boolean res);
 
     void onAppActivate(IRhoExtManager extManager, boolean bActivate);
 
-    
-    boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res); 
+
+    boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res);
     boolean stopLocationUpdates(IRhoExtManager extManager, IRhoWebView ext, boolean res);
 
     boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res);
 
     String onGetProperty(IRhoExtManager extManager, String name);
 }
-

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -48,17 +48,20 @@ import android.provider.Settings;
 import android.os.Build;
 
 public class BaseActivity extends Activity implements ServiceConnection {
-	
+
 	private static final String TAG = BaseActivity.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	private static boolean setFullScreenFlag = false;
-	
+
 	public static final String INTENT_SOURCE = BaseActivity.class.getName();
-	
+
 	public boolean mEnableScreenOrientationOverride = false;
-	
+
+
+	private int mCurrentScreenOrientation = -1;
+
     public static class ScreenProperties {
         private int mScreenWidth;
         private int mScreenHeight;
@@ -67,12 +70,12 @@ public class BaseActivity extends Activity implements ServiceConnection {
         private int mScreenOrientation;
         private float mScreenPpiX;
         private float mScreenPpiY;
-        
-        
+
+
         ScreenProperties(Context context) {
             reread(context);
         }
-        
+
         public void reread(Context context) {
             Logger.T(TAG, "Updating screen properties");
 
@@ -117,7 +120,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
             Logger.D(TAG, "New screen properties - width: " + mScreenWidth + ", height: " + mScreenHeight + ", orientation: " + mScreenOrientation);
         }
-        
+
         public int getWidth() { return mScreenWidth; }
         public int getHeight() { return mScreenHeight; }
         public int getRealWidth() { return mRealScreenWidth; }
@@ -128,7 +131,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
     }
 
     private static ScreenProperties sScreenProp = null;
-    
+
     public static ScreenProperties getScreenProperties() { return sScreenProp; }
 
     private static boolean sFullScreen = RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false;
@@ -138,7 +141,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
     private static int sActivitiesActive;
     private static BaseActivity sTopActivity = null;
-    
+
     private static boolean sScreenAutoRotate = true;
 
     public static void onActivityStarted(Activity activity) {
@@ -174,7 +177,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
         ++sActivitiesActive;
         Logger.D(TAG, "activityStarted (2): sActivitiesActive=" + sActivitiesActive);
     }
-    
+
     public static void activityStopped() {
         Logger.D(TAG, "activityStopped (1): sActivitiesActive=" + sActivitiesActive);
 
@@ -188,7 +191,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
         }
         Logger.D(TAG, "activityStopped (2): sActivitiesActive=" + sActivitiesActive);
     }
-    
+
     public static int getActivitiesCount() {
         return sActivitiesActive;
     }
@@ -229,7 +232,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
         if (sScreenProp == null) {
             sScreenProp = new ScreenProperties(this);
         } else {
-            if (!sScreenAutoRotate) { 
+            if (!sScreenAutoRotate) {
                 Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
                 setRequestedOrientation(getScreenProperties().getOrientation());
             }
@@ -271,7 +274,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
         if((RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false ) && setFullScreenFlag ==false){
         	 setFullScreen(true);
         }else if(sFullScreen){
-        	setFullScreen(true);	
+        	setFullScreen(true);
         }else{
     		setFullScreen(false);
         }
@@ -287,10 +290,27 @@ public class BaseActivity extends Activity implements ServiceConnection {
         super.onStop();
     }
 
+	//public void setRequestedOrientationTau(int requestedOrientation) {
+	//	Logger.T(TAG, "$$$ setRequestedOrientationTau("+String.valueOf(requestedOrientation)+")");
+	//	Thread.dumpStack();
+	//	super.setRequestedOrientation(requestedOrientation);
+	//}
+
+	@Override
+	public void setRequestedOrientation(int requestedOrientation) {
+		//if (!sScreenAutoRotate) {
+		//	return;
+		//}
+		Logger.T(TAG, "$$$ setRequestedOrientation("+String.valueOf(requestedOrientation)+")");
+		mCurrentScreenOrientation = requestedOrientation;
+		Thread.dumpStack();
+		super.setRequestedOrientation(requestedOrientation);
+	}
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
   		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged()");
-        Logger.T(TAG, "onConfigurationChanged");
+        Logger.T(TAG, "$$$ onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
         if(!sScreenAutoRotate)
         {
@@ -298,8 +318,9 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
         	if (!mEnableScreenOrientationOverride) {
           		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###2");
-        		Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
-            	setRequestedOrientation(getScreenProperties().getOrientation());
+        		//Logger.T(TAG, "$$$ Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
+				Logger.T(TAG, "$$$ Screen rotation is disabled. Force current orientation: " + String.valueOf(mCurrentScreenOrientation));
+            	setRequestedOrientation(mCurrentScreenOrientation);
         	}
         }
         else
@@ -350,7 +371,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 			else {
 				if (!mEnableScreenOrientationOverride) {
 	          		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###2");
-	        		Logger.D(TAG, "Screen rotation is disabled by Android settings. ##### Force old orientation: " + getScreenProperties().getOrientation());
+	        		Logger.D(TAG, "$$$ Screen rotation is disabled by Android settings. ##### Force old orientation: " + getScreenProperties().getOrientation());
 	            	setRequestedOrientation(getScreenProperties().getOrientation());
 	        	}
 			}
@@ -382,11 +403,11 @@ public class BaseActivity extends Activity implements ServiceConnection {
             }
         });
     }
-    
+
     public static boolean getFullScreenMode() {
         return sFullScreen;
     }
-    
+
     public static void setScreenAutoRotateMode(boolean mode) {
    		//Utils.platformLog("$$$$$", "BaseActivity.setScreenAutoRotateMode("+String.valueOf(mode)+")");
         sScreenAutoRotate = mode;
@@ -397,7 +418,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
     public static boolean getScreenAutoRotateMode() {
    	   //Utils.platformLog("$$$$$", "BaseActivity.getScreenAutoRotateMode("+String.valueOf(sScreenAutoRotate)+")");
-       return sScreenAutoRotate; 
+       return sScreenAutoRotate;
     }
 
     public void setFullScreen(boolean enable) {
