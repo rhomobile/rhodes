@@ -303,7 +303,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		//}
 		Logger.T(TAG, "$$$ setRequestedOrientation("+String.valueOf(requestedOrientation)+")");
 		mCurrentScreenOrientation = requestedOrientation;
-		Thread.dumpStack();
+		//Thread.dumpStack();
 		super.setRequestedOrientation(requestedOrientation);
 	}
 
