@@ -707,19 +707,19 @@ public class GoogleWebView implements IRhoWebView {
                 int sdkVersion = Build.VERSION.SDK_INT;
 
                 if ( sdkVersion >= 21 ) {
-                    Logger.I(TAG, "Enabling third-party cookies");
-                    CookieManager cm = CookieManager.getInstance();
-                    try {
+                    //Logger.I(TAG, "Enabling third-party cookies");
+                    //CookieManager cm = CookieManager.getInstance();
+                    //try {
                         //java.lang.reflect.Method mtdAllow3Party = cm.getClass().getMethod("setAcceptThirdPartyCookies", android.webkit.WebView.class, boolean.class);
                         //mtdAllow3Party.invoke(cm,mWebView,true);
                         //Logger.I(TAG, "Enabling third-party cookies done");
-                    } catch (SecurityException e) {
-                        Logger.W(TAG, "Can't allow third-party cookies explicily due to SecurityException");
-                    } catch (NoSuchMethodException e) {
-                        Logger.W(TAG, "Can't allow third-party cookies explicily due to NoSuchMethodException");
-                    } catch ( Exception e ) {
-                        Logger.E(TAG, "Can't allow third-party cookies explicily due to exception: " + e.toString() );
-                    }
+                    //} catch (SecurityException e) {
+                        //Logger.W(TAG, "Can't allow third-party cookies explicily due to SecurityException");
+                    //} catch (NoSuchMethodException e) {
+                        //Logger.W(TAG, "Can't allow third-party cookies explicily due to NoSuchMethodException");
+                    //} catch ( Exception e ) {
+                        //Logger.E(TAG, "Can't allow third-party cookies explicily due to exception: " + e.toString() );
+                    //}
                 }
 
     		  /*  if(sdkVersion <19){
