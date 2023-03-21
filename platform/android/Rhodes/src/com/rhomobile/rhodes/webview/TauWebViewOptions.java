@@ -108,5 +108,11 @@ public class TauWebViewOptions {
         return null;
     }
 
+    public String getParameterByUrl(String url, String name) {
+        Map<String, String> opt = getOptionsForUrl(url);
+        String value = opt.get(name);
+        return value;
+    }
+
 
 }
