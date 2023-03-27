@@ -128,7 +128,7 @@ import android.widget.EditText;
 import android.os.Environment;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-
+import androidx.core.content.FileProvider;
 
 import java.util.Enumeration;
 import java.net.NetworkInterface;
@@ -1338,11 +1338,14 @@ public class RhodesService extends Service {
 
 			Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
 
+
+			Logger.D(TAG, "File exist :"+ tmpFile.exists());
+
 			return tmpFile;
 		}
 		catch (IOException e) {
 
-			Logger.E(TAG, e.toString());
+			Logger.D(TAG, e.toString());
 			e.printStackTrace();
 
 			if (tmpFile != null)
@@ -1375,10 +1378,29 @@ public class RhodesService extends Service {
 							public void run() {
 								try {
 									Logger.D(TAG, "Install package " + tmpFile.getAbsolutePath());
-									Uri uri = Uri.fromFile(tmpFile);
-									Intent intent = new Intent(Intent.ACTION_VIEW);
-									intent.setDataAndType(uri, "application/vnd.android.package-archive");
-									r.startActivity(intent);
+									
+									Log.e.D(TAG, "Version android SDK: " + android.os.Build.VERSION.SDK_INT);
+									if(android.os.Build.VERSION.SDK_INT >= 24)
+									{
+										Context context = r.getContext();
+										Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName()+".provider", tmpFile);
+										Logger.D(TAG, "Path uri for fileProvider: " + uri.toString());
+
+										Intent intent = new Intent(Intent.ACTION_VIEW);
+										intent.setDataAndType(uri, "application/vnd.android.package-archive");
+										intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+										intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+										r.startActivity(intent);
+	
+									} else {
+										Uri uri = Uri.fromFile(tmpFile);
+										Logger.D(TAG, "Path uri for old: " + uri.toString());
+										Intent intent = new Intent(Intent.ACTION_VIEW);
+
+										intent.setDataAndType(uri, "application/vnd.android.package-archive");
+										r.startActivity(intent);	
+									}
 								}
 								catch (Exception e) {
 									Log.e(TAG, "Can't install file from " + tmpFile.getAbsolutePath(), e);
