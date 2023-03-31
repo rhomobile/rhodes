@@ -118,7 +118,7 @@ public class RhoWebViewClient extends WebViewClient
     private static boolean ourIsDoNotTrack = false;
 
 
-    public static setDoNotTrack(boolean dnt) {
+    public static void setDoNotTrack(boolean dnt) {
         ourIsDoNotTrack = dnt;
     }
 
