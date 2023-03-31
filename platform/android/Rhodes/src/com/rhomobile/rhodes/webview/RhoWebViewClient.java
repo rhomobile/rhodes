@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -100,7 +101,7 @@ public class RhoWebViewClient extends WebViewClient
 //        public void setPending() {
 //            pending = true;
 //        }
-//        
+//
 //        boolean isPending() {
 //            return pending;
 //        }
@@ -109,11 +110,18 @@ public class RhoWebViewClient extends WebViewClient
         public String type() {
             return "http";
         }
-        
+
     }
-    
+
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
+    private static boolean ourIsDoNotTrack = false;
+
+
+    public static setDoNotTrack(boolean dnt) {
+        ourIsDoNotTrack = dnt;
+    }
+
 
     public RhoWebViewClient(GoogleWebView webView) {
         mWebView = webView;
@@ -131,41 +139,41 @@ public class RhoWebViewClient extends WebViewClient
         RhoExtManager.getImplementationInstance().onLoadResource(view, url);
     }
 
-    
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
-        
+
         //RhoElements implementation of "history:back"
         if(url.equalsIgnoreCase("history:back")) {
         	Logger.I(TAG, "history:back");
         	view.goBack();
         	return true;
         }
-        else if(url.equalsIgnoreCase("history:twiceback")) 
+        else if(url.equalsIgnoreCase("history:twiceback"))
         {
             Logger.I(TAG, "history:twiceback");
         	view.goBack();
 		view.goBack();
         	return true;
         }
-        
-        if (url.contains(".HTM")) 
+
+        if (url.contains(".HTM"))
         {
     	     url=url.replace(".HTML", ".html");
     	     url=url.replace(".HTM", ".htm");
     	     Logger.I(TAG, "Changed to lower case html, url="+ url);
     	}
-        
-        
-        
-        
+
+
+
+
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
             Logger.profStart("BROWSER_PAGE");
-            
+
             RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
-            
+
             Uri localUri = LocalFileProvider.overrideUri(Uri.parse(url));
             if (localUri != null) {
                 url = Uri.decode(localUri.toString());
@@ -173,20 +181,28 @@ public class RhoWebViewClient extends WebViewClient
                 view.loadUrl(url);
                 return true;
             }
+            else {
+                if (ourIsDoNotTrack) {
+                    HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                    extraHeaders.put("DNT", "1");
+                    view.loadUrl(url, extraHeaders);
+                    return true;
+                }
+            }
         }
         return res;
     }
-    
+
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        
+
         RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
 
         if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
     }
-    
+
     @Override
     public void onPageFinished(WebView view, String url) {
 
