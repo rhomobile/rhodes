@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -346,6 +348,7 @@ public class GoogleWebView implements IRhoWebView {
     }
     */
 
+
     public class TauWebView extends android.webkit.WebView {
 
         private String TAG = TauWebView.class.getSimpleName();
@@ -386,10 +389,42 @@ public class GoogleWebView implements IRhoWebView {
             //}
         }
 
+
+        private boolean isAutorizationDisable = false;
+
+        public void setDisableHTTPAuthorisation(boolean sa) {
+            isAutorizationDisable = sa;
+        }
+
         public void loadUrl(String url) {
-            Logger.I(this.TAG, "RhoKbWebView.loadUrl url = " + url);
+            Logger.I(this.TAG, "TauWebView.loadUrl url = " + url);
+            ///*
+            if (isAutorizationDisable) {
+                HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                extraHeaders.put("Authorization", "");
+                //isAutorizationDisable = false;
+                Logger.I(this.TAG, "TauWebView.loadUrl disable Authorization !");
+                loadUrl(url, extraHeaders);
+                return;
+            }
+            //*/
             super.loadUrl(url);
         }
+
+        public void loadUrl (String url, Map<String, String> additionalHttpHeaders) {
+            Logger.I(this.TAG, "TauWebView.loadUrl url,additionalHttpHeaders  = " + url);
+            /*
+            if (isAutorizationDisable) {
+                HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                extraHeaders.put("Authorization", "");
+                isAutorizationDisable = false;
+                super.loadUrl(url, extraHeaders);
+                return;
+            }
+            */
+            super.loadUrl(url, additionalHttpHeaders);
+        }
+
 
 
         public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
@@ -444,7 +479,6 @@ public class GoogleWebView implements IRhoWebView {
         }
     }
     }
-
 
 
     private void setupOurTauKeyboard() {

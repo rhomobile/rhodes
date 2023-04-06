@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.rhomobile.rhodes.util.PerformOnUiThread;
+
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
@@ -116,12 +118,16 @@ public class RhoWebViewClient extends WebViewClient
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
     private static boolean ourIsDoNotTrack = false;
+    private static boolean ourIsDoNotSendAuthorise = false;
 
 
     public static void setDoNotTrack(boolean dnt) {
         ourIsDoNotTrack = dnt;
     }
 
+    public static void setDoNotSendAuthorise(boolean dnsa) {
+        ourIsDoNotSendAuthorise = dnsa;
+    }
 
     public RhoWebViewClient(GoogleWebView webView) {
         mWebView = webView;
@@ -182,9 +188,35 @@ public class RhoWebViewClient extends WebViewClient
                 return true;
             }
             else {
-                if (ourIsDoNotTrack) {
+
+
+                /*
+                if (url.equals("https://authenticationtest.com/HTTPAuth/")) {
+                    final WebView sview = view;
+                    final String surl = url;
+                    final HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                    extraHeaders.put("Authorization", "");
+
+                    PerformOnUiThread.exec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            sview.loadUrl(surl, extraHeaders);
+                        }
+                    });
+                    return true;
+                }
+                */
+
+                if (ourIsDoNotTrack || ourIsDoNotSendAuthorise) {
                     HashMap<String, String> extraHeaders = new HashMap<String, String>();
-                    extraHeaders.put("DNT", "1");
+                    if (ourIsDoNotTrack) {
+                        extraHeaders.put("DNT", "1");
+                    }
+                    if (ourIsDoNotSendAuthorise) {
+                        extraHeaders.put("Authorization", "");
+                        //ourIsDoNotSendAuthorise = false;
+                    }
                     view.loadUrl(url, extraHeaders);
                     return true;
                 }
@@ -192,6 +224,8 @@ public class RhoWebViewClient extends WebViewClient
         }
         return res;
     }
+
+
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {

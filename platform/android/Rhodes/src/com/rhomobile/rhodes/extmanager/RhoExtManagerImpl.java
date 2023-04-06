@@ -596,13 +596,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             builder.create().show();
         }
     }
+    
 
     public void onAuthRequest(View view, final IRhoExtension.IAuthRequest request) {
         final IRhoWebView rhoWebView = makeDefExtData(view);
         boolean res = false;
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onAuthRequest(this, request, rhoWebView, res);
+                res = res || ext.onAuthRequest(this, request, rhoWebView, res);
             }
         }
         if (!res) {
@@ -946,6 +947,12 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
         activity.getMainView().setWebView(createWebView(activity, 0), 0);
     }
+
+    public void doFullResetWebViewByCreateNewOne() {
+        RhodesActivity.safeGetInstance().getMainView().setWebView(createWebView(RhodesActivity.safeGetInstance(), 0), 0);
+    }
+
+
     public void onStartActivity(RhodesActivity activity) {
         for (IRhoListener listener: mListeners) {
             listener.onStart(activity);

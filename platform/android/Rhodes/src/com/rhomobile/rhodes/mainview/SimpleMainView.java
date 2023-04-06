@@ -679,6 +679,10 @@ public class SimpleMainView implements MainView {
 
     @Override
     public void setWebView(IRhoWebView view, int tabIndex) {
+		IRhoWebView rwv = detachWebView();
+		if (rwv != null) {
+			// destory
+		}
         webView = view;
         addWebViewToMainView(webView, 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
     }
