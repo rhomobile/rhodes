@@ -119,10 +119,15 @@ public class RhoWebViewClient extends WebViewClient
     private GoogleWebView mWebView;
     private static boolean ourIsDoNotTrack = false;
     private static boolean ourIsDoNotSendAuthorise = false;
+    private static boolean ourIsDoNotVerifySSL = false;
 
 
     public static void setDoNotTrack(boolean dnt) {
         ourIsDoNotTrack = dnt;
+    }
+
+    public static void setDoNotVerifySSL(boolean do_not_verify) {
+        ourIsDoNotVerifySSL = do_not_verify;
     }
 
     public static void setDoNotSendAuthorise(boolean dnsa) {
@@ -326,7 +331,7 @@ public class RhoWebViewClient extends WebViewClient
             }
         }
 
-        if(RhoConf.getBool("no_ssl_verify_peer")) {
+        if(ourIsDoNotVerifySSL || RhoConf.getBool("no_ssl_verify_peer")) {
             Logger.D(TAG, "Skip SSL error.");
             handler.proceed();
         } else {
