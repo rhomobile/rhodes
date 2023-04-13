@@ -22,8 +22,12 @@
   <uses-permission android:name='<%=name%>'/>
   <% end %>
 
+  <%# <!-- Установка пакета -->
+  <uses-permission android:name='android.permission.REQUEST_INSTALL_PACKAGES'/> %>
+
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
-  <application android:name='com.rhomobile.rhodes.RhodesApplication'
+  <application android:requestLegacyExternalStorage='true'
+    android:name='com.rhomobile.rhodes.RhodesApplication'
   <% if canRenderNetworkSecurityConfig %>
                android:networkSecurityConfig="@xml/network_security_config"
   <% end %>
@@ -64,10 +68,24 @@
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
 
-    <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
-      <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
-      <grant-uri-permission android:pathPrefix='/rhodata/apps/'/>
-    </provider>
+    <% if  @androidVerMaj >= 7 %>
+      <provider
+        android:name='androidx.core.content.FileProvider'
+        android:authorities='<%=@appPackageName%>.provider'
+        android:exported='false'
+        android:grantUriPermissions='true'>
+        <meta-data
+          android:name='android.support.FILE_PROVIDER_PATHS'
+          android:resource='@xml/provider_paths' />        
+      </provider>
+    <% else %>
+      <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
+        <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
+        <grant-uri-permission android:pathPrefix='/rhodata/apps/'/>
+      </provider>
+    <% end %>
+
+
 
 	<receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false" android:exported='true'>
      <intent-filter>
