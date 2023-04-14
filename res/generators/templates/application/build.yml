@@ -57,6 +57,7 @@ applog: rholog.txt
   #- calendar
   ## allows writing to the SD card on Android devices
   #- sdcard
+  #- install_packages
   ## add UIWebView code to project - now UIWebView deprecated by Apple - You can not submit application with UIWebView to AppStore !
   ## You can select type of WebView in rhoconfig.txt - see ios_use_WKWebView option
   #- ios_uiwebview
