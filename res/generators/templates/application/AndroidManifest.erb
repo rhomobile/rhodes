@@ -68,7 +68,7 @@
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
 
-    <% if  @androidVerMaj >= 7 %>
+    <% if  @androidVerMaj >= 7 && (@usesPermissions&["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"]).length > 0 %>
       <provider
         android:name='androidx.core.content.FileProvider'
         android:authorities='<%=@appPackageName%>.provider'
