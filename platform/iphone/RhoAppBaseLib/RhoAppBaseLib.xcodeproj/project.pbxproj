@@ -25,6 +25,8 @@
 		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
 		C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */; };
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
+		FA09EF3529E75E950021D5F1 /* RhoCryptAESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA09EF3429E75E950021D5F1 /* RhoCryptAESGCM.swift */; };
+		FA09EF3629E75E950021D5F1 /* RhoCryptAESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA09EF3429E75E950021D5F1 /* RhoCryptAESGCM.swift */; };
 		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
 		FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24A192121F200FB1301 /* IRhoExtManager.h */; };
 		FA11F24E1921221E00FB1301 /* RhoExtManagerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F24C1921221E00FB1301 /* RhoExtManagerImpl.h */; };
@@ -370,6 +372,9 @@
 		C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPhoneNetRequest.mm; path = rho/net/IPhoneNetRequest.mm; sourceTree = "<group>"; };
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhoappbaselib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhoappbaselib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA09EF3229E75E940021D5F1 /* RhoAppBaseLib-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RhoAppBaseLib-Bridging-Header.h"; sourceTree = "<group>"; };
+		FA09EF3329E75E950021D5F1 /* RhoAppBaseStandaloneLib-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RhoAppBaseStandaloneLib-Bridging-Header.h"; sourceTree = "<group>"; };
+		FA09EF3429E75E950021D5F1 /* RhoCryptAESGCM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RhoCryptAESGCM.swift; sourceTree = "<group>"; };
 		FA11F248192121BF00FB1301 /* IRhoExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtension.h; path = RhoExtManager/IRhoExtension.h; sourceTree = "<group>"; };
 		FA11F24A192121F200FB1301 /* IRhoExtManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoExtManager.h; path = RhoExtManager/IRhoExtManager.h; sourceTree = "<group>"; };
 		FA11F24C1921221E00FB1301 /* RhoExtManagerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoExtManagerImpl.h; path = RhoExtManager/RhoExtManagerImpl.h; sourceTree = "<group>"; };
@@ -840,6 +845,9 @@
 				FA20C275182B04140036D304 /* RhoFileImpl.m */,
 				FA20C276182B04140036D304 /* SplashScreenImpl.h */,
 				FA20C277182B04140036D304 /* SplashScreenImpl.cpp */,
+				FA09EF3429E75E950021D5F1 /* RhoCryptAESGCM.swift */,
+				FA09EF3229E75E940021D5F1 /* RhoAppBaseLib-Bridging-Header.h */,
+				FA09EF3329E75E950021D5F1 /* RhoAppBaseStandaloneLib-Bridging-Header.h */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -1311,10 +1319,16 @@
 			attributes = {
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
+					D2AAC045055464E500DB518D = {
+						LastSwiftMigration = 1410;
+					};
 					FAD356FD226422D200419673 = {
 						CreatedOnToolsVersion = 10.1;
 						DevelopmentTeam = PNQRMU2LPM;
 						ProvisioningStyle = Automatic;
+					};
+					FAE78BDF22583F6C001A1150 = {
+						LastSwiftMigration = 1410;
 					};
 				};
 			};
@@ -1445,6 +1459,7 @@
 				FAE2F0B027EC1955000DC2DA /* DDNumber.m in Sources */,
 				FA20C2F9182B07EB0036D304 /* RhoThreadImpl.m in Sources */,
 				FA20C2D9182B07CB0036D304 /* SplittedMainView.m in Sources */,
+				FA09EF3529E75E950021D5F1 /* RhoCryptAESGCM.swift in Sources */,
 				FA20C2E8182B07D10036D304 /* MapViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1459,6 +1474,7 @@
 				FAE78C2022583F6C001A1150 /* RhoWKWebView.mm in Sources */,
 				FAE78C2122583F6C001A1150 /* RhoExtManagerImpl.m in Sources */,
 				FAE78C2222583F6C001A1150 /* PickImageDelegate.m in Sources */,
+				FA09EF3629E75E950021D5F1 /* RhoCryptAESGCM.swift in Sources */,
 				FAE78C2322583F6C001A1150 /* RingtoneManager.m in Sources */,
 				FAE78C2422583F6C001A1150 /* NativeBar.m in Sources */,
 				FAE78C2522583F6C001A1150 /* InitMemoryInfoCollector.mm in Sources */,
@@ -1545,8 +1561,10 @@
 		1DEB91EC08733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1567,6 +1585,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1577,6 +1596,9 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseLib-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};
@@ -1585,8 +1607,10 @@
 		1DEB91ED08733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1604,6 +1628,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1614,6 +1639,8 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseLib-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};
@@ -1663,8 +1690,10 @@
 		46B0042C10332DC400D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1682,6 +1711,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1692,6 +1722,8 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseLib-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};
@@ -1732,6 +1764,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1753,6 +1786,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1763,6 +1797,9 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseStandaloneLib-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};
@@ -1773,6 +1810,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1791,6 +1829,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1801,6 +1840,8 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseStandaloneLib-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};
@@ -1811,6 +1852,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1829,6 +1871,7 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1839,6 +1882,8 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIPFLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Classes/RhoAppBaseStandaloneLib-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
 			};

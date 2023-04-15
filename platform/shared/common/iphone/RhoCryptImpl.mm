@@ -32,6 +32,14 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonCryptor.h>
 
+#include "common/app_build_capabilities.h"
+
+
+#ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
+#import <rhoappbaselib-Swift.h>
+RhoCryptAESGCM* swift_aes_gcm = nil;
+#endif
+
 #define kChosenCipherBlockSize	kCCBlockSizeAES128
 #define kChosenCipherKeySize	kCCKeySizeAES256
 #define kChosenDigestLength		CC_SHA1_DIGEST_LENGTH
@@ -59,6 +67,18 @@ CRhoCryptImpl::CRhoCryptImpl(void) : m_dbKeyData(NULL)
 {
 	m_dwLastError = 0;
 	currentKeySize = kCCKeySizeAES256;
+    
+    
+    
+#ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
+    swift_aes_gcm = [[RhoCryptAESGCM alloc] init];
+#endif
+    
+    //[swift_aes_gcm run_crypto_test];
+    //NSData* key_data = [swift_aes_gcm generate_new_key];
+    //NSString* str = [key_data base64EncodedStringWithOptions:0];;
+    //RAWLOG_INFO1("CALL SWIFT Object RESULT = [%s]", [str UTF8String]);
+    //int o = 9;
 }
 
 CRhoCryptImpl::~CRhoCryptImpl(void)
@@ -586,23 +606,41 @@ void CRhoCryptImpl::readKeyFromStorage() {
     
 void CRhoCryptImpl::generateNewKey()
 {
-    RAWLOG_INFO1("CRhoCryptImpl::generateNewKey() currentKeySize = %d", (int)currentKeySize);
     
-	OSStatus sanityCheck = noErr;
-	uint8_t * symmetricKey = NULL;
-	
-	// Allocate some buffer space. I don't trust calloc.
-	symmetricKey = (uint8_t *)malloc( currentKeySize * sizeof(uint8_t) );
-	memset((void *)symmetricKey, 0x0, currentKeySize);
-	
-	sanityCheck = SecRandomCopyBytes(kSecRandomDefault, currentKeySize, symmetricKey);
-	if ( sanityCheck != noErr )
-	{
-		free(symmetricKey);
-		LOG(ERROR) + "Problem generating the key, OSStatus: " + sanityCheck + "; errno: " + errno;
-	}
-	else	
-		m_dbKeyData = symmetricKey;
+#ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
+    
+    if ([swift_aes_gcm is_aes_gcm_available]) {
+        
+        
+        NSData* key_data = [swift_aes_gcm generate_new_key];
+        uint8_t * symmetricKey = NULL;
+        symmetricKey = (uint8_t *)malloc( currentKeySize * sizeof(uint8_t) );
+        
+        memcpy(symmetricKey, [key_data bytes], currentKeySize);
+        
+        m_dbKeyData = symmetricKey;
+    }
+    else
+#endif
+    {
+        RAWLOG_INFO1("CRhoCryptImpl::generateNewKey() currentKeySize = %d", (int)currentKeySize);
+        
+        OSStatus sanityCheck = noErr;
+        uint8_t * symmetricKey = NULL;
+        
+        // Allocate some buffer space. I don't trust calloc.
+        symmetricKey = (uint8_t *)malloc( currentKeySize * sizeof(uint8_t) );
+        memset((void *)symmetricKey, 0x0, currentKeySize);
+        
+        sanityCheck = SecRandomCopyBytes(kSecRandomDefault, currentKeySize, symmetricKey);
+        if ( sanityCheck != noErr )
+        {
+            free(symmetricKey);
+            LOG(ERROR) + "Problem generating the key, OSStatus: " + sanityCheck + "; errno: " + errno;
+        }
+        else
+            m_dbKeyData = symmetricKey;
+    }
 }
 	
 void CRhoCryptImpl::initContext(const char* szPartition)
@@ -661,50 +699,88 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 {
     initContext(szPartition);
 
-    // Initialization vector; dummy in this case 0's.
-    uint8_t iv[kChosenCipherBlockSize];
-    memset((void *) iv, 0x0, (size_t) sizeof(iv));
-	
-	size_t movedBytes = 0;
-	
-	checkError( CCCrypt(  kCCEncrypt, kCCAlgorithmAES,
-					   0, //kCCOptionPKCS7Padding
-					   (const void *)m_dbKeyData,
-					   currentKeySize,
-					   iv,
-					   (const void *) data,
-					   size,
-					   (void *)dataOut,
-					   size,
-					   &movedBytes
-					   ) );
-	
-    return getErrorCode() == 0 ? 1 : 0;
+#ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
+    if ([swift_aes_gcm is_aes_gcm_available]) {
+        NSData* page = [NSData dataWithBytes:(const void *)data length:sizeof(unsigned char)*size];
+        NSData* key = [NSData dataWithBytes:(const void *)m_dbKeyData length:sizeof(unsigned char)*currentKeySize];
+        
+        NSData* encrypted = [swift_aes_gcm encrypt_page:page :key];
+        if (encrypted == nil) {
+            return 0;
+        }
+        
+        memcpy(dataOut, [encrypted bytes], size);
+        
+        return 1;
+    }
+    else
+#endif
+    {
+        // Initialization vector; dummy in this case 0's.
+        uint8_t iv[kChosenCipherBlockSize];
+        memset((void *) iv, 0x0, (size_t) sizeof(iv));
+        
+        size_t movedBytes = 0;
+        
+        checkError( CCCrypt(  kCCEncrypt, kCCAlgorithmAES,
+                            0, //kCCOptionPKCS7Padding
+                            (const void *)m_dbKeyData,
+                            currentKeySize,
+                            iv,
+                            (const void *) data,
+                            size,
+                            (void *)dataOut,
+                            size,
+                            &movedBytes
+                            ) );
+        
+        return getErrorCode() == 0 ? 1 : 0;
+    }
 }
 
 int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char* data )
 {
     initContext(szPartition);
 	
-    // Initialization vector; dummy in this case 0's.
-    uint8_t iv[kChosenCipherBlockSize];
-    memset((void *) iv, 0x0, (size_t) sizeof(iv));
-	
-	size_t movedBytes = 0;
-	
-	checkError( CCCrypt(  kCCDecrypt, kCCAlgorithmAES,
-									   0, //kCCOptionPKCS7Padding
-									   (const void *)m_dbKeyData,
-									   currentKeySize,
-									   iv,
-									   (const void *) data,
-									   size,
-									   (void *)data,
-									   size,
-									   &movedBytes
-									   ) );
-	
-    return getErrorCode() == 0 ? 1 : 0;
+    
+#ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
+    
+    if ([swift_aes_gcm is_aes_gcm_available]) {
+        NSData* page = [NSData dataWithBytes:(const void *)data length:sizeof(unsigned char)*size];
+        NSData* key = [NSData dataWithBytes:(const void *)m_dbKeyData length:sizeof(unsigned char)*currentKeySize];
+        
+        NSData* decrypted = [swift_aes_gcm decrypt_page:page :key];
+        if (decrypted == nil) {
+            return 0;
+        }
+        
+        memcpy(data, [decrypted bytes], size);
+        
+        return 1;
+    }
+    else
+#endif
+    {
+        // Initialization vector; dummy in this case 0's.
+        uint8_t iv[kChosenCipherBlockSize];
+        memset((void *) iv, 0x0, (size_t) sizeof(iv));
+        
+        size_t movedBytes = 0;
+        
+        checkError( CCCrypt(  kCCDecrypt, kCCAlgorithmAES,
+                            0, //kCCOptionPKCS7Padding
+                            (const void *)m_dbKeyData,
+                            currentKeySize,
+                            iv,
+                            (const void *) data,
+                            size,
+                            (void *)data,
+                            size,
+                            &movedBytes
+                            ) );
+        
+        return getErrorCode() == 0 ? 1 : 0;
+    }
 }
 
 int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent )

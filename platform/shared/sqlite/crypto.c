@@ -31,10 +31,19 @@
 extern void rho_db_decrypt( const char* szPartition, int nPartLen, int size, unsigned char* data );
 extern void rho_db_encrypt( const char* szPartition, int nPartLen, int size, unsigned char* data, unsigned char* dataOut );
 
+
+#include "common/app_build_capabilities.h"
+
+
 #define FILE_HEADER_SZ 16
 #define ENCRYPTED_SQLITE_FILE_HEADER "SQLite crypto 3"
 #define EVP_MAX_KEY_LENGTH 32
+
+#if defined(OS_MACOSX) && defined(APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM)
+#define EVP_MAX_IV_LENGTH 32
+#else
 #define EVP_MAX_IV_LENGTH 16
+#endif
 
 typedef struct 
 {
@@ -241,7 +250,12 @@ int sqlite3_rekey_v2(sqlite3 *db, const char *zDb, const void *pKey, int nKey)
 //#include <Wincrypt.h>
 
 #define EVP_MAX_KEY_LENGTH 32
+
+#if defined(OS_MACOSX) && defined(APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM)
+#define EVP_MAX_IV_LENGTH 32
+#else
 #define EVP_MAX_IV_LENGTH 16
+#endif
 
 typedef struct _EVP_CIPHER
 {
