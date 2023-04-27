@@ -38,6 +38,9 @@ import java.io.InputStream;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.kioskservices.IKioskMode;
+import com.rhomobile.rhodes.kioskservices.KioskManager;
+import com.rhomobile.rhodes.kioskservices.PermissionManager;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
@@ -70,10 +73,14 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.util.Log;
 
+import android.widget.Toast;
+
 import androidx.core.content.PermissionChecker;
 import androidx.core.app.ActivityCompat;
+import android.app.Activity;
 
-public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback {
+
+public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback, IKioskMode {
 	
 	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
@@ -108,6 +115,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		void onTripleTap();
 		void onQuadroTap();
 	};
+
+
 	
 	public static class GestureListenerAdapter implements GestureListener {
 		public void onTripleTap() {
@@ -843,5 +852,49 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		notificationBarHeight = r.top;
 		return (r.bottom - r.top);
 	}
+
+    @Override
+    public void startKioskMode(String password) {
+        System.out.println("START");
+        KioskManager.setKioskMode(true);
+    }
+
+    @Override
+    public void stopKioskMode(String password) {
+        System.out.println("STOP");
+        KioskManager.setKioskMode(false);
+    }
+
+    @Override
+    public boolean isKioskMode() {
+        return KioskManager.getKioskModeStatus();
+    }
+
+    @Override
+    public void startOverlay() {
+        if(PermissionManager.checkPermissions(getContext(),this)){
+            
+        }
+    }
+
+    @Override
+    public void stopOverlay() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'stopOverlay'");
+    }
+
+    @Override
+    public boolean isAllPermissions() {
+        Activity mActivity= (Activity) this;
+        Context mContext = getApplicationContext();
+        boolean perm = PermissionManager.checkPermissions(mContext, mActivity);
+        Toast.makeText(mActivity, "Permission: "+ (perm? "true" : "flase"),Toast.LENGTH_LONG).show();
+        return PermissionManager.checkPermissions(mContext, mActivity);
+    }
+
+    @Override
+    public void showPermissionsList() {
+        
+    }
 
 }
