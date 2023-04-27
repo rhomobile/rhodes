@@ -72,6 +72,11 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.util.Log;
+import android.widget.Button;
+import android.app.AlertDialog;
+import android.widget.LinearLayout;
+
+
 
 import android.widget.Toast;
 
@@ -894,7 +899,121 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void showPermissionsList() {
-        
+        showAlertPermission();
+    }
+
+    private Activity mActivity = null;
+
+    private void showAlertPermission() {
+        mActivity= (Activity) this;
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Permission check");
+        LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
+        adb.setView(view);
+
+        final AlertDialog alert = adb.create();
+
+        //===================== ACCESSIBILITY SERVICE =====================
+
+        view.findViewById(R.id.accessibilityServiceStatus).setBackgroundColor(
+                (PermissionManager.checkAccessibilityServicePermission(this)?0xFF59FF00:0xFFFF0000)
+        );
+
+        Button asBtn = view.findViewById(R.id.accessibilityServiceBtn);
+
+        asBtn.setVisibility(
+                (!PermissionManager.checkAccessibilityServicePermission(this)?View.VISIBLE:View.INVISIBLE)
+        );
+
+        asBtn.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                PermissionManager.setAccessibilityServicePermission(mActivity);
+                alert.cancel();
+            }
+        });
+
+        //===================== NOTIFICATION SERVICE =====================
+
+        view.findViewById(R.id.notificationServiceStatus).setBackgroundColor(
+                (PermissionManager.checkNotificationServicePermission(this,this)?0xFF59FF00:0xFFFF0000)
+        );
+
+        Button nBt = view.findViewById(R.id.notificationServiceBtn);
+
+        nBt.setVisibility(
+                (!PermissionManager.checkNotificationServicePermission(this,this)?View.VISIBLE:View.INVISIBLE)
+        );
+
+        nBt.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                PermissionManager.setNotificationServicePermission(mActivity);
+                alert.cancel();
+            }
+        });
+
+        //===================== DEFAULT LAUNCHER =====================
+
+        view.findViewById(R.id.defaultLauncherStatus).setBackgroundColor(
+                (PermissionManager.isMyLauncherDefault(this)?0xFF59FF00:0xFFFF0000)
+        );
+
+        Button dlBtn = view.findViewById(R.id.defaultLauncherBtn);
+
+        dlBtn.setVisibility(
+                (!PermissionManager.isMyLauncherDefault(this)?View.VISIBLE:View.INVISIBLE)
+        );
+
+        dlBtn.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                PermissionManager.setDefaultLauncher(mActivity);
+                alert.cancel();
+            }
+        });
+
+        //===================== CALL PHONE =====================
+
+        view.findViewById(R.id.callPhoneStatus).setBackgroundColor(
+                (PermissionManager.checkCallPhonePermission(this)?0xFF59FF00:0xFFFF0000)
+        );
+
+        Button cpBtn = view.findViewById(R.id.callPhoneBtn);
+
+        cpBtn.setVisibility(
+                (!PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.INVISIBLE)
+        );
+
+        cpBtn.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                PermissionManager.setCallPhonePermission(mActivity);
+                alert.cancel();
+            }
+        });
+
+        //===================== OVERLAY PERMISSION =====================
+
+        view.findViewById(R.id.overlayServiceStatus).setBackgroundColor(
+                (PermissionManager.checkOverlayPermission(this)?0xFF59FF00:0xFFFF0000)
+        );
+
+        Button oBtn = view.findViewById(R.id.overlayServiceBtn);
+
+        oBtn.setVisibility(
+                (!PermissionManager.checkOverlayPermission(this)?View.VISIBLE:View.INVISIBLE)
+        );
+
+        oBtn.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                PermissionManager.setOverlayPermission(mActivity);
+                alert.cancel();
+            }
+        });
+
+        alert.show();
     }
 
 }

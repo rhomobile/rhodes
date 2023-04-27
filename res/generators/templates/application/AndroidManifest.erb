@@ -22,6 +22,23 @@
   <uses-permission android:name='<%=name%>'/>
   <% end %>
 
+
+
+  <%# FOR KIOSK %>
+
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+  <uses-permission android:name="android.permission.CALL_PHONE" />
+
+  <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+  <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission
+      android:name="android.permission.PACKAGE_USAGE_STATS" />
+
+
+
+
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
   <application android:name='com.rhomobile.rhodes.RhodesApplication'
   <% if canRenderNetworkSecurityConfig %>
@@ -63,6 +80,46 @@
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
+
+  <%# FOR KIOSK %>
+     <service
+        android:name="com.rhomobile.rhodes.kioskservices.MyAccessibilityService"
+        android:description="@string/app_name"
+        android:label="@string/app_name"
+        android:exported="true"
+        android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        android:priority="1000">
+        <intent-filter>
+            <action android:name="android.accessibilityservice.AccessibilityService" />
+        </intent-filter>
+        <meta-data
+            android:name="android.accessibilityservice"
+            android:resource="@xml/accessibility_service_config" />
+      </service>
+
+
+      <receiver
+            android:name="com.rhomobile.rhodes.kioskservices.CallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.rhomobile.rhodes.kioskservices.MyOverlayService"
+            android:exported="false"/>
+
+        <service
+            android:name="com.rhomobile.rhodes.kioskservices.MyNotificationListenerService"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+
 
     <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
