@@ -340,6 +340,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
        requestPermissions();
     }
 
+
+	public View getContentView() {
+		return mTopLayout;
+	}
+
+
     public MainView switchToSimpleMainView(MainView currentView) {
         IRhoWebView rhoWebView = currentView.detachWebView();
         SimpleMainView view = new SimpleMainView(rhoWebView);
@@ -347,7 +353,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         setMainView(view);
         return view;
     }
-	
+
 	public void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
