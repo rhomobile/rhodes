@@ -678,12 +678,9 @@ public class RhodesService extends Service {
 			}
 		});
 	}
-	public static void PerformRealExit()
-	{
-		  PerformOnUiThread.exec(new Runnable() {
-		        @Override
-		        public void run() {
-	                Logger.I(TAG, "Exit application");
+
+	public static void PerformRealExitInUiThread(){
+		Logger.I(TAG, "Exit application");
 	                try {
 	                    // Do this fake state change in order to make processing before server is stopped
 	                    RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
@@ -702,6 +699,14 @@ public class RhodesService extends Service {
 	                catch (Exception e) {
 	                    Logger.E(TAG, e);
 	                }
+	}
+
+	public static void PerformRealExit()
+	{
+		  PerformOnUiThread.exec(new Runnable() {
+		        @Override
+		        public void run() {
+	                PerformRealExitInUiThread();
 		        }
 		    });
 	}
@@ -716,6 +721,8 @@ public class RhodesService extends Service {
 		else
 			PerformRealExit();
 	}
+
+	
 
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {

@@ -529,6 +529,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         RhoExtManager.getImplementationInstance().onStopActivity(this);
 
         mIsInsideStartStop = false;
+        // RhoExtManager.getInstance().quitApp();
+        RhodesService.PerformRealExitInUiThread();
     }
 
     @Override
@@ -675,6 +677,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
         handleStartParams(getIntent());
+
+        if(mIsServiceAllreadyExist)
+        {
+            onActivityStarted(this);
+            getMainView().navigate(RhodesService.currentLocation(-1), -1);
+        }
 	}
 
     private void handleStartParams(Intent intent)

@@ -196,10 +196,14 @@ public class BaseActivity extends Activity implements ServiceConnection {
         return sActivitiesActive;
     }
 
+    protected boolean mIsServiceAllreadyExist = false;
+
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Logger.T(TAG, "onCreate");
+
+        mIsServiceAllreadyExist = false;
 
 		Intent intent = new Intent(this, RhodesService.class);
 		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
@@ -208,19 +212,28 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		ComponentName serviceName = null;
 		// use new mechanism for foregorund service only for 9.0 and later
 		int sdkVersion = Build.VERSION.SDK_INT;
-		if (sdkVersion >= 28) {
-			serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
-		}
-		else {
-			serviceName = startService(intent);
-		}
-		Logger.D(TAG, "onCreate() startForegroundService POST");
+        
+        if(RhodesService.getInstance() == null) {
+            Logger.D(TAG, "onCreate() startForegroundService PRE");
+            if (sdkVersion >= 28) {
+                serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
+            }
+            else {
+                serviceName = startService(intent);
+            }
+            Logger.D(TAG, "onCreate() startForegroundService POST");
+            //ComponentName serviceName = startService(intent);
+            if (serviceName == null)
+                throw new RuntimeException("Can not start Rhodes service");
+            
+        } else {
+            Logger.D(TAG, "onCreate() RhodesService allready started");
+            mIsServiceAllreadyExist = true;
+        }
 
-		//ComponentName serviceName = startService(intent);
-		if (serviceName == null)
-			throw new RuntimeException("Can not start Rhodes service");
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
-		mBoundToService = true;
+        mBoundToService = true;
+		
 
         if (RhoConf.isExist("disable_screen_rotation")) {
             sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");

@@ -14,7 +14,7 @@ rhobundle_zip_pwd = nil
 # log level
 # 0-trace, 1-info(app level), 2-warnings, 3-errors
 # for production set to 3
-MinSeverity  = 1
+MinSeverity  = 0
 
 # enable copy log messages to standard output, useful for debugging
 LogToOutput = 1
@@ -26,7 +26,7 @@ LogCategories = *
 ExcludeLogCategories =
 
 # max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
-MaxLogFileSize=50000
+MaxLogFileSize=0
 
 # turn on local http server traces, off by default
 #net_trace = 0
