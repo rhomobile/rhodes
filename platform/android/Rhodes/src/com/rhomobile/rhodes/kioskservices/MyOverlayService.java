@@ -4,10 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+
+
 
 import androidx.annotation.Nullable;
 
@@ -15,7 +18,7 @@ import com.rhomobile.rhodes.R;
 
 public class MyOverlayService extends Service {
     private WindowManager wm;
-    private View overlayView;
+    private LinearLayout overlayLayout;
 
     @Nullable
     @Override
@@ -26,7 +29,32 @@ public class MyOverlayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null);
+
+        overlayLayout = new LinearLayout(this);
+        overlayLayout.setOrientation(LinearLayout.VERTICAL);
+        overlayLayout.setBackgroundColor(0xFFFFFFFF);
+
+        Button btnClose = new Button(this);
+        btnClose.setText("STOP OVERLAY");
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelf();
+            }
+        });
+
+        LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        lparams.topMargin = 8;
+        lparams.bottomMargin = 8;
+        lparams.leftMargin = 8;
+        lparams.rightMargin = 8;
+
+        overlayLayout.addView(btnClose, lparams);
+
+
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -36,15 +64,7 @@ public class MyOverlayService extends Service {
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
                 PixelFormat.TRANSLUCENT
         );
-        wm.addView(overlayView, params);
-
-        Button btnExit = overlayView.findViewById(R.id.stopOverlay);
-        btnExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopSelf();
-            }
-        });
+        wm.addView(overlayLayout, params);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -52,7 +72,7 @@ public class MyOverlayService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        wm.removeView(overlayView);
-        overlayView = null;
+        wm.removeView(overlayLayout);
+        overlayLayout = null;
     }
 }

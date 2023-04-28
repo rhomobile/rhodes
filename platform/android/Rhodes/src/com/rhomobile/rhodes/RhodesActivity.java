@@ -46,6 +46,8 @@ import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.kioskservices.MyOverlayService;
+
 
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -860,13 +862,16 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void startKioskMode(String password) {
-        System.out.println("START");
-        KioskManager.setKioskMode(true);
+        Activity mActivity= (Activity) this;
+        Context mContext = getApplicationContext();
+        if(PermissionManager.checkPermissions(mContext, mActivity))
+            KioskManager.setKioskMode(true);
+        else
+            showAlertPermission();
     }
 
     @Override
     public void stopKioskMode(String password) {
-        System.out.println("STOP");
         KioskManager.setKioskMode(false);
     }
 
@@ -877,9 +882,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void startOverlay() {
-        if(PermissionManager.checkPermissions(getContext(),this)){
-            
+        Activity mActivity= (Activity) this;
+        Context mContext = getApplicationContext();
+        if(PermissionManager.checkOverlayPermission(mContext)){
+            Intent overlay = new Intent(this, MyOverlayService.class);
+            startService(overlay);
         }
+        else
+            PermissionManager.setOverlayPermission(mActivity);
     }
 
     @Override
