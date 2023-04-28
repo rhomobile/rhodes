@@ -39,7 +39,7 @@ class ManifestGenerator
       @usesFeatures.merge! cameraFeatures
     end
     @rhodesActivityIntentFilters = []
-    @rhodesActivityIntentFilters << {:act=>'android.intent.action.VIEW', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.BROWSABLE']}
+    @rhodesActivityIntentFilters << {:act=>'android.intent.action.VIEW', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.BROWSABLE','android.intent.category.LAUNCHER']}
     unless hidden
       @rhodesActivityIntentFilters << {:act=>'android.intent.action.MAIN', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.HOME','android.intent.category.LAUNCHER']}
     end

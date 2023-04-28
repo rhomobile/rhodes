@@ -14,9 +14,12 @@ import android.view.accessibility.AccessibilityManager;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import java.util.function.Predicate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PermissionManager {
     final static private Integer MY_PERMISSIONS_REQUEST = 343457842;
@@ -79,6 +82,12 @@ public class PermissionManager {
         String[] theListList = theList.split(":", -1);
 
         List<String> theListListFiltered = new ArrayList<String>();
+        for (String str : theListList){
+            if (!str.isEmpty()) {
+                theListListFiltered.add(str.toString());
+            }
+        }
+        
         for (String str: theListListFiltered){
             if(str.equals("")){
                 theListListFiltered.add("");
