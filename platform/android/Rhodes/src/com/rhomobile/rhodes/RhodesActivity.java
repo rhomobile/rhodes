@@ -78,7 +78,7 @@ import android.widget.Button;
 import android.app.AlertDialog;
 import android.widget.LinearLayout;
 
-
+import java.util.Vector;
 
 import android.widget.Toast;
 
@@ -88,74 +88,125 @@ import android.app.Activity;
 
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback, IKioskMode {
-	
+
 	private static final String TAG = RhodesActivity.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	public static boolean IS_WINDOWS_KEY = false;
-	
+
 	public static boolean isShownSplashScreenFirstTime = false;//Used to display the splash screen only once during launch of an application
-	
+
 	public static int MAX_PROGRESS = 10000;
-	
+
 	private static RhodesActivity sInstance = null;
-	
+
 	private Handler mHandler;
-	
+
 	private View mChild;
 	private int oldHeight;
 	private FrameLayout.LayoutParams frameLayoutParams;
 	private int notificationBarHeight = 0;
 	public static boolean IS_RESIZE_SIP = false;
-	
-	private FrameLayout mTopLayout;
+
+	public FrameLayout mTopLayout;
 	private SplashScreen mSplashScreen;
-	private MainView mMainView;
+	private MainView mMainView = null;
+	private static MainView mWebMainView = null;
 	private String lastIntent ="android.intent.action.MAIN";
 	private RhoMenu mAppMenu;
 
 	private long uiThreadId = 0;
 	public static SharedPreferences pref = null;
-	
+
+
+	private class AdditionalContentView {
+		public View view = null;
+		public ViewGroup.LayoutParams lparams = null;
+		public AdditionalContentView() {
+			view = null;
+			lparams = null;
+		}
+	}
+
+
+	private static Vector<AdditionalContentView> ourAdditionalContentViews = new Vector<AdditionalContentView>(1);
+
+	@Override
+	public void addContentView (View view,
+                ViewGroup.LayoutParams params) {
+		AdditionalContentView item = new AdditionalContentView();
+		item.view = view;
+		item.lparams = params;
+		if (!(view instanceof SimpleMainView.MyView)) {
+			//ourAdditionalContentViews.addElement(item);
+		}
+		super.addContentView(view, params);
+	}
+
+
+	public void addContentViewInner (View view,
+                ViewGroup.LayoutParams params) {
+		AdditionalContentView item = new AdditionalContentView();
+		item.view = view;
+		item.lparams = params;
+		if (!(view instanceof SimpleMainView.MyView)) {
+			ourAdditionalContentViews.addElement(item);
+		}
+		super.addContentView(view, params);
+	}
+
+
+	public static void onOverlayStarted(FrameLayout overlayLayout) {
+		for(int i=0; i < ourAdditionalContentViews.size(); ++i) {
+			AdditionalContentView item = ourAdditionalContentViews.get(i);
+			ViewGroup vg = (ViewGroup) item.view.getParent();
+			if (vg != null) {
+				vg.removeView(item.view);
+			}
+			overlayLayout.addView(item.view, item.lparams);
+		}
+	}
+
+
 	public static interface GestureListener {
 		void onTripleTap();
 		void onQuadroTap();
 	};
 
 
-	
+
 	public static class GestureListenerAdapter implements GestureListener {
 		public void onTripleTap() {
-			
+
 		}
-		
+
 		public void onQuadroTap() {
-			
+
 		}
 	};
-	
+
 	private static ArrayList<GestureListener> ourGestureListeners = new ArrayList<GestureListener>();
 
-	
+
 	public long getUiThreadId() {
 		return uiThreadId;
 	}
-	
+
 	private boolean mIsForeground = false;
 	private boolean mIsInsideStartStop = false;
-	
+
 	public boolean isForegroundNow() {
 		return mIsForeground;
 	}
-	
+
 	public boolean isInsideStartStop() {
 		return mIsInsideStartStop;
 	}
-	
+
 	//------------------------------------------------------------------------------------------------------------------
 	// Read SSL settings from config.xml
-	
+
     private ApplicationInfo getAppInfo() {
         String pkgName = getPackageName();
         try {
@@ -329,20 +380,35 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         mHandler = new Handler();
 
         Logger.T(TAG, "Creating default main view");
-        
+
         mTopLayout = new FrameLayout(this);
         setContentView(mTopLayout);
 
-        SimpleMainView simpleMainView = new SimpleMainView();
-        setMainView(simpleMainView);
-        
+
+		if (mWebMainView != null) {
+			ViewGroup vg = (ViewGroup) mWebMainView.getView().getParent();
+			if (vg != null) {
+				vg.removeView(mWebMainView.getView());
+			}
+			setMainView(mWebMainView);
+			isShownSplashScreenFirstTime = true;
+			notifyUiCreated();
+		}
+		else {
+			SimpleMainView simpleMainView = new SimpleMainView();
+			setMainView(simpleMainView);
+
+			readRhoElementsConfig();
+	        RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
+
+	        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
+
+		}
+
+
         mAppMenu = new RhoMenu();
 
-        readRhoElementsConfig();
-        RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
-        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-        
         if (RhoConf.isExist("resize_sip")) {
 			String resizeSIP = RhoConf.getString("resize_sip");
 			if (resizeSIP != null && resizeSIP.contains("1")) {
@@ -527,31 +593,31 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     @Override
-    public void onStop() 
+    public void onStop()
     {
         super.onStop();
         Logger.T(TAG, "onStop");
 
-        RhoExtManager.getImplementationInstance().onStopActivity(this);
+        //RhoExtManager.getImplementationInstance().onStopActivity(this);
 
         mIsInsideStartStop = false;
         // RhoExtManager.getInstance().quitApp();
-        RhodesService.PerformRealExitInUiThread();
+        //RhodesService.PerformRealExitInUiThread();
     }
 
     @Override
     public void onDestroy() {
         Logger.T(TAG, "onDestroy");
 
-        RhoExtManager.getImplementationInstance().onDestroyActivity(this);
+        //RhoExtManager.getImplementationInstance().onDestroyActivity(this);
 
-        RhodesApplication.stateChanged(RhodesApplication.UiState.Undefined);
+        //RhodesApplication.stateChanged(RhodesApplication.UiState.Undefined);
 
         sInstance = null;
 
         super.onDestroy();
     }
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
@@ -561,7 +627,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				Logger.D(TAG, "onKeyDown: r=" + r);
 			if (r == null)
 				return false;
-			
+
 			// If the RhoConf setting of disable_back_button is set to 1, pretend we did something.
 			if (RhoConf.isExist("disable_back_button") && RhoConf.getInt("disable_back_button") == 1) {
 				Logger.D(TAG, "Back button pressed, but back button is disabled in RhoConfig.");
@@ -572,7 +638,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				return true;
 			}
 		}
-		
+
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -583,17 +649,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        
+
         mAppMenu.enumerateMenu(menu);
         Logger.T(TAG, "onCreateOptionsMenu");
-        
+
         return mAppMenu.getItemsCount() != 0;
     }
-    
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        
+
         Logger.T(TAG, "onPrepareOptionsMenu");
 
         mAppMenu.enumerateMenu(menu);
@@ -651,15 +717,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	public RhodesService getService() {
 		return mRhodesService;
 	}
-	
+
 	public void post(Runnable r) {
 		mHandler.post(r);
 	}
-	
+
 	public void post(Runnable r, long delay) {
 		mHandler.postDelayed(r, delay);
 	}
-	
+
 	public SplashScreen getRhodesSplashScreen() {
 		return mSplashScreen;
 	}
@@ -669,12 +735,36 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             mTopLayout.removeAllViews();
             mMainView = v;
             mTopLayout.addView(v.getView(), new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+			if (v instanceof SimpleMainView) {
+				mWebMainView = v;
+			}
+
+			for(int i=0; i < ourAdditionalContentViews.size(); ++i) {
+				AdditionalContentView item = ourAdditionalContentViews.get(i);
+				ViewGroup vg = (ViewGroup) item.view.getParent();
+				if (vg != null) {
+					vg.removeView(item.view);
+				}
+				super.addContentView(item.view, item.lparams);
+			}
         }
     }
 
 	public MainView getMainView() {
 		return mMainView;
-	}	
+	}
+
+	public static MainView extractMainView() {
+		RhodesActivity ins = sInstance;
+		if (ins != null) {
+			if (ins.getMainView() instanceof SimpleMainView) {
+				mWebMainView = ins.getMainView();
+			}
+			ins.mTopLayout.removeAllViews();
+		}
+		return mWebMainView;
+	}
+
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
