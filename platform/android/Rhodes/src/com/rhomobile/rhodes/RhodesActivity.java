@@ -77,6 +77,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.app.AlertDialog;
 import android.widget.LinearLayout;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 
 
@@ -935,20 +937,24 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
         adb.setView(view);
 
+        Resources res = getResources();
+
+        Drawable statusDenied  = res.getDrawable(R.drawable.baseline_close_24);
+        statusDenied.setBounds(0, 0, 60, 60);
+        Drawable statusPermitted  = res.getDrawable(R.drawable.baseline_check_24);
+        statusPermitted.setBounds(0, 0, 60, 60);
+
         final AlertDialog alert = adb.create();
 
+    
         //===================== ACCESSIBILITY SERVICE =====================
 
-        view.findViewById(R.id.accessibilityServiceStatus).setBackgroundColor(
-                (PermissionManager.checkAccessibilityServicePermission(this)?0xFF59FF00:0xFFFF0000)
-        );
+        Button asBtn = view.findViewById(R.id.accessibilityServiceStatus);
 
-        Button asBtn = view.findViewById(R.id.accessibilityServiceBtn);
+        asBtn.setEnabled(!PermissionManager.checkAccessibilityServicePermission(this));
+        asBtn.setCompoundDrawables((PermissionManager.checkAccessibilityServicePermission(this)? statusPermitted: statusDenied), null, null ,null);
 
-        asBtn.setVisibility(
-                (!PermissionManager.checkAccessibilityServicePermission(this)?View.VISIBLE:View.INVISIBLE)
-        );
-
+    
         asBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -959,15 +965,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== NOTIFICATION SERVICE =====================
 
-        view.findViewById(R.id.notificationServiceStatus).setBackgroundColor(
-                (PermissionManager.checkNotificationServicePermission(this,this)?0xFF59FF00:0xFFFF0000)
-        );
+        Button nBt = view.findViewById(R.id.notificationServiceStatus);
 
-        Button nBt = view.findViewById(R.id.notificationServiceBtn);
-
-        nBt.setVisibility(
-                (!PermissionManager.checkNotificationServicePermission(this,this)?View.VISIBLE:View.INVISIBLE)
-        );
+        nBt.setEnabled(!PermissionManager.checkNotificationServicePermission(this, this));
+        nBt.setCompoundDrawables((PermissionManager.checkNotificationServicePermission(this, this)? statusPermitted: statusDenied), null, null ,null);
 
         nBt.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -979,15 +980,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== DEFAULT LAUNCHER =====================
 
-        view.findViewById(R.id.defaultLauncherStatus).setBackgroundColor(
-                (PermissionManager.isMyLauncherDefault(this)?0xFF59FF00:0xFFFF0000)
-        );
+        Button dlBtn = view.findViewById(R.id.defaultLauncherStatus);
 
-        Button dlBtn = view.findViewById(R.id.defaultLauncherBtn);
-
-        dlBtn.setVisibility(
-                (!PermissionManager.isMyLauncherDefault(this)?View.VISIBLE:View.INVISIBLE)
-        );
+        dlBtn.setEnabled(!PermissionManager.isMyLauncherDefault(this));
+        dlBtn.setCompoundDrawables((PermissionManager.isMyLauncherDefault(this)? statusPermitted: statusDenied), null, null ,null);
 
         dlBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -999,15 +995,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== CALL PHONE =====================
 
-        view.findViewById(R.id.callPhoneStatus).setBackgroundColor(
-                (PermissionManager.checkCallPhonePermission(this)?0xFF59FF00:0xFFFF0000)
-        );
+        Button cpBtn = view.findViewById(R.id.callPhoneStatus);
 
-        Button cpBtn = view.findViewById(R.id.callPhoneBtn);
-
-        cpBtn.setVisibility(
-                (!PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.INVISIBLE)
-        );
+        cpBtn.setEnabled(!PermissionManager.checkCallPhonePermission(this));
+        cpBtn.setCompoundDrawables((PermissionManager.checkCallPhonePermission(this)? statusPermitted: statusDenied), null, null ,null);
 
         cpBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -1019,15 +1010,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== OVERLAY PERMISSION =====================
 
-        view.findViewById(R.id.overlayServiceStatus).setBackgroundColor(
-                (PermissionManager.checkOverlayPermission(this)?0xFF59FF00:0xFFFF0000)
-        );
-
-        Button oBtn = view.findViewById(R.id.overlayServiceBtn);
-
-        oBtn.setVisibility(
-                (!PermissionManager.checkOverlayPermission(this)?View.VISIBLE:View.INVISIBLE)
-        );
+        Button oBtn = view.findViewById(R.id.overlayServiceStatus);
+        
+        oBtn.setEnabled(!PermissionManager.checkOverlayPermission(this));
+        oBtn.setCompoundDrawables((PermissionManager.checkOverlayPermission(this)? statusPermitted: statusDenied), null, null ,null);
 
         oBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -1037,6 +1023,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             }
         });
 
+        
         alert.show();
     }
 
