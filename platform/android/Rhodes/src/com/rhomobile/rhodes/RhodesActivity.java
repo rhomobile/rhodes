@@ -121,6 +121,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private long uiThreadId = 0;
 	public static SharedPreferences pref = null;
 
+    private boolean permissionWindowShow = false;
+
 
 	private class AdditionalContentView {
 		public View view = null;
@@ -540,6 +542,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void onResume() {
         Logger.T(TAG, "onResume");
+
+        if(permissionWindowShow)
+            startKioskMode("");
         
         if(!isShownSplashScreenFirstTime){
 	        Logger.T(TAG, "Creating splash screen");
@@ -970,15 +975,23 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void startKioskMode(String password) {
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
-        if(PermissionManager.checkPermissions(mContext, mActivity))
+        if(PermissionManager.checkPermissions(mContext, mActivity)){
+            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+            if(permissionWindowShow) permissionWindowShow = false;
             KioskManager.setKioskMode(true);
-        else
+        }
+        else{
+            permissionWindowShow = true;
             showAlertPermission();
+        }
     }
 
     @Override
     public void stopKioskMode(String password) {
         KioskManager.setKioskMode(false);
+
+        Context mContext = getApplicationContext();
+        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -1022,8 +1035,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     private void showAlertPermission() {
         mActivity= (Activity) this;
+
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Permission check");
+        adb.setTitle("Permission check")
+            .setCancelable(false);
+
         LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
         adb.setView(view);
 
