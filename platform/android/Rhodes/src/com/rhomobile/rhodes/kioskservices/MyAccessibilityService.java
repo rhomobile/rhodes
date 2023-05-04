@@ -27,15 +27,17 @@ public class MyAccessibilityService extends AccessibilityService {
         if(event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
                 event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
             if(KioskManager.getKioskModeStatus()) {
-                if (!event.getPackageName().equals(getPackageName())) {
-                    performGlobalAction(GLOBAL_ACTION_HOME);
-                    if(event.getPackageName().equals(oldEvent)) {
-                        Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
-                        oldEvent = event.getPackageName();
+                if (event.getPackageName() != null) {
+                    if (!event.getPackageName().equals(getPackageName())) {
+                        performGlobalAction(GLOBAL_ACTION_HOME);
+                        if(event.getPackageName().equals(oldEvent)) {
+                            Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
+                            oldEvent = event.getPackageName();
+                        }
                     }
                 }
             }
-            
+
         }
     }
 
