@@ -77,8 +77,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.app.AlertDialog;
 import android.widget.LinearLayout;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import java.util.Vector;
 
@@ -1043,23 +1042,20 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
         adb.setView(view);
 
-        Resources res = getResources();
-
-        Drawable statusDenied  = res.getDrawable(R.drawable.baseline_close_24);
-        statusDenied.setBounds(0, 0, 60, 60);
-        Drawable statusPermitted  = res.getDrawable(R.drawable.baseline_check_24);
-        statusPermitted.setBounds(0, 0, 60, 60);
-
         final AlertDialog alert = adb.create();
 
     
         //===================== ACCESSIBILITY SERVICE =====================
 
-        Button asBtn = view.findViewById(R.id.accessibilityServiceStatus);
+        Button asBtn = view.findViewById(R.id.accessibilityServiceBtn);
+        ImageView asImg = view.findViewById(R.id.accessibilityServiceStatus);
 
-        asBtn.setEnabled(!PermissionManager.checkAccessibilityServicePermission(this));
-        asBtn.setCompoundDrawables((PermissionManager.checkAccessibilityServicePermission(this)? statusPermitted: statusDenied), null, null ,null);
-
+        asBtn.setVisibility(
+            (!PermissionManager.checkAccessibilityServicePermission(this)?View.VISIBLE:View.GONE)
+        );
+        asImg.setVisibility(
+            (PermissionManager.checkAccessibilityServicePermission(this)?View.VISIBLE:View.GONE)
+        );
     
         asBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -1071,12 +1067,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== NOTIFICATION SERVICE =====================
 
-        Button nBt = view.findViewById(R.id.notificationServiceStatus);
+        Button nBtn = view.findViewById(R.id.notificationServiceBtn);
+        ImageView nImg = view.findViewById(R.id.notificationServiceStatus);
 
-        nBt.setEnabled(!PermissionManager.checkNotificationServicePermission(this, this));
-        nBt.setCompoundDrawables((PermissionManager.checkNotificationServicePermission(this, this)? statusPermitted: statusDenied), null, null ,null);
+        nBtn.setVisibility(
+            (!PermissionManager.checkNotificationServicePermission(this, this)?View.VISIBLE:View.GONE)
+        );
+        nImg.setVisibility(
+            (PermissionManager.checkNotificationServicePermission(this, this)?View.VISIBLE:View.GONE)
+        );
 
-        nBt.setOnClickListener(new Button.OnClickListener(){
+        nBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
                 PermissionManager.setNotificationServicePermission(mActivity);
@@ -1086,10 +1087,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== DEFAULT LAUNCHER =====================
 
-        Button dlBtn = view.findViewById(R.id.defaultLauncherStatus);
+        Button dlBtn = view.findViewById(R.id.defaultLauncherBtn);
+        ImageView dlImg = view.findViewById(R.id.defaultLauncherStatus);
 
-        dlBtn.setEnabled(!PermissionManager.isMyLauncherDefault(this));
-        dlBtn.setCompoundDrawables((PermissionManager.isMyLauncherDefault(this)? statusPermitted: statusDenied), null, null ,null);
+        dlBtn.setVisibility(
+            (!PermissionManager.isMyLauncherDefault(this)?View.VISIBLE:View.GONE)
+        );
+        dlImg.setVisibility(
+            (PermissionManager.isMyLauncherDefault(this)?View.VISIBLE:View.GONE)
+        );
 
         dlBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -1101,10 +1107,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== CALL PHONE =====================
 
-        Button cpBtn = view.findViewById(R.id.callPhoneStatus);
+        Button cpBtn = view.findViewById(R.id.callPhoneBtn);
+        ImageView cpImg = view.findViewById(R.id.callPhoneStatus);
 
-        cpBtn.setEnabled(!PermissionManager.checkCallPhonePermission(this));
-        cpBtn.setCompoundDrawables((PermissionManager.checkCallPhonePermission(this)? statusPermitted: statusDenied), null, null ,null);
+        cpBtn.setVisibility(
+            (!PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.GONE)
+        );
+        cpImg.setVisibility(
+            (PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.GONE)
+        );
 
         cpBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -1116,10 +1127,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         //===================== OVERLAY PERMISSION =====================
 
-        Button oBtn = view.findViewById(R.id.overlayServiceStatus);
-        
-        oBtn.setEnabled(!PermissionManager.checkOverlayPermission(this));
-        oBtn.setCompoundDrawables((PermissionManager.checkOverlayPermission(this)? statusPermitted: statusDenied), null, null ,null);
+        Button oBtn = view.findViewById(R.id.overlayServiceBtn);
+        ImageView oImg = view.findViewById(R.id.overlayServiceStatus);
+
+        oBtn.setVisibility(
+            (!PermissionManager.checkOverlayPermission(this)?View.VISIBLE:View.GONE)
+        );
+        oImg.setVisibility(
+            (PermissionManager.checkOverlayPermission(this)?View.VISIBLE:View.GONE)
+        );
 
         oBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
