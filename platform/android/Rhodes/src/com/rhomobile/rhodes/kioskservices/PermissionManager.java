@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import java.util.function.Predicate;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,8 +134,8 @@ public class PermissionManager {
         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(intent);
-        Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_SHORT).show();
-        activity.finishAffinity();
+        Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_LONG).show();
+        RhoExtManager.getInstance().quitApp();
     }
 
     static public void setDefaultLauncherSystem(Context context, Class ClassForLauncher){
