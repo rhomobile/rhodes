@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,6 +47,7 @@ import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.kioskservices.MyOverlayService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
 import android.app.Dialog;
@@ -120,7 +121,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private long uiThreadId = 0;
 	public static SharedPreferences pref = null;
 
-    private boolean permissionWindowShow = false;
+    private static boolean permissionWindowShow = false;
+	private AlertDialog mPermissionsDialog = null;
+	private static boolean mIsUseOverlay = false;
 
 
 	private class AdditionalContentView {
@@ -238,7 +241,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 configIs = getResources().openRawResource(RhoExtManager.getResourceId("raw", "config"));
                 config.load(configIs, externalSharedPath);
             }
-            
+
              String isWindowKey = null;
 		try {
 		   isWindowKey = config.getValue("isWindowsKey");
@@ -249,7 +252,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             	if(isWindowKey.contains("1")){
             		IS_WINDOWS_KEY = true;
             	}
-            }	
+            }
 
             String CAFile = config.getValue("CAFile");
             if (CAFile != null && CAFile.length() > 0)
@@ -263,7 +266,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             if (sVerifyPeer != null && sVerifyPeer.length() > 0)
                 RhoConf.setBoolean("no_ssl_verify_peer", sVerifyPeer.equals("0"));
 
-                
+
             String pageZoom=config.getValue("PageZoom");
             if(pageZoom !=null && pageZoom.length()>0)
 		RhoConf.setString("PageZoom", pageZoom);
@@ -281,11 +284,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             	}else{
             		 RhoConf.setBoolean("full_screen", false);
             	}
-            }	
-            	
-            
-            
-           
+            }
+
+
+
+
         } catch (Throwable e) {
             Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
             //Logger.W(TAG, e);
@@ -305,20 +308,20 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
         initConfig(configPath);
     }
-    
+
     //------------------------------------------------------------------------------------------------------------------
 
     private final int RHODES_PERMISSIONS_REQUEST = 1;
 
     private void requestPermissions() {
         String pkgName = getPackageName();
-        
+
         try {
             PackageInfo info = getPackageManager().getPackageInfo(pkgName, PackageManager.GET_PERMISSIONS);
 
             ArrayList<String> requestedPermissions  = new ArrayList<String>();
 
-            for ( String p : info.requestedPermissions ) {               
+            for ( String p : info.requestedPermissions ) {
 
                 int result = PermissionChecker.checkSelfPermission( this, p );
 
@@ -341,7 +344,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {       
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         StringBuilder results = new StringBuilder();
 
@@ -352,17 +355,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.I(
             TAG,
             String.format(
-                "onRequestPermissionsResult code: %d, results: %s", 
-                    requestCode, 
+                "onRequestPermissionsResult code: %d, results: %s",
+                    requestCode,
                     results.toString()
             )
         );
     }
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
-        
+
         Thread ct = Thread.currentThread();
         //ct.setPriority(Thread.MAX_PRIORITY);
         uiThreadId = ct.getId();
@@ -454,13 +457,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 						mHandler.postDelayed(this, 100);
 						return;
 					}
-				
+
 					RhodesService.callUiCreatedCallback();
 				}
 			});
 		}
 	}
-	
+
 	@Override
        protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -477,7 +480,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         		}
         	 }
         	 else if((intent.getAction().compareTo("android.intent.action.MAIN") == 0) && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0)) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/) ){
-	    	  //This Else is to handle start page when user call  two times on minimize API 
+	    	  //This Else is to handle start page when user call  two times on minimize API
         		 //That time last intent will be as VIEW and intent action will be MAIN
 	    	    String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
 	        	intent.setAction("android.intent.action.VIEW");
@@ -495,7 +498,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         lastIntent = intent.getAction();
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -542,16 +545,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onResume() {
         Logger.T(TAG, "onResume");
 
-        if(permissionWindowShow)
-            startKioskMode("");
-        
+        if(permissionWindowShow) {
+		    startKioskMode(mIsUseOverlay);
+		}
+
         if(!isShownSplashScreenFirstTime){
 	        Logger.T(TAG, "Creating splash screen");
 	        mSplashScreen = new SplashScreen(this, mMainView, this);
 	        mMainView = mSplashScreen;
 	        isShownSplashScreenFirstTime = true;
         }
-        
+
         mIsForeground = true;
         pauseWebViews(false);
         super.onResume();
@@ -561,7 +565,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     @Override
-    public void onPause() 
+    public void onPause()
     {
         mIsForeground = false;
         pauseWebViews(true);
@@ -793,14 +797,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         boolean firstParam = true;
         if (intent.getData() != null) {
 	    	String strUri = intent.toUri(0);
-	        
+
 	        if(strUri.length() > 0)
 	        {
 	            Uri uri = Uri.parse(strUri);
 	            String authority = uri.getAuthority();
 	            String path = uri.getPath();
 	            String query = uri.getQuery();
-	
+
 	            if (authority != null)
 	                startParams.append(authority);
 	            if (path != null)
@@ -814,7 +818,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Bundle extras = intent.getExtras();
         if (extras != null) {
 	        Set<String> keys = extras.keySet();
-	
+
 	        for (String key : keys) {
 	            Object value = extras.get(key);
 	            if (firstParam) {
@@ -834,7 +838,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
-            
+
             //Toast.makeText(this,"Invalid security token !",Toast.LENGTH_SHORT).show();
             /*
             AlertDialog.Builder b = new AlertDialog.Builder(this);
@@ -850,7 +854,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				public void onClick(DialogInterface arg0, int arg1) {
 					RhodesService.exit();
 				}
-            	
+
             });
             securityAlert.show();
             */
@@ -859,7 +863,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 
 //        String urlStart = uri.getPath();
-//        if (urlStart != null) { 
+//        if (urlStart != null) {
 //            if ("".compareTo(urlStart) != 0)
 //            {
 //                Logger.D(TAG, "PROCESS URL START: " + urlStart);
@@ -867,7 +871,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 //            }
 //        }
     }
-    
+
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event)
 	{
@@ -913,11 +917,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		pref.getString("scandecodewavkey", "");
 		return decodeWavPath;
 	}
-    
+
         public static void setDecodeWav(String string){
     	        pref.edit().putString("scandecodewavkey", string).commit();
     }
-    
+
     public void resizeSIP() {
 		FrameLayout mLayout = (FrameLayout) this
 				.findViewById(android.R.id.content);
@@ -931,7 +935,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                             Rect r = new Rect();
                             //r will be populated with the coordinates of your view that area still visible.
                             mChild.getWindowVisibleDisplayFrame(r);
-                            
+
                             RhoExtManager.getInstance().onInputMethod( mChild, false, "", r);
 
 						}
@@ -952,7 +956,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				// keyboard probably just became hidden
 				frameLayoutParams.height = sipHeight;
 			}
-		if( !BaseActivity.getFullScreenMode()){	
+		if( !BaseActivity.getFullScreenMode()){
 			frameLayoutParams.height = frameLayoutParams.height  - notificationBarHeight;
 			if (heightDiff > (sipHeight / 4)) {
 				frameLayoutParams.height = frameLayoutParams.height  + notificationBarHeight;
@@ -971,26 +975,54 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	}
 
     @Override
-    public void startKioskMode(String password) {
+    public void startKioskMode(boolean use_overlay) {
+		mIsUseOverlay = use_overlay;
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
-        if(PermissionManager.checkPermissions(mContext, mActivity)){
-            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
-            if(permissionWindowShow) permissionWindowShow = false;
-            KioskManager.setKioskMode(true);
-        }
-        else{
-            permissionWindowShow = true;
-            showAlertPermission();
-        }
+		if (!KioskManager.getKioskModeStatus()) {
+	        if(PermissionManager.checkPermissions(mContext, mActivity)){
+	            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+	            if(permissionWindowShow) permissionWindowShow = false;
+				if (mPermissionsDialog != null) {
+					try {
+						mPermissionsDialog.dismiss();
+					}
+					catch(Exception ex) {
+
+					}
+					mPermissionsDialog = null;
+				}
+	            KioskManager.setKioskMode(true);
+				if (mIsUseOverlay) {
+					PerformOnUiThread.exec(new Runnable() {
+			             @Override
+			             public void run() {
+			                 startOverlay();
+			             }
+			        }, 500);
+
+				}
+	        }
+	        else{
+	            permissionWindowShow = true;
+	            showAlertPermission();
+	        }
+		}
     }
 
     @Override
-    public void stopKioskMode(String password) {
-        KioskManager.setKioskMode(false);
+    public void stopKioskMode() {
+		if (KioskManager.getKioskModeStatus()) {
+	        KioskManager.setKioskMode(false);
 
-        Context mContext = getApplicationContext();
-        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
+	        Context mContext = getApplicationContext();
+	        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
+			if (mIsUseOverlay) {
+				stopOverlay();
+			}
+
+			PermissionManager.setDefaultLauncher(this);
+		}
     }
 
     @Override
@@ -1013,7 +1045,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void stopOverlay() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopOverlay'");
+		MyOverlayService os = MyOverlayService.getInstance();
+		if (os != null) {
+			if (MyOverlayService.isOverlayMode()) {
+				os.stopOverlayMode();
+			}
+		}
+        //throw new UnsupportedOperationException("Unimplemented method 'stopOverlay'");
     }
 
     @Override
@@ -1021,7 +1059,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
         boolean perm = PermissionManager.checkPermissions(mContext, mActivity);
-        Toast.makeText(mActivity, "Permission: "+ (perm? "true" : "flase"),Toast.LENGTH_LONG).show();
+        //Toast.makeText(mActivity, "Permission: "+ (perm? "true" : "flase"),Toast.LENGTH_LONG).show();
         return PermissionManager.checkPermissions(mContext, mActivity);
     }
 
@@ -1042,9 +1080,19 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
         adb.setView(view);
 
-        final AlertDialog alert = adb.create();
+		if (mPermissionsDialog != null) {
+			try {
+				mPermissionsDialog.dismiss();
+			}
+			catch(Exception ex) {
 
-    
+			}
+			mPermissionsDialog = null;
+		}
+
+        mPermissionsDialog = adb.create();
+
+
         //===================== ACCESSIBILITY SERVICE =====================
 
         Button asBtn = view.findViewById(R.id.accessibilityServiceBtn);
@@ -1056,12 +1104,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         asImg.setVisibility(
             (PermissionManager.checkAccessibilityServicePermission(this)?View.VISIBLE:View.GONE)
         );
-    
+
         asBtn.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
                 PermissionManager.setAccessibilityServicePermission(mActivity);
-                alert.cancel();
+                //mPermissionsDialog.cancel();
             }
         });
 
@@ -1081,7 +1129,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             @Override
             public void onClick(View v) {
                 PermissionManager.setNotificationServicePermission(mActivity);
-                alert.cancel();
+                //mPermissionsDialog.cancel();
             }
         });
 
@@ -1101,7 +1149,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             @Override
             public void onClick(View v) {
                 PermissionManager.setDefaultLauncher(mActivity);
-                alert.cancel();
+                //mPermissionsDialog.cancel();
             }
         });
 
@@ -1121,7 +1169,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             @Override
             public void onClick(View v) {
                 PermissionManager.setCallPhonePermission(mActivity);
-                alert.cancel();
+                //mPermissionsDialog.cancel();
             }
         });
 
@@ -1141,12 +1189,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             @Override
             public void onClick(View v) {
                 PermissionManager.setOverlayPermission(mActivity);
-                alert.cancel();
+                //mPermissionsDialog.cancel();
             }
         });
 
-        
-        alert.show();
+
+        mPermissionsDialog.show();
     }
+
+	public Context getCurrentContextForUI() {
+		//MyOverlayService os = MyOverlayService.getInstance();
+		//if (os != null) {
+		//	if (MyOverlayService.isOverlayMode()) {
+		//		return os;
+		//	}
+		//}
+		return this;
+	}
 
 }
