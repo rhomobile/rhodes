@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.Toast;
+
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -129,7 +131,10 @@ public class PermissionManager {
 
     static public void setDefaultLauncher(Activity activity){
         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(intent);
+        Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_SHORT).show();
+        activity.finishAffinity();
     }
 
     static public void setDefaultLauncherSystem(Context context, Class ClassForLauncher){
