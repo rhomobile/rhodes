@@ -85,7 +85,7 @@ public class MyOverlayService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Logger.E(TAG, "$$$ onStartCommand() ");
+        Logger.T(TAG, "$$$ onStartCommand() ");
         ourInstance = this;
         ourIsOverlayModeEnabled = true;
 
@@ -123,16 +123,17 @@ public class MyOverlayService extends Service {
 
         mMainView = RhodesActivity.extractMainView();
         if (mMainView != null) {
-            Logger.E(TAG, "$$$ mMainView != NULL ! class = "+mMainView.getClass().getSimpleName());
-            Logger.E(TAG, "$$$ mMainView != NULL ! view.class = "+mMainView.getView().getClass().getSimpleName());
+            if (mMainView != null) {
+                Logger.T(TAG, "$$$ mMainView != NULL ! class = "+mMainView.getClass().getSimpleName());
+                //Logger.T(TAG, "$$$ mMainView != NULL ! view.class = "+mMainView.getView().getClass().getSimpleName());
 
+            }
+            else {
+                Logger.T(TAG, "$$$ mMainView == NULL ! ");
+            }
+
+            mFrameLayout.addView(mMainView.getView(), wvlparams);
         }
-        else {
-            Logger.E(TAG, "$$$ mMainView == NULL ! ");
-        }
-
-        mFrameLayout.addView(mMainView.getView(), wvlparams);
-
 
 
         FrameLayout.LayoutParams blparams = new FrameLayout.LayoutParams(
@@ -146,7 +147,7 @@ public class MyOverlayService extends Service {
         blparams.rightMargin = 8;
         blparams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
 
-        mFrameLayout.addView(btnClose, blparams);
+        //mFrameLayout.addView(btnClose, blparams);
 
 
 
