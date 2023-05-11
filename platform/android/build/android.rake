@@ -2903,6 +2903,7 @@ def create_bundle()
 
   apk = File.join($targetdir,"#{$appname}-universal.apk")
   apks = File.join($targetdir,"#{$appname}.apks")
+  rm apks if File.file? apks
   Jake.run( $javabin, ["-jar", $bundletool, "build-apks","--bundle=#{signed_bundle}", "--output=#{apks}", "--mode=universal"] )
   rm apk if File.file? apk
   Zip::File.open(apks) { |zip|
