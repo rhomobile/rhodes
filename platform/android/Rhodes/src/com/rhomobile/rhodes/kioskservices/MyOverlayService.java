@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.FrameLayout;
+import android.util.Log;
 
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -95,24 +96,41 @@ public class MyOverlayService extends Service {
         overlayLayout.setOrientation(LinearLayout.VERTICAL);
         overlayLayout.setBackgroundColor(0xFFFFFFFF);
 
-        Button btnClose = new Button(this);
-        btnClose.setText("STOP OVERLAY");
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopOverlayMode();
-            }
-        });
-
-        mFrameLayout = new FrameLayout(this);
-
+        // Button btnClose = new Button(this);
+        // btnClose.setText("STOP OVERLAY");
+        // btnClose.setOnClickListener(new View.OnClickListener() {
+        //     @Override
+        //     public void onClick(View v){
+        //         stopOverlayMode();
+        //     }
+        // });
 
         LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
-        overlayLayout.addView(mFrameLayout, lparams);
+        lparams.topMargin = 8;
+        lparams.bottomMargin = 8;
+        lparams.leftMargin = 8;
+        lparams.rightMargin = 8;
 
+        // overlayLayout.addView(btnClose, lparams);
+
+/*
+        |
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD 
+*/
+
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            PixelFormat.TRANSLUCENT
+        );
+
+        mFrameLayout = new FrameLayout(this);
 
 
         FrameLayout.LayoutParams wvlparams = new FrameLayout.LayoutParams(
@@ -120,59 +138,31 @@ public class MyOverlayService extends Service {
             FrameLayout.LayoutParams.MATCH_PARENT
         );
 
-
         mMainView = RhodesActivity.extractMainView();
-        if (mMainView != null) {
-            if (mMainView != null) {
+        if(mMainView != null){
+            if(mMainView != null){
                 Logger.T(TAG, "$$$ mMainView != NULL ! class = "+mMainView.getClass().getSimpleName());
-                //Logger.T(TAG, "$$$ mMainView != NULL ! view.class = "+mMainView.getView().getClass().getSimpleName());
-
-            }
-            else {
+            }else{
                 Logger.T(TAG, "$$$ mMainView == NULL ! ");
             }
 
             mFrameLayout.addView(mMainView.getView(), wvlparams);
         }
 
-
-        FrameLayout.LayoutParams blparams = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-
-        blparams.topMargin = 8;
-        blparams.bottomMargin = 8;
-        blparams.leftMargin = 8;
-        blparams.rightMargin = 8;
-        blparams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-
-        //mFrameLayout.addView(btnClose, blparams);
-
-
-
-
-
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN |
-                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
-                PixelFormat.TRANSLUCENT
-        );
-        wm.addView(overlayLayout, params);
-
         callListsnersOnStart();
 
-        RhodesActivity.onOverlayStarted(mFrameLayout);
+        overlayLayout.addView(RhodesActivity.onOverlayStarted(mFrameLayout), lparams);
+
+
+        wm.addView(overlayLayout, params);
 
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
+        Log.d("myLog", "Overlay stop");
+        Logger.T(TAG, "OverLay Stop");
         ourIsOverlayModeEnabled = false;
         super.onDestroy();
         wm.removeView(overlayLayout);

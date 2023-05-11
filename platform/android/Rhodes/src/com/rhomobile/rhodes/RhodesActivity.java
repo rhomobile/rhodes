@@ -163,7 +163,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	}
 
 
-	public static void onOverlayStarted(FrameLayout overlayLayout) {
+	public static FrameLayout onOverlayStarted(FrameLayout overlayLayout) {
 		for(int i=0; i < ourAdditionalContentViews.size(); ++i) {
 			AdditionalContentView item = ourAdditionalContentViews.get(i);
 			ViewGroup vg = (ViewGroup) item.view.getParent();
@@ -172,6 +172,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			}
 			overlayLayout.addView(item.view, item.lparams);
 		}
+        return overlayLayout;
 	}
 
 
