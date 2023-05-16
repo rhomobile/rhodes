@@ -119,7 +119,7 @@ public class MyOverlayService extends Service {
 /*
         |
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD 
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
 */
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -165,7 +165,12 @@ public class MyOverlayService extends Service {
         Logger.T(TAG, "OverLay Stop");
         ourIsOverlayModeEnabled = false;
         super.onDestroy();
-        wm.removeView(overlayLayout);
+        try {
+            wm.removeView(overlayLayout);
+        }
+        catch(Exception e) {
+            
+        }
         overlayLayout = null;
     }
 }

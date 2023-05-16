@@ -384,14 +384,14 @@ public class RhodesService extends Service {
 						.getResourcesForApplication(getApplicationContext().getPackageName());
 				int id_icon = res.getIdentifier("icon", "mipmap", getApplicationContext().getPackageName());
 				if(android.os.Build.VERSION.SDK_INT < 28)
-				{				
+				{
 					builder.setSmallIcon(id_icon);
 				}
 
 			} catch (Exception e) {
-				
+
 				if(android.os.Build.VERSION.SDK_INT < 28)
-				{				
+				{
 					builder.setSmallIcon(R.mipmap.icon);
 				}
 				Logger.E(TAG, "Resources of icon not found!!!");
@@ -489,9 +489,21 @@ public class RhodesService extends Service {
 		Logger.D(TAG, "initForegroundServiceApi() FINISH");
 	}
 
+
+	private Runnable mOnDestroyListener = null;
+
+	public void setOnDestroyListener(Runnable listener) {
+		mOnDestroyListener = listener;
+	}
+
 	@Override
 	public void onDestroy() {
 		unregisterReceiver(mConnectionChangeReceiver);
+
+		if (mOnDestroyListener != null) {
+			mOnDestroyListener.run();
+			mOnDestroyListener = null;
+		}
 
 		if(DEBUG)
 			Log.d(TAG, "+++ onDestroy");
@@ -722,7 +734,7 @@ public class RhodesService extends Service {
 			PerformRealExit();
 	}
 
-	
+
 
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {

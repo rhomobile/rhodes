@@ -1194,8 +1194,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             }
         });
 
-
-        mPermissionsDialog.show();
+		try {
+        	mPermissionsDialog.show();
+		}
+		catch(Exception e) {
+			
+		}
     }
 
 	public Context getCurrentContextForUI() {
