@@ -168,3 +168,5 @@ use_kinetic_scroll_on_windows = 1
 
 #disable_external_access = 1
 # disable external access to rhodes http server
+
+strict_permission_requirements = 0

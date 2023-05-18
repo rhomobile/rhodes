@@ -43,6 +43,7 @@ import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.permissioncheck.PermissionListGenerate;
 
 import android.os.Build;
 import android.Manifest;
@@ -249,6 +250,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     private void requestPermissions() {
         String pkgName = getPackageName();
+
         
         try {
             PackageInfo info = getPackageManager().getPackageInfo(pkgName, PackageManager.GET_PERMISSIONS);
@@ -474,6 +476,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void onResume() {
         Logger.T(TAG, "onResume");
+        Log.d("mes", "onResume");
         
         if(!isShownSplashScreenFirstTime){
 	        Logger.T(TAG, "Creating splash screen");

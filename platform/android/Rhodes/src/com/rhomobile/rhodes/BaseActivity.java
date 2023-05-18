@@ -29,6 +29,8 @@ package com.rhomobile.rhodes;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.permissioncheck.PermissionListGenerate;
+
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -193,56 +195,65 @@ public class BaseActivity extends Activity implements ServiceConnection {
         return sActivitiesActive;
     }
 
+    private PermissionListGenerate pl;
+    private boolean startedApp = false;
+
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Logger.T(TAG, "onCreate");
+        
+        pl = new PermissionListGenerate(this, this);
+        
+        if(pl.checkAllPermissionsStatus()){
+            Intent intent = new Intent(this, RhodesService.class);
+            intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
+        
 
-		Intent intent = new Intent(this, RhodesService.class);
-		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
-
-		Logger.D(TAG, "onCreate() startForegroundService PRE");
-		ComponentName serviceName = null;
-		// use new mechanism for foregorund service only for 9.0 and later
-		int sdkVersion = Build.VERSION.SDK_INT;
-		if (sdkVersion >= 28) {
-			serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
-		}
-		else {
-			serviceName = startService(intent);
-		}
-		Logger.D(TAG, "onCreate() startForegroundService POST");
-
-		//ComponentName serviceName = startService(intent);
-		if (serviceName == null)
-			throw new RuntimeException("Can not start Rhodes service");
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
-		mBoundToService = true;
-
-        if (RhoConf.isExist("disable_screen_rotation")) {
-            sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");
-        }
-        if (mEnableScreenOrientationOverride) {
-        	sScreenAutoRotate = true;
-        }
-
-        if (sScreenProp == null) {
-            sScreenProp = new ScreenProperties(this);
-        } else {
-            if (!sScreenAutoRotate) { 
-                Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
-                setRequestedOrientation(getScreenProperties().getOrientation());
+            Logger.D(TAG, "onCreate() startForegroundService PRE");
+            ComponentName serviceName = null;
+            // use new mechanism for foregorund service only for 9.0 and later
+            int sdkVersion = Build.VERSION.SDK_INT;
+            if (sdkVersion >= 28) {
+                serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
             }
-        }
+            else {
+                serviceName = startService(intent);
+            }
+            Logger.D(TAG, "onCreate() startForegroundService POST");
 
-        if (RhoConf.getInt("WebView.replaceContentBySplashWhenSnapshotBySystem") == 1) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        }
-        else
-        {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
+            //ComponentName serviceName = startService(intent);
+            if (serviceName == null)
+                throw new RuntimeException("Can not start Rhodes service");
+            bindService(intent, this, Context.BIND_AUTO_CREATE);
+            mBoundToService = true;
 
+            if (RhoConf.isExist("disable_screen_rotation")) {
+                sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");
+            }
+            if (mEnableScreenOrientationOverride) {
+                sScreenAutoRotate = true;
+            }
+
+            if (sScreenProp == null) {
+                sScreenProp = new ScreenProperties(this);
+            } else {
+                if (!sScreenAutoRotate) { 
+                    Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
+                    setRequestedOrientation(getScreenProperties().getOrientation());
+                }
+            }
+
+            if (RhoConf.getInt("WebView.replaceContentBySplashWhenSnapshotBySystem") == 1) {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+            }
+            else
+            {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+            }
+
+            startedApp = true;
+        }
     }
 
 	@Override
@@ -266,8 +277,71 @@ public class BaseActivity extends Activity implements ServiceConnection {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (pl.isShowPermissionDialog()){
+            pl.closePermissionsDialog();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+
+        if(pl != null && !pl.checkAllPermissionsStatus())
+            pl.showPermissionList();
+        else{
+            if (!startedApp){
+                Intent intent = new Intent(this, RhodesService.class);
+                intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
+            
+
+                Logger.D(TAG, "onCreate() startForegroundService PRE");
+                ComponentName serviceName = null;
+                // use new mechanism for foregorund service only for 9.0 and later
+                int sdkVersion = Build.VERSION.SDK_INT;
+                if (sdkVersion >= 28) {
+                    serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
+                }
+                else {
+                    serviceName = startService(intent);
+                }
+                Logger.D(TAG, "onCreate() startForegroundService POST");
+
+                //ComponentName serviceName = startService(intent);
+                if (serviceName == null)
+                    throw new RuntimeException("Can not start Rhodes service");
+                bindService(intent, this, Context.BIND_AUTO_CREATE);
+                mBoundToService = true;
+
+                if (RhoConf.isExist("disable_screen_rotation")) {
+                    sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");
+                }
+                if (mEnableScreenOrientationOverride) {
+                    sScreenAutoRotate = true;
+                }
+
+                if (sScreenProp == null) {
+                    sScreenProp = new ScreenProperties(this);
+                } else {
+                    if (!sScreenAutoRotate) { 
+                        Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
+                        setRequestedOrientation(getScreenProperties().getOrientation());
+                    }
+                }
+
+                if (RhoConf.getInt("WebView.replaceContentBySplashWhenSnapshotBySystem") == 1) {
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+                }
+                else
+                {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                }
+
+                startedApp = true;
+            }
+        }
+
         if((RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false ) && setFullScreenFlag ==false){
         	 setFullScreen(true);
         }else if(sFullScreen){
