@@ -92,7 +92,7 @@ public class PermissionManager {
                 theListListFiltered.add(str.toString());
             }
         }
-        
+
         for (String str: theListListFiltered){
             if(str.equals("")){
                 theListListFiltered.add("");
@@ -133,17 +133,60 @@ public class PermissionManager {
     }
 
     static public void setDefaultLauncher(Activity activity){
+
         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(intent);
-        Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_LONG).show();
+        //Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_LONG).show();
+        RhoExtManager.getInstance().quitApp();
 
+        PerformOnUiThread.exec(new Runnable() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        }, 200);
+
+
+
+        /*
+        mActivity = (RhodesActivity) RhodesActivity.safeGetInstance();
+        kioskMode = (IKioskMode) RhodesActivity.safeGetInstance();
+
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //stopBrowserServer();
+                mActivity.stopOverlay();
+                PerformOnUiThread.exec(new Runnable() {
+                     @Override
+                     public void run() {
+                         kioskMode.stopKioskMode();
+                         PerformOnUiThread.exec(new Runnable() {
+                              @Override
+                              public void run() {
+                                  Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
+                                  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                  activity.startActivity(intent);
+                                  Toast.makeText(activity.getApplicationContext(), "PLease select Tau browser with default home app", Toast.LENGTH_LONG).show();
+                                  //RhoExtManager.getInstance().quitApp();
+                                  System.exit(0);
+                              }
+                         }, 500);
+                     }
+                }, 500);
+
+            }
+        });
+        */
+        /*
         PerformOnUiThread.exec(new Runnable() {
             @Override
             public void run() {
                 RhoExtManager.getInstance().quitApp();
             }
         }, 500);
+        */
     }
 
     static public void setDefaultLauncherSystem(Context context, Class ClassForLauncher){

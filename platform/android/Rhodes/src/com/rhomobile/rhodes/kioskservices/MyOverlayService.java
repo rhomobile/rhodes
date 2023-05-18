@@ -63,6 +63,7 @@ public class MyOverlayService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Logger.T(TAG, "$$$ onBind() ");
         return null;
     }
 
@@ -74,12 +75,14 @@ public class MyOverlayService extends Service {
 
 
     public void stopOverlayMode() {
+        Logger.T(TAG, "$$$ stopOverlayMode() ");
         ourInstance = null;
         ourIsOverlayModeEnabled = false;
         if (mMainView != null) {
             mFrameLayout.removeAllViews();
             overlayLayout.removeAllViews();
             RhodesActivity.safeGetInstance().setMainView(mMainView);
+            mMainView = null;
         }
         stopSelf();
     }
@@ -87,10 +90,18 @@ public class MyOverlayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.T(TAG, "$$$ onStartCommand() ");
+        if (ourInstance != null) {
+            //return super.onStartCommand(intent, flags, startId);
+        }
         ourInstance = this;
         ourIsOverlayModeEnabled = true;
 
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        if (overlayLayout != null) {
+            wm.removeView(overlayLayout);
+            overlayLayout = null;
+        }
 
         overlayLayout = new LinearLayout(this);
         overlayLayout.setOrientation(LinearLayout.VERTICAL);
@@ -162,14 +173,24 @@ public class MyOverlayService extends Service {
     @Override
     public void onDestroy() {
         Log.d("myLog", "Overlay stop");
-        Logger.T(TAG, "OverLay Stop");
+        Logger.T(TAG, "onDestroy()");
+        ourInstance = null;
         ourIsOverlayModeEnabled = false;
         super.onDestroy();
         try {
-            wm.removeView(overlayLayout);
+            if (mMainView != null) {
+                mFrameLayout.removeAllViews();
+                overlayLayout.removeAllViews();
+                RhodesActivity.safeGetInstance().setMainView(mMainView);
+                mMainView = null;
+            }
+            if (overlayLayout != null) {
+                wm.removeView(overlayLayout);
+                overlayLayout = null;
+            }
         }
         catch(Exception e) {
-            
+
         }
         overlayLayout = null;
     }

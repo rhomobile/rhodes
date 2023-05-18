@@ -776,6 +776,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		return mWebMainView;
 	}
 
+	private static Runnable ourRestartActivityCallback = null;
+
+	public static void setRestartActivityCallback(Runnable r) {
+		ourRestartActivityCallback = r;
+	}
+
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
@@ -787,6 +793,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         if(mIsServiceAllreadyExist)
         {
+			if (ourRestartActivityCallback != null) {
+				ourRestartActivityCallback.run();
+			}
             onActivityStarted(this);
             getMainView().navigate(RhodesService.currentLocation(-1), -1);
         }
@@ -980,7 +989,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		mIsUseOverlay = use_overlay;
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
-		if (!KioskManager.getKioskModeStatus()) {
+		//if (!KioskManager.getKioskModeStatus()) {
 	        if(PermissionManager.checkPermissions(mContext, mActivity)){
 	            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
 	            if(permissionWindowShow) permissionWindowShow = false;
@@ -1008,7 +1017,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	            permissionWindowShow = true;
 	            showAlertPermission();
 	        }
-		}
+		//}
     }
 
     @Override
@@ -1022,7 +1031,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				stopOverlay();
 			}
 
-			PermissionManager.setDefaultLauncher(this);
+			//PermissionManager.setDefaultLauncher(this);
 		}
     }
 
@@ -1198,7 +1207,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         	mPermissionsDialog.show();
 		}
 		catch(Exception e) {
-			
+
 		}
     }
 

@@ -304,17 +304,17 @@ public class RhodesApplication extends Application{
                         Logger.T(TAG, "send kill signal");
                         Process.killProcess(Process.myPid());
                     }
-                }, 500);
+                }, 200);
             }
-        }, 500);
+        }, 200);
     }
 
-    
+
     public static abstract class StateHandler implements Runnable
     {
         private Exception error;
         private boolean runOnce;
-        
+
         public StateHandler(boolean once) { runOnce = once; }
 
         protected void setError(Exception err) { error = err; }
