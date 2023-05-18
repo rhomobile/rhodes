@@ -138,3 +138,5 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/MyNotificationLis
 platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/MyOverlayService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/PermissionManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/IKioskMode.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/PermissionListGenerate.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/CheckDrawable.java
