@@ -131,3 +131,12 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunction
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality26.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionalityManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/OsVersionManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/MyAccessibilityService.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/CallReceiver.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/KioskManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/MyNotificationListenerService.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/MyOverlayService.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/PermissionManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/IKioskMode.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/PermissionListGenerate.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/CheckDrawable.java

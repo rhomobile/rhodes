@@ -374,8 +374,33 @@ public class GoogleWebView implements IRhoWebView {
                 //if (mIsShouldKillKeyboardMethodUse ) {
                     final TauWebView me = this;
                     setOnTouchListener(new View.OnTouchListener() {
+
+                        private int mCurrentMax = 0;
+
+                        @Override
                         public boolean onTouch(View v, MotionEvent event) {
-                            ViewGroup activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content));
+                            Logger.I(TAG, "TauWebView.onTouch");
+                            if ((event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) {
+                                if ((event.getPointerCount() == 3) && (mCurrentMax == 3)) {
+                                    RhodesActivity.onTripleTap();
+                                }
+                                if ((event.getPointerCount() == 4) && (mCurrentMax == 4)) {
+                                    RhodesActivity.onQuadroTap();
+                                }
+                                if (event.getPointerCount() == 1) {
+                                    mCurrentMax = 0;
+                                }
+                            }
+                            else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                                mCurrentMax = 0;
+                            }
+                            else if ((event.getActionMasked() == MotionEvent.ACTION_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)) {
+                                Logger.I(TAG, "TauWebView.onTouch COUNT = " + String.valueOf(event.getPointerCount()));
+                                if (event.getPointerCount() > mCurrentMax) {
+                                    mCurrentMax = event.getPointerCount();
+                                }
+                            }
+                            //ViewGroup activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content));
                             //recursiveLoopChildrenForTextEdit(activityRootView);
                             //RhodesActivity.safeGetInstance().getWindow().setFlags(  WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
                             //                                                        WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);

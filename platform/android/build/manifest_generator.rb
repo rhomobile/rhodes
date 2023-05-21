@@ -41,7 +41,7 @@ class ManifestGenerator
     @rhodesActivityIntentFilters = []
     @rhodesActivityIntentFilters << {:act=>'android.intent.action.VIEW', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.BROWSABLE']}
     unless hidden
-      @rhodesActivityIntentFilters << {:act=>'android.intent.action.MAIN', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.LAUNCHER']}
+      @rhodesActivityIntentFilters << {:act=>'android.intent.action.MAIN', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.HOME','android.intent.category.LAUNCHER']}
     end
     @screenOrientation = 'unspecified'
     @debuggable = 'false'
