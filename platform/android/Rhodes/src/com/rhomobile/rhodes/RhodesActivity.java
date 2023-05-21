@@ -50,6 +50,13 @@ import com.rhomobile.rhodes.kioskservices.MyOverlayService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
+import android.os.Build;
+import android.Manifest;
+import android.provider.Settings;
+import android.os.Environment;
+
+
+
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -332,6 +339,23 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             }
 
             if ( requestedPermissions.size() > 0 ) {
+                for (String p : requestedPermissions){
+                    if (p.contains("MANAGE_EXTERNAL_STORAGE") && 
+                        Build.VERSION.SDK_INT >= 30){
+                        if (!Environment.isExternalStorageManager()){
+                            try{
+                                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                                intent.addCategory("android.intent.category.DEFAULT");                    
+                                intent.setData(Uri.parse(String.format("package:%s", this.getPackageName())));
+                                this.startActivityForResult(intent, RHODES_PERMISSIONS_REQUEST);
+                            } catch (Exception e) {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                                this.startActivityForResult(intent, RHODES_PERMISSIONS_REQUEST);
+                            }
+                        }
+                    }
+                }
                 Logger.I(TAG, "Requesting permissions: " + requestedPermissions.toString() );
 
                 ActivityCompat.requestPermissions(

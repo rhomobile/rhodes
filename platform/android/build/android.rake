@@ -80,7 +80,8 @@ ANDROID_PERMISSIONS = {
     'read_sdcard' => 'READ_EXTERNAL_STORAGE',
     'push' => nil,
     'shared_runtime' => nil,
-    'hardware_acceleration' => nil
+    'hardware_acceleration' => nil,
+    'install_packages' => 'REQUEST_INSTALL_PACKAGES'
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
@@ -2068,6 +2069,10 @@ namespace "build" do
           end
 
           if cap_item.is_a? String
+
+            if $target_sdk_level >= 30 && cap_item == 'WRITE_EXTERNAL_STORAGE' || cap_item == 'READ_EXTERNAL_STORAGE'
+              usesPermissions << "android.permission.MANAGE_EXTERNAL_STORAGE"
+            end
             usesPermissions << "android.permission.#{cap_item}"
             next
           end

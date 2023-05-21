@@ -69,7 +69,12 @@ public class GeoLocation {
 				ourSpeed = loc.getSpeed();
 				//The  way of getiing satellites is changed
 				//ourSatellities = getImpl().getSatellities();
-				ourSatellities = loc.getExtras().getInt("satellites");
+				android.os.Bundle extras = loc.getExtras();
+				if (extras != null) {
+					ourSatellities = extras.getInt("satellites");
+				} else {
+					ourSatellities = 0;
+				}
 				ourIsKnownPosition = true;
 			}
 			else {
