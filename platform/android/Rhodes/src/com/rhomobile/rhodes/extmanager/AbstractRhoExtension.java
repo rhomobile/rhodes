@@ -12,7 +12,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
         return null;
     }
-    
+
     @Override
     public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
         return res;
@@ -65,6 +65,17 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
+    public boolean onGoBack(IRhoExtManager extManager, String current_url, String back_url, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+    @Override
+    public boolean onGoForward(IRhoExtManager extManager, String current_url, String forward_url, IRhoWebView ext, boolean res) {
+        return res;
+    }
+
+
+    @Override
     public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult alertResult, boolean res) {
         return res;
     }
@@ -113,7 +124,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
     }
 
-    
+
     @Override
     public boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res) {
         return res;
@@ -133,7 +144,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res) {
         return res;
     }
-    
+
     @Override
     public String onGetProperty(IRhoExtManager extManager, String name) {
         return null;

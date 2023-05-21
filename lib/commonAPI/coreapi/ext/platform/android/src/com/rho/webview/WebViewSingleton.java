@@ -31,12 +31,12 @@ import java.util.Map;
 public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     private static final String TAG = WebViewSingleton.class.getSimpleName();
-    
+
     private static final String DISABLE_PAGE_LOADING_INDICATION = "disable_loading_indication";
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_during_navigation";    
+    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_during_navigation";
     private static final String ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE = "enable_media_playback_without_gesture";
     private WebViewConfig mConfig = new WebViewConfig();
 
@@ -57,9 +57,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         originalProxyHost = Proxy.getDefaultHost();
         originalProxyPort = Proxy.getDefaultPort();
 
-        readRhoConfig(extManager.getConfig("rhoconfig"));        
+        readRhoConfig(extManager.getConfig("rhoconfig"));
     }
-    
+
     @Override
     public void getFramework(IMethodResult result) {
         result.set(RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId());
@@ -373,7 +373,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     @Override
     public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
         Logger.I(TAG, "Set config initially: " + (mConfig != null));
-        ext.setConfig(mConfig);        
+        ext.setConfig(mConfig);
 
         return res;
     }
@@ -404,9 +404,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
 
         if ( haveOriginalProxy ) {
-            //we have system/rhoelements proxy settings so decide what to do with URL            
+            //we have system/rhoelements proxy settings so decide what to do with URL
             if ( isLocalUrl ) {
-                //local URL, we don't need proxy                
+                //local URL, we don't need proxy
                 dropProxySettings();
             } else {
                 //set original proxy setting
@@ -426,7 +426,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
         if ( haveOriginalProxy ) {
             Logger.I( TAG, "Restoring proxy settings: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
-            ProxySettings.setProxy(ContextFactory.getAppContext(),originalProxyHost,originalProxyPort);            
+            ProxySettings.setProxy(ContextFactory.getAppContext(),originalProxyHost,originalProxyPort);
         }
     }
 
@@ -484,6 +484,19 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     public boolean onDocumentComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
         return res;
     }
+
+    @Override
+    public boolean onGoBack(IRhoExtManager extManager, String current_url, String back_url, IRhoWebView ext, boolean res) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean onGoForward(IRhoExtManager extManager, String current_url, String forward_url, IRhoWebView ext, boolean res) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 
     @Override
     public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult alertResult, boolean res) {
@@ -573,7 +586,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
                 }});
         } else*/
         if (name.equalsIgnoreCase("rhoconfig")) {
-            
+
             readRhoConfig(config);
 
             RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandlerInUIThread(true) {
@@ -593,7 +606,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     public String onGetProperty(IRhoExtManager extManager, String name) {
         return null;
     }
-    
+
     private void readRhoelementsConfig(IRhoConfig config) {
         if (config.isExist("enablezoom")) {
            // mConfig.set(WebViewConfig.ENABLE_ZOOM, config.getBool("enable_screen_zoom", WebViewConfig.ENABLE_ZOOM_DEF));
@@ -605,7 +618,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             double zoomValue = config.getDouble("pagezoom");
             mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
         }
-        
+
         if (config.isExist("cache")) {
             String cache = config.getString("cache");
             cache=cache.toLowerCase();
@@ -614,17 +627,17 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             if(endString==-1)
             	endString=cache.indexOf("kb");
             int cacheInt =Integer.parseInt(cache.substring(0,endString ).toString());
-         
+
             mConfig.set(WebViewConfig.ENABLE_CACHE, cacheInt!=0);
         }
-        
+
         if(config.isExist("splashscreenpath")){
         	String splashscreenpathValue = config.getString("splashscreenpath");
         	if(splashscreenpathValue != null){
         		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_PATH, splashscreenpathValue);
         	}
         }
-        
+
         if(config.isExist("splashscreenduration")){
         	String splashscreendurationValue = config.getString("splashscreenduration");
         	if(splashscreendurationValue != null){
@@ -643,7 +656,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
                     originalProxyHost = hostURL;
                     originalProxyPort = port;
-		    		
+
 		    		ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
 		  		}
 	    	}
@@ -653,14 +666,14 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     		if(httpsProxy.length()!=0){
 	    		int index = httpsProxy.lastIndexOf(":");
 	    		if(index > -1)
-	    		{	      		
+	    		{
 	    			String portNumber = httpsProxy.substring(index + 1, httpsProxy.length());
 	    			String hostURL = httpsProxy.substring(0, index);
 	    			int port = Integer.parseInt(portNumber);
 
                     originalProxyHost = hostURL;
                     originalProxyPort = port;
-	    		
+
 	    			ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
 	    		}
 	    	}
@@ -692,7 +705,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     					}
     			}
     	}
-    	
+
     	if(config.isExist("usedwforscanning")){
     	        String _usedwforscanning = config.getString("usedwforscanning");
     	        if(_usedwforscanning != null){
@@ -708,12 +721,12 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             mConfig.set(WebViewConfig.ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE, false);
         }
     }
-    
+
     private void readRhoConfig(IRhoConfig config) {
         if (RhoConf.isExist(DISABLE_PAGE_LOADING_INDICATION))
             mConfig.set(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION, !RhoConf.getBool(DISABLE_PAGE_LOADING_INDICATION));
 
-        
+
         if (RhoConf.isExist(ENABLE_ZOOM))
             mConfig.set(WebViewConfig.ENABLE_ZOOM, RhoConf.getBool(ENABLE_ZOOM));
 
@@ -722,7 +735,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
         if (RhoConf.isExist(ENABLE_CACHE))
             mConfig.set(WebViewConfig.ENABLE_CACHE, RhoConf.getBool(ENABLE_CACHE));
-            
+
         if (RhoConf.isExist(DISABLE_SCANNER_NAVIGATION))
             mConfig.set(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION, RhoConf.getString(DISABLE_SCANNER_NAVIGATION));
         if (RhoConf.isExist("iswindowskey"))

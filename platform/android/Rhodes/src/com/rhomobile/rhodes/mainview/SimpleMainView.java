@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Vector;
 import java.util.List;
+import android.os.Looper;
 
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
@@ -679,6 +680,10 @@ public class SimpleMainView implements MainView {
 
     @Override
     public void setWebView(IRhoWebView view, int tabIndex) {
+		IRhoWebView rwv = detachWebView();
+		if (rwv != null) {
+			// destory
+		}
         webView = view;
         addWebViewToMainView(webView, 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
     }
@@ -729,18 +734,29 @@ public class SimpleMainView implements MainView {
 		}
 	}
 
-	
+
     //@Override
     public void executeJS(String js, int index) {
-    	
+
     	//Utils.platformLog("@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$@", "ExecuteJS("+js+")");
     	//((android.webkit.WebView)webView.getView()).executeJS();
     	if ((android.os.Build.VERSION.SDK_INT < 14) || (android.os.Build.VERSION.SDK_INT >= 19)) {    // 14 is 4.0, 19 is 4.4
-    		navigate("javascript:"+js, index);
+			final String js_code = js;
+			if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
+				((WebView)webView.getView()).evaluateJavascript(js_code, null);
+	        }
+	        else {
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						((WebView)webView.getView()).evaluateJavascript(js_code, null);
+					}
+				});
+			}
+    		//navigate("javascript:"+js, index);
     		return;
     	}
-    	
-    	
+
+
 		Method mStringByEvaluatingJavaScriptFromString = null;
 		Method mSendMessage = null;
 	    Object mWebViewCore = null;
@@ -789,11 +805,21 @@ public class SimpleMainView implements MainView {
 				//e.printStackTrace();
 			}
 	    }
-	    
+
 	    if (!mHasReflectionWasExecutedOK) {
 	        //com.rhomobile.rhodes.WebView.executeJs(js, index);
-	    	navigate("javascript:"+js, index);
-	    	
+			final String js_code = js;
+			if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
+				((WebView)webView.getView()).evaluateJavascript(js_code, null);
+			}
+			else {
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						((WebView)webView.getView()).evaluateJavascript(js_code, null);
+					}
+				});
+			}
+	    	//navigate("javascript:"+js, index);
 	    }
     }
 

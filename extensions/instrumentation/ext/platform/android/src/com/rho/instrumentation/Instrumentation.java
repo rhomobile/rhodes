@@ -31,10 +31,10 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Instrumentation extends InstrumentationBase implements IInstrumentation, IRhoExtension {
 	private static final String TAG = "Rho::Instrumentation";
-	
+
     public Instrumentation(String id) {
         super(id);
-        RhoExtManager.getInstance().registerExtension("instrumentation", this); 
+        RhoExtManager.getInstance().registerExtension("instrumentation", this);
     }
 
 	@Override
@@ -65,7 +65,7 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 
 	@Override
 	public void simulate_touch_event(final int event_type, final int x, final int y, IMethodResult result)
-	{		
+	{
 		new Thread(new Runnable()
 		{
 			public void run()
@@ -130,7 +130,7 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 	public void get_allocated_memory(IMethodResult result) {
 		Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
 		Debug.getMemoryInfo(memoryInfo);
-		
+
 		result.set(memoryInfo.getTotalPss());
 	}
 
@@ -138,12 +138,12 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 	public void delete_file(String fileName, IMethodResult result) {
 		int res = 0;
 		final String basePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-		
+
 		if ( (fileName == null) || (fileName.equals("")) ) {
 			result.set(-1);
 		    return;
 		}
-		
+
 		fileName = fileName.replaceAll("\\\\", "/");
 		try
 		{
@@ -157,21 +157,21 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 		{
 		    res = -1;
 		}
-		
+
 		result.set(res);
-		
+
 	}
 
 	@Override
 	public void file_exists(String fileName, IMethodResult result) {
 		int res = 0;
 		final String basePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-		
+
 		if ( (fileName == null) || (fileName.equals("")) ) {
 			result.set(-1);
 		    return;
 		}
-		
+
 		fileName = fileName.replaceAll("\\\\", "/");
 		try
 		{
@@ -185,9 +185,9 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 		{
 		    res = -1;
 		}
-		
+
 		result.set(res);
-		
+
 	}
 
 	@Override
@@ -228,7 +228,7 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 				}
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -272,7 +272,7 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public boolean onNavigateStarted(IRhoExtManager extManager, String url,
 		IRhoWebView ext, boolean res) {
@@ -300,6 +300,20 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+    public boolean onGoBack(IRhoExtManager extManager, String current_url, String back_url, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean onGoForward(IRhoExtManager extManager, String current_url, String forward_url, IRhoWebView ext, boolean res) {
+		// TODO Auto-generated method stub
+        return false;
+    }
+
+
 
 	@Override
 	public boolean onSelect(IRhoExtManager extManager, String[] items,
@@ -351,7 +365,7 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 	@Override
 	public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -32,6 +32,9 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
+
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -69,7 +72,7 @@ public class RhoWebViewClient extends WebViewClient
         private String host;
         private String realm;
 //        private boolean pending;
-        
+
         public HttpAuthResult(HttpAuthHandler handler, String host, String realm) {
             authHandler = handler;
             this.host = host;
@@ -100,7 +103,7 @@ public class RhoWebViewClient extends WebViewClient
 //        public void setPending() {
 //            pending = true;
 //        }
-//        
+//
 //        boolean isPending() {
 //            return pending;
 //        }
@@ -109,11 +112,27 @@ public class RhoWebViewClient extends WebViewClient
         public String type() {
             return "http";
         }
-        
+
     }
-    
+
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
+    private static boolean ourIsDoNotTrack = false;
+    private static boolean ourIsDoNotSendAuthorise = false;
+    private static boolean ourIsDoNotVerifySSL = false;
+
+
+    public static void setDoNotTrack(boolean dnt) {
+        ourIsDoNotTrack = dnt;
+    }
+
+    public static void setDoNotVerifySSL(boolean do_not_verify) {
+        ourIsDoNotVerifySSL = do_not_verify;
+    }
+
+    public static void setDoNotSendAuthorise(boolean dnsa) {
+        ourIsDoNotSendAuthorise = dnsa;
+    }
 
     public RhoWebViewClient(GoogleWebView webView) {
         mWebView = webView;
@@ -128,44 +147,49 @@ public class RhoWebViewClient extends WebViewClient
     public void onLoadResource(WebView view, String url) {
         Logger.I(TAG, "Load resource" + url);
 
-        RhoExtManager.getImplementationInstance().onLoadResource(view, url);
+        try {
+            RhoExtManager.getImplementationInstance().onLoadResource(view, url);
+        }
+        catch (Exception e) {
+
+        }
     }
 
-    
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
-        
+
         //RhoElements implementation of "history:back"
         if(url.equalsIgnoreCase("history:back")) {
         	Logger.I(TAG, "history:back");
         	view.goBack();
         	return true;
         }
-        else if(url.equalsIgnoreCase("history:twiceback")) 
+        else if(url.equalsIgnoreCase("history:twiceback"))
         {
             Logger.I(TAG, "history:twiceback");
         	view.goBack();
 		view.goBack();
         	return true;
         }
-        
-        if (url.contains(".HTM")) 
+
+        if (url.contains(".HTM"))
         {
     	     url=url.replace(".HTML", ".html");
     	     url=url.replace(".HTM", ".htm");
     	     Logger.I(TAG, "Changed to lower case html, url="+ url);
     	}
-        
-        
-        
-        
+
+
+
+
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
             Logger.profStart("BROWSER_PAGE");
-            
+
             RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
-            
+
             Uri localUri = LocalFileProvider.overrideUri(Uri.parse(url));
             if (localUri != null) {
                 url = Uri.decode(localUri.toString());
@@ -173,20 +197,56 @@ public class RhoWebViewClient extends WebViewClient
                 view.loadUrl(url);
                 return true;
             }
+            else {
+
+
+                /*
+                if (url.equals("https://authenticationtest.com/HTTPAuth/")) {
+                    final WebView sview = view;
+                    final String surl = url;
+                    final HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                    extraHeaders.put("Authorization", "");
+
+                    PerformOnUiThread.exec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            sview.loadUrl(surl, extraHeaders);
+                        }
+                    });
+                    return true;
+                }
+                */
+
+                if (ourIsDoNotTrack || ourIsDoNotSendAuthorise) {
+                    HashMap<String, String> extraHeaders = new HashMap<String, String>();
+                    if (ourIsDoNotTrack) {
+                        extraHeaders.put("DNT", "1");
+                    }
+                    if (ourIsDoNotSendAuthorise) {
+                        extraHeaders.put("Authorization", "");
+                        //ourIsDoNotSendAuthorise = false;
+                    }
+                    view.loadUrl(url, extraHeaders);
+                    return true;
+                }
+            }
         }
         return res;
     }
-    
+
+
+
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        
+
         RhoExtManager.getImplementationInstance().onNavigateStarted(view, url);
 
         if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
     }
-    
+
     @Override
     public void onPageFinished(WebView view, String url) {
 
@@ -221,9 +281,9 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
-        
+
         Logger.profStop("BROWSER_PAGE");
-        
+
         StringBuilder msg = new StringBuilder(failingUrl != null ? failingUrl : "null");
         msg.append(" failed: ");
         msg.append(errorCode);
@@ -233,7 +293,7 @@ public class RhoWebViewClient extends WebViewClient
         RhoExtManager.getImplementationInstance().onLoadError(view, IRhoExtension.LoadErrorReason.INTERNAL_ERROR);
     }
 
-    @Override 
+    @Override
     public void onReceivedClientCertRequest(WebView view, ClientCertRequest request)
     {
         try {
@@ -250,7 +310,7 @@ public class RhoWebViewClient extends WebViewClient
         } catch (Throwable  e) {
             request.cancel();
         }
-        
+
     }
 
     @Override
@@ -276,7 +336,7 @@ public class RhoWebViewClient extends WebViewClient
             }
         }
 
-        if(RhoConf.getBool("no_ssl_verify_peer")) {
+        if(ourIsDoNotVerifySSL || RhoConf.getBool("no_ssl_verify_peer")) {
             Logger.D(TAG, "Skip SSL error.");
             handler.proceed();
         } else {
@@ -306,7 +366,7 @@ public class RhoWebViewClient extends WebViewClient
     //public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
     //    return null;
     //}
-    
+
     @Override
     public void onReceivedHttpAuthRequest (WebView view, HttpAuthHandler handler, String host, String realm) {
     	IRhoConfig rhoelementsGetConfig =  RhoExtManager.getInstance().getConfig("rhoelementsext");
@@ -333,10 +393,10 @@ public class RhoWebViewClient extends WebViewClient
      private void checkTitleDataContain(WebView view){
     	// Set title
         String title = view.getTitle();
-    	if(! (title.equalsIgnoreCase("data:text/html,") || title.equalsIgnoreCase("data:,") 
+    	if(! (title.equalsIgnoreCase("data:text/html,") || title.equalsIgnoreCase("data:,")
     			|| title.contains("about:blank"))){
     		RhodesActivity.safeGetInstance().setTitle(title);
     	}
     }
-    
+
 }

@@ -13,16 +13,17 @@ import com.rhomobile.rhodes.RhoConf;
 
 public class WebSettingsProviderBase implements IWebSettingsProvider {
     protected static final String TAG = "WebSettingsProvider";
-    
+
     @SuppressLint("SetJavaScriptEnabled")
     public void fillSettings(WebSettings settings, IRhoConfig config) {
-        
+
         boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM);
         boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE);
         boolean enableMediaPlaybackWithoutGesture = config != null && config.getBool(WebViewConfig.ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE);
         String customUA = RhoConf.getString("useragent");
-        
-        settings.setMediaPlaybackRequiresUserGesture(!enableMediaPlaybackWithoutGesture);
+
+        //settings.setMediaPlaybackRequiresUserGesture(!enableMediaPlaybackWithoutGesture);
+        settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setSavePassword(false);
         settings.setSaveFormData(false);
         settings.setJavaScriptEnabled(true);

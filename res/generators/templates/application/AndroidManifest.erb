@@ -22,8 +22,10 @@
   <uses-permission android:name='<%=name%>'/>
   <% end %>
 
+
   <%# <!-- Установка пакета -->
   <uses-permission android:name='android.permission.REQUEST_INSTALL_PACKAGES'/> %>
+
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
   <application android:requestLegacyExternalStorage='true'
@@ -67,6 +69,7 @@
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
+
 
     <% if  @androidVerMaj >= 7 %>
       <provider
