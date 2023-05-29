@@ -3,19 +3,22 @@ package com.rhomobile.rhodes.permissioncheck;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.rhomobile.rhodes.RhoConf;
 
 
 import androidx.annotation.NonNull;
@@ -26,15 +29,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
+
+import com.rhomobile.rhodes.RhoConf;
+
 
 public class PermissionListGenerate {
-    private Context mContext;
-    private Activity mActivity;
+    private final Context mContext;
+    private final Activity mActivity;
     private AlertDialog mPermissionsDialog = null;
     private final Map<String, ArrayList<String>> permissionsMap = new HashMap<String, ArrayList<String>>();
     private AlertDialog.Builder ad;
-    final static private Integer MY_PERMISSIONS_REQUEST = 343457842;
+    final static private Integer MY_PERMISSIONS_REQUEST = 1;
     public PermissionListGenerate(Context context, Activity activity){
         this.mContext = context;
         this.mActivity = activity;
@@ -53,7 +58,7 @@ public class PermissionListGenerate {
         for(String p :info.requestedPermissions){
             PermissionInfo permissionInfo = mContext.getPackageManager().getPermissionInfo(p, 0);
             int protectionLevel = permissionInfo.protectionLevel;
-            if (protectionLevel == PermissionInfo.PROTECTION_DANGEROUS)
+            if (protectionLevel == PermissionInfo.PROTECTION_DANGEROUS || p.equals("android.permission.MANAGE_EXTERNAL_STORAGE"))
                 addToListPermission(p);
         }
     }
@@ -62,6 +67,7 @@ public class PermissionListGenerate {
 
     public void addToListPermission(String permissionName){
         String nameKey = formatName(permissionName);
+
         if(permissionsMap.get(nameKey) != null)
         {
             ArrayList<String> i = permissionsMap.get(nameKey);
@@ -86,12 +92,15 @@ public class PermissionListGenerate {
         String[] splitName = splitNameToPoint[splitNameToPoint.length -1].split("_");
 
         StringBuilder returnName = new StringBuilder();
+        boolean firstWord = true;
         for(int i = 0; i < splitName.length; i++){
-            if(!splitName[i].equals("read") &&
-               !splitName[i].equals("write"))
+            if(!splitName[i].equals("read") && !splitName[i].equals("write") && !splitName[i].equals("manage"))
             {
-                if(i != splitName.length -1)
+                if(!firstWord)
                     returnName.append(" ");
+                else
+                    firstWord = false;
+
                 returnName.append(splitName[i]);
             }
         }
@@ -102,31 +111,33 @@ public class PermissionListGenerate {
 
     public boolean checkAllPermissionsStatus(){
         if(RhoConf.getInt("strict_permission_requirements") == 1){
-            boolean returnStatus = true;
             for(Map.Entry<String, ArrayList<String>> entry : permissionsMap.entrySet()){
-                ArrayList<String> entryValue = entry.getValue();
-                for(String pNameManifest : entryValue){
-                    if(!returnStatus)
-                        break;
-                    returnStatus = getPermissionStatus(pNameManifest);
-                }
-                if (!returnStatus)
-                    break;
+                if(!getPermissionStatus(entry.getValue()))
+                    return false;
             }
-            return returnStatus;
-        }else
-            return true;
+        }
+        return true;
     }
 
     private boolean getPermissionStatus(@NonNull String pNameManifest){
-        return ContextCompat.checkSelfPermission(mContext, pNameManifest) == PackageManager.PERMISSION_GRANTED;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+            pNameManifest.equals("android.permission.MANAGE_EXTERNAL_STORAGE"))
+            return Environment.isExternalStorageManager();
+        else
+            return ContextCompat.checkSelfPermission(mContext, pNameManifest) == PackageManager.PERMISSION_GRANTED;
     }
     private boolean getPermissionStatus(@NonNull ArrayList<String> pNameManifest){
-        boolean returnStatus = true;
-        for (String value : pNameManifest) {
-            returnStatus =  ContextCompat.checkSelfPermission(mContext, value) == PackageManager.PERMISSION_GRANTED;
+        for(String value : pNameManifest){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && value.equals("android.permission.MANAGE_EXTERNAL_STORAGE")){
+                boolean manageExternal =  Environment.isExternalStorageManager();
+                if(!manageExternal)
+                    return false;
+            }
+            else 
+                if(ContextCompat.checkSelfPermission(mContext, value) != PackageManager.PERMISSION_GRANTED)
+                    return false;
         }
-        return returnStatus;
+        return true;
     }
 
 
@@ -188,7 +199,7 @@ public class PermissionListGenerate {
 
     }
     @NonNull
-    private LinearLayout permissionLine(@NonNull final ArrayList<String> pItem){
+    private LinearLayout permissionLine(@NonNull final ArrayList<String> pItems){
         LinearLayout layout = new LinearLayout(mContext);
         layout.setOrientation(LinearLayout.HORIZONTAL);
         layout.setBackgroundColor(Color.parseColor("#F3F3F3"));
@@ -213,7 +224,7 @@ public class PermissionListGenerate {
         tvParams.setMargins(10,0,0,0);
 
         tv.setLayoutParams(tvParams);
-        tv.setText(formatName(pItem.get(0)));
+        tv.setText(formatName(pItems.get(0)));
         tv.setTextSize(20);
         tv.setGravity(Gravity.CENTER);
 
@@ -229,7 +240,7 @@ public class PermissionListGenerate {
 
         ////////////////////////////////////////////////////////////
 
-        if(getPermissionStatus(pItem)){
+        if(getPermissionStatus(pItems)){
             ImageView checkImg = new ImageView(mContext);
 
             LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(
@@ -264,7 +275,9 @@ public class PermissionListGenerate {
             btn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    ActivityCompat.requestPermissions(mActivity, pItem.toArray(new String[0]), MY_PERMISSIONS_REQUEST);
+                    openManageExternalStorage(pItems);
+
+                    ActivityCompat.requestPermissions(mActivity, pItems.toArray(new String[0]), MY_PERMISSIONS_REQUEST);
                     mPermissionsDialog.cancel();
                 }
             });
@@ -276,6 +289,22 @@ public class PermissionListGenerate {
         ////////////////////////////////////////////////////////////
 
         return layout;
+    }
+
+    private void openManageExternalStorage(@NonNull final ArrayList<String> pItems){
+        if(pItems.contains("android.permission.MANAGE_EXTERNAL_STORAGE") &&
+            !getPermissionStatus("android.permission.MANAGE_EXTERNAL_STORAGE")){
+                try{
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    intent.addCategory("android.intent.category.DEFAULT");
+                    intent.setData(Uri.parse(String.format("package:%s", mContext.getPackageName())));
+                    mActivity.startActivity(intent);
+                } catch (Exception e) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    mActivity.startActivity(intent);
+                }
+            }
     }
 
 
