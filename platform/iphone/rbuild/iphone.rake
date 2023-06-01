@@ -936,15 +936,16 @@ def update_xcode_project_files_by_capabilities
     hash_dev_ent = load_plist(dev_ent)
     hash_prd_ent = load_plist(prd_ent)
 
-    #if($push_type == FCM_PUSH)
+    if($push_type == FCM_PUSH)
       #framework_src = File.join($startdir, 'lib', 'extensions', 'fcm-push', 'ext', 'iphone', 'Frameworks')
       #firebase_h_src = File.join($startdir, 'platform', 'iphone', 'Firebase.h')
       #googleservice_plist_src = File.join($startdir, 'platform', 'iphone', 'GoogleService-Info.plist')
-      #framework_dst = File.join($app_path, 'project', 'iphone')
+      googleservice_plist_src = File.join($app_path, 'GoogleService-Info.plist')
+      framework_dst = File.join($app_path, 'project', 'iphone')
       #cp_r framework_src, framework_dst
       #cp_r firebase_h_src, framework_dst
-      #cp_r googleservice_plist_src, framework_dst
-    #end
+      cp_r googleservice_plist_src, framework_dst
+    end
 
     #bluetooth
     bt_capability = false
