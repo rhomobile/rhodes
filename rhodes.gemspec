@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rest-client', '2.0.2')
   s.add_dependency('net-scp','1.2.1')
   s.add_dependency('net-ssh','6.0.2')
-  s.add_dependency('CFPropertyList', '2.2.8')
+  s.add_dependency('CFPropertyList', '~> 2.3.3')
   s.add_dependency('naturally', '1.3.2')
   s.add_dependency('simctl', '1.6.8')
   s.add_dependency('listen', '3.0.6')
