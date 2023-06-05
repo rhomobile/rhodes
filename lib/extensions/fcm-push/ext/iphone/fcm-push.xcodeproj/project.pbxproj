@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B1618C73C1AFDF2D84EDF1B3 /* libPods-fcm-push.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */; };
+		DE3320874BA7A270A0ADF5E8 /* Pods_fcm_push.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4AB037FE0CB3EB218E130A /* Pods_fcm_push.framework */; };
 		FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* applePush_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
@@ -19,8 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A4AB037FE0CB3EB218E130A /* Pods_fcm_push.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_fcm_push.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CDA3BB94718F541853D0BC4 /* Pods-fcm-push.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fcm-push.debug.xcconfig"; path = "Target Support Files/Pods-fcm-push/Pods-fcm-push.debug.xcconfig"; sourceTree = "<group>"; };
-		96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fcm-push.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C4D0AD1B4A0521913C12576B /* Pods-fcm-push.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fcm-push.release.xcconfig"; path = "Target Support Files/Pods-fcm-push/Pods-fcm-push.release.xcconfig"; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libfcm-push.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfcm-push.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,7 +40,7 @@
 			files = (
 				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
 				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
-				B1618C73C1AFDF2D84EDF1B3 /* libPods-fcm-push.a in Frameworks */,
+				DE3320874BA7A270A0ADF5E8 /* Pods_fcm_push.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +72,7 @@
 			children = (
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 				FAD4602C12260A8500141873 /* UIKit.framework */,
-				96A61BE3E184A0E6B57CF9D2 /* libPods-fcm-push.a */,
+				4A4AB037FE0CB3EB218E130A /* Pods_fcm_push.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -99,7 +99,6 @@
 				4CDA3BB94718F541853D0BC4 /* Pods-fcm-push.debug.xcconfig */,
 				C4D0AD1B4A0521913C12576B /* Pods-fcm-push.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -340,7 +339,7 @@
 					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "fcm-push";
 				SDKROOT = iphoneos;
@@ -387,7 +386,7 @@
 					../../../../../lib/commonAPI/coreapi/ext/shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "fcm-push";
 				SDKROOT = iphoneos;

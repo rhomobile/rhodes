@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--inline-source", "--charset=UTF-8", '--exclude=bin', '--exclude=doc', '--exclude=ext', '--exclude=installer', '--exclude=lib/build', '--exclude=lib/commonAPI', '--exclude=lib/extensions', '--exclude=lib/rhodes', '--exclude=lib/test', '--exclude=lib/rhodes.rb', '--exclude=platform', '--exclude=res', '--exclude=spec']
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.3'
+  s.add_dependency('cocoapods', '~> 1.10.2') if RUBY_PLATFORM =~ /darwin/i
   s.add_dependency('templater', '1.0.0')
   s.add_dependency('rake', '12.3.3')
   s.add_dependency('uuid', '2.3.7')
@@ -30,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rest-client', '2.0.2')
   s.add_dependency('net-scp','1.2.1')
   s.add_dependency('net-ssh','6.0.2')
-  s.add_dependency('CFPropertyList', '2.2.8')
+  s.add_dependency('CFPropertyList', '~> 2.3.3')
   s.add_dependency('naturally', '1.3.2')
   s.add_dependency('simctl', '1.6.8')
   s.add_dependency('listen', '3.0.6')
