@@ -20,25 +20,32 @@ public class MyAccessibilityService extends AccessibilityService {
     private BroadcastReceiver receiver;
     private static final int NOTIFICATION_ID = 1234;
     private boolean filter = true;
+    public static boolean isPowerProcessing = false;
+
+    public static void setPowerProcessing(boolean value) {
+        isPowerProcessing = value;
+    }
 
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
 
-        if(RhoConf.getInt("power_off_button") == 1){
-            receiver = new BroadcastReceiver(){
-                @Override
-                public void onReceive(Context context, Intent intent){
-                    String action = intent.getAction();
-                    if(action != null && action.equals("com.rhobrowser.poweroff")){
-                        powerOff();
-                    }
+        receiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent){
+                String action = intent.getAction();
+                if( action != null && 
+                    action.equals("com.rhobrowser.poweroff") &&
+                    isPowerProcessing)
+                    {
+                    powerOff();
                 }
-            };
-            IntentFilter filter = new IntentFilter("com.rhobrowser.poweroff");
-            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-        }
+            }
+        };
+        IntentFilter filter = new IntentFilter("com.rhobrowser.poweroff");
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        
 
         Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
     }
@@ -92,7 +99,7 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(RhoConf.getInt("power_off_button") == 1)
+        if(isPowerProcessing)
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 }
