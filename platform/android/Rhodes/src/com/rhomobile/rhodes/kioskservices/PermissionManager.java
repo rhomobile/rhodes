@@ -55,14 +55,12 @@ public class PermissionManager {
     static public Boolean checkAccessibilityServicePermission(Context context){
         AccessibilityManager am = (AccessibilityManager)context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> enabledService = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-        boolean status = false;
         for (AccessibilityServiceInfo service: enabledService){
             if(service.getId().equals(getAccessibilityServiceName(context.getPackageName(), MyAccessibilityService.class.getName()))){
-                status = true;
-                break;
+                return true;
             }
         }
-        return status;
+        return false;
     }
 
     static public void setAccessibilityServicePermission(Activity activity){

@@ -20,6 +20,7 @@ public class MyAccessibilityService extends AccessibilityService {
     private BroadcastReceiver receiver;
     private static final int NOTIFICATION_ID = 1234;
     private boolean filter = true;
+    private CharSequence powerPackageName;
     public static boolean isPowerProcessing = false;
 
     public static void setPowerProcessing(boolean value) {
@@ -38,7 +39,7 @@ public class MyAccessibilityService extends AccessibilityService {
                 if( action != null && 
                     action.equals("com.rhobrowser.poweroff") &&
                     isPowerProcessing)
-                    {
+                {
                     powerOff();
                 }
             }
@@ -76,11 +77,20 @@ public class MyAccessibilityService extends AccessibilityService {
             }
 
         } else {
-            if( event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED && 
-                !event.getPackageName().equals("com.tau.taubrowser"))
+            if (powerPackageName == null && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
+                powerPackageName = event.getPackageName();
+            }
+
+            Log.d("TESTETST", getPackageName());
+
+            if( (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED && 
+                !event.getPackageName().equals("com.tau.taubrowser")) || 
+                (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+                event.getPackageName() != powerPackageName ))
             {
                 Log.d("myLog1", "FILTER ON");
                 filter = true;
+                powerPackageName = null;
             }
         }
     }
