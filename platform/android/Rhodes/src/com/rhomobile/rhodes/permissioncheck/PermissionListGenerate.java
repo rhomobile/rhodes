@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.util.Log;
+
 
 
 import androidx.annotation.NonNull;
@@ -55,11 +57,22 @@ public class PermissionListGenerate {
 
     private void init() throws PackageManager.NameNotFoundException {
         PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(),PackageManager.GET_PERMISSIONS);
+        int sdkVersion = Build.VERSION.SDK_INT;
+
         for(String p :info.requestedPermissions){
-            PermissionInfo permissionInfo = mContext.getPackageManager().getPermissionInfo(p, 0);
-            int protectionLevel = permissionInfo.protectionLevel;
-            if (protectionLevel == PermissionInfo.PROTECTION_DANGEROUS || p.equals("android.permission.MANAGE_EXTERNAL_STORAGE"))
-                addToListPermission(p);
+            if(sdkVersion >= 29) {
+                PermissionInfo permissionInfo = mContext.getPackageManager().getPermissionInfo(p, 0);
+                int protectionLevel = permissionInfo.protectionLevel;
+                if (protectionLevel == PermissionInfo.PROTECTION_DANGEROUS || p.equals("android.permission.MANAGE_EXTERNAL_STORAGE"))
+                    addToListPermission(p);
+            }else{
+                if(!p.equals("android.permission.MANAGE_EXTERNAL_STORAGE")){
+                    PermissionInfo permissionInfo = mContext.getPackageManager().getPermissionInfo(p, 0);
+                    int protectionLevel = permissionInfo.protectionLevel;
+                    if (protectionLevel == PermissionInfo.PROTECTION_DANGEROUS)
+                        addToListPermission(p);
+                }
+            }
         }
     }
 
@@ -67,6 +80,7 @@ public class PermissionListGenerate {
 
     public void addToListPermission(String permissionName){
         String nameKey = formatName(permissionName);
+        Log.d("permissionCheck", permissionName);
 
         if(permissionsMap.get(nameKey) != null)
         {
