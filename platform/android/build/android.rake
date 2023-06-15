@@ -1079,6 +1079,11 @@ namespace "config" do
       $app_extensions_list.each do |ext, extpath|
         next if extpath.nil?
 
+        # com.android.ndk.thirdparty:openssl:1.1.1 openssl.so and openssl.so - obsolete
+        if ext == 'openssl.so'
+          next
+        end
+
         puts "#{extpath} is configuring..."
         extyml = File.join(extpath, "ext.yml")
         if File.file? extyml
@@ -1461,6 +1466,10 @@ namespace "build" do
       end
       
       $ext_android_build_scripts.each do |ext, builddata|
+        # com.android.ndk.thirdparty:openssl:1.1.1 extension openssl.so - obsolete
+        if ext == 'openssl.so'
+          next
+        end
 
         puts "Building #{ext}: #{builddata.inspect}"
 
@@ -1653,29 +1662,6 @@ namespace "build" do
       print_timestamp('build:android:libsqlite FINISH')
     end
 
-    #not real build, just copy existing .so to build dir
-    task :libopenssl => "config:android" do
-
-      skip = ($app_config['extensions'].index('openssl.so') || $app_config['extensions'].index('openssl'))    
-      next if skip
-
-      print_timestamp('build:android:libopenssl START')
-
-      libdir = File.join($app_builddir, 'openssl')
-      mkdir_p libdir unless File.directory? libdir
-
-      src_dir = "#{$shareddir}/../../lib/extensions/openssl.so/ext/android"
-
-      $abis.each do |abi|
-        realabi = abi
-        realabi = 'armeabi' if abi == 'arm'
-        mkdir_p File.join(libdir, realabi) unless File.directory? File.join(libdir, realabi)
-        cp_r File.join(src_dir, realabi, "libopenssl.so.a"), File.join(libdir, realabi, "libopenssl.a")
-      end
-
-      LibBuilder.results['openssl'] = libdir
-    end
-
     task :libcurl => "config:android" do
       print_timestamp('build:android:libcurl START')
       # Steps to get curl_config.h from fresh libcurl sources:
@@ -1843,8 +1829,7 @@ namespace "build" do
       :librhocommon, 
       :librhomain, 
       :librhosync, 
-      :librholog, 
-      :libopenssl
+      :librholog
     ]
 
     task :genconfig => "config:android" do
@@ -1928,6 +1913,12 @@ namespace "build" do
         next
       end
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
+      openssl_include = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "crypto", "include"
+
+      # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
+      openssl_crypto_lib = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "crypto", "libs"
+      openssl_ssl_lib = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "ssl", "libs"
+      abi_prefab_target_dirs = { "arm" => "android.armeabi-v7a", "aarch64" => "android.arm64-v8a", "x86" => "android.x86", "armeabi-v7a" => "android.armeabi-v7a", "x86_64" => "android.x86_64" }
 
       args = []
       args << "-I\"#{$appincdir}\""
@@ -1940,7 +1931,8 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
+      # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
+      args << "-I\"#{openssl_include}\""
       args << "-I\"#{$coreapidir}\""
       args << "-I\"#{File.join($tmpdir,"include")}\""
 
@@ -1966,6 +1958,10 @@ namespace "build" do
         rlibs << "z"
         rlibs << "stdc++"
 
+        # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
+        rlibs << "crypto"
+        rlibs << "ssl"
+
         rlibs.map! { |x| "-l#{x}" }
 
         realabi = abi
@@ -1977,6 +1973,9 @@ namespace "build" do
           args << "-L\"#{File.dirname(lib)}\""
         end
 
+        # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
+        args << "-L\"#{File.join(openssl_crypto_lib, abi_prefab_target_dirs[abi])}\""
+        args << "-L\"#{File.join(openssl_ssl_lib, abi_prefab_target_dirs[abi])}\""
        
         deps = []
         libs = []
@@ -2248,6 +2247,23 @@ namespace "build" do
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
         cp_r lib, File.join($applibs,arch,file)
+      end
+
+      abi_prefab_alter_names = { "android.armeabi-v7a" => "arm", "android.arm64-v8a" => "aarch64", "android.x86" => "x86", "armeabi-v7a" => "arm", "android.x86_64" => "x86_64" }
+      abi_prefab_target_dirs = { "android.armeabi-v7a" => "armeabi", "android.arm64-v8a" => "arm64-v8a", "android.x86" => "x86", "armeabi-v7a" => "armeabi", "android.x86_64" => "x86_64" }
+      android_prefab_dir = AndroidTools::MavenDepsExtractor.instance.prefab_dirs
+      android_prefab_dir.each do |dir|
+        Dir.glob(dir + "/**/lib*.so").each do |lib|
+          arch = File.basename(File.dirname(lib))
+          if !$abis.include?(abi_prefab_alter_names[arch])
+            next
+          end
+          arch = abi_prefab_target_dirs[arch]
+          file = File.basename(lib)
+          if Dir.exists? File.join($applibs,arch)
+            cp_r lib, File.join($applibs,arch,file)
+          end
+        end
       end
 
       abi_alter_names = { "armeabi" => "arm", "arm64-v8a" => "aarch64", "x86" => "x86", "armeabi-v7a" => "arm", "x86_64" => "x86_64" }

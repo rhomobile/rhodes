@@ -47,7 +47,7 @@ class MavenDepsExtractor
     @asset_dirs = []
     @jni_libs = []
     @manifests = []
-
+    @prefab_dirs = []
 
   end
 
@@ -118,6 +118,10 @@ class MavenDepsExtractor
     @dependencies
   end
 
+  def prefab_dirs
+    @prefab_dirs
+  end
+
   def set_temp_dir( d )
     raise "Maven extractor directory was already set to #{@temp_dir}" if @temp_dir
 
@@ -177,6 +181,7 @@ class MavenDepsExtractor
           libs = File.join(target,'libs')
           jni = File.join(target,'jni')
           classes = File.join(target,'classes.jar')
+          prefab = File.join(target,'prefab')
 
           @asset_dirs << assets if (File.directory?(assets) and !Dir[File.join(assets,'*')].empty? )
           @manifests << manifest if File.file?(manifest) and File.size?(r_txt)
@@ -184,6 +189,7 @@ class MavenDepsExtractor
           @jars += Dir[File.join(libs,'*.jar')]
           @jars << classes if File.file?(classes)
           @jni_libs += Dir[(File.join(jni,'**','*.so'))]
+          @prefab_dirs << prefab if (File.directory?(prefab) and !Dir[File.join(prefab,'**')].empty? )
 
         end
       elsif File.extname(f) == '.jar'
