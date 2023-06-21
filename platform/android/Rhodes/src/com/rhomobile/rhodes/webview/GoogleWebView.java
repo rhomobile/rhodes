@@ -97,6 +97,8 @@ public class GoogleWebView implements IRhoWebView {
     private OnGlobalLayoutListener mOnGlobalLayoutListener = null;
 
 
+
+
     /*
     public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         private String TAG = RhoInputConnectionWrapper.class.getSimpleName();
@@ -421,6 +423,8 @@ public class GoogleWebView implements IRhoWebView {
             isAutorizationDisable = sa;
         }
 
+
+
         public void loadUrl(String url) {
             Logger.I(this.TAG, "TauWebView.loadUrl url = " + url);
             ///*
@@ -650,6 +654,8 @@ public class GoogleWebView implements IRhoWebView {
     private TextZoom mTextZoom = TextZoom.NORMAL;
     private IRhoConfig mConfig;
 
+    private boolean mIsBackDisabled = false;
+
     public GoogleWebView(Activity activity) {
         mWebView = new TauWebView(activity);
         mWebView.getSettings().setLoadWithOverviewMode(true);
@@ -733,6 +739,9 @@ public class GoogleWebView implements IRhoWebView {
        }, 10);
     }
 
+    public void setBackDisabled(boolean value) {
+        mIsBackDisabled = value;
+    }
 
     private static void initWebStuff(Activity activity) {
 
@@ -838,6 +847,9 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void goBack() {
+        if (mIsBackDisabled) {
+            return;
+        }
         try {
             WebBackForwardList history = mWebView.copyBackForwardList();
             int current_index = history.getCurrentIndex();
