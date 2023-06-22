@@ -1,18 +1,9 @@
-QT += core gui network multimedia
+QT += core gui network multimedia webkit
 <%= @enableDBUS %>
-
-DEFINES += <%= @enableQWebEngine %>
-
-!contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-    QT += webkit
-}
-contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-    QT += webengine
-}
 
 message(Qt version: $$[QT_VERSION])
 
-CONFIG += sailfishapp c++14 sailfishapp_i18n
+CONFIG += auroraapp auroraapp_i18n c++14
 DEFINES += OS_SAILFISH OS_LINUX
 
 TARGET = <%= @nameApp %>
@@ -112,11 +103,11 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customtoolbaritem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customwebviewtab.h
 
-#DISTFILES += $$PWD/../sailfish/qml/harbour-SailfishRhodes.qml \
-#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/cover/harbour-CoverPage.qml \
-#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-FirstPageWK.qml \
-#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-FirstPageWE.qml \
-#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-MenuPage.qml
+#DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/cover/CoverPage.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/FirstPageWK.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/FirstPageWE.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/MenuPage.qml
 
 
 #RESOURCES += resources/common.qrc

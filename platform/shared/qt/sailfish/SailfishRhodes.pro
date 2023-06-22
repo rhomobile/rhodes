@@ -1,6 +1,6 @@
-TARGET = harbour-sailfishrhodes
+TARGET = sailfishrhodes
 QT += webkit core network quick #widgets
-CONFIG += c++14 sailfishapp sailfishapp_i18n ordered
+CONFIG += c++14 auroraapp auroraapp_i18n ordered
 debug{
     CONFIG += force_debug_info
 }
@@ -17,15 +17,15 @@ data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
 
-DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
-    rpm/harbour-sailfishrhodes.changes.run.in \
-    rpm/harbour-sailfishrhodes.spec \
-    rpm/harbour-sailfishrhodes.yaml \
-    harbour-sailfishrhodes.desktop \
+DISTFILES += rpm/sailfishrhodes.changes.in \
+    rpm/sailfishrhodes.changes.run.in \
+    rpm/sailfishrhodes.spec \
+    rpm/sailfishrhodes.yaml \
+    sailfishrhodes.desktop \
     translations/*.ts \
-    qml/harbour-sailfishrhodes.qml \
+    qml/sailfishrhodes.qml \
     qml/pages/MenuPage.qml \
-    privileges/harbour-sailfishrhodes \
+    privileges/sailfishrhodes \
     qml/pages/FirstPageWE.qml \
     qml/pages/FirstPageWK.qml
 

@@ -58,7 +58,7 @@ public:
     QString getLastError() const{return lastError;}
     QString getDeviceName(){
         if (hostInfo.name().isEmpty()){
-            hostInfo.setName("nemo");
+            hostInfo.setName("defaultuser");
         }
         return hostInfo.name();
 

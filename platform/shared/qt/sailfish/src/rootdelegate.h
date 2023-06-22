@@ -2,7 +2,7 @@
 #define ROOTDELEGATE_H
 
 #include <QObject>
-#include <sailfishapp.h>
+#include <auroraapp.h>
 #include <QCoreApplication>
 
 class RootDelegate : public QObject

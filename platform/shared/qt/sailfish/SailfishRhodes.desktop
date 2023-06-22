@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Application
 X-Nemo-Application-Type=silica-qt5
-Icon=harbour-sailfishrhodes
-Exec=harbour-sailfishrhodes
-Name=harbour-sailfishrhodes
-
+Icon=sailfishrhodes
+Name=sailfishrhodes
+Exec=invoker --type=silica-qt5 -s /usr/bin/sailfishrhodes

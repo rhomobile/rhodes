@@ -169,10 +169,10 @@ sailfish:
   device:
     type: real
     device_name: INOI R7 (ARM)
-    user: nemo
+    user: defaultuser
     key: C:/SailfishOS/vmshare/ssh/private_keys/INOI_R7_(ARM)/nemo
     password: 123
-    host: '192.168.2.15'
+    host: '192.168.1.56'
   extensions: ["mediacapture", "barcode", "signature", "rhoconnect-client", "serialport"]
 
 

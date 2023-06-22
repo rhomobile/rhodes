@@ -1,4 +1,4 @@
-#include <sailfishapp.h>
+#include <auroraapp.h>
 #include <QObject>
 #include <QDebug>
 #include <QFileInfo>
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", debugAddress.toLocal8Bit());
 #endif
 
-    QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
+    QScopedPointer<QGuiApplication> pApplication(Aurora::Application::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
     qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     #endif
 
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
-    QScopedPointer<QQuickView> pView(SailfishApp::createView());
+    QScopedPointer<QQuickView> pView(Aurora::Application::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
     // Create the main application window
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
-    qDebug() << "Main path to QML: " + SailfishApp::pathToMainQml().toString();
+    qDebug() << "Main path to QML: " + Aurora::Application::pathToMainQml().toString();
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
     view->rootContext()->setContextProperty("rootDelegate", RootDelegate::getInstance());
-    view->setSource(SailfishApp::pathToMainQml());
+    view->setSource(Aurora::Application::pathToMainQml());
     view->showFullScreen();
     RHODESAPP().startApp();
     //QTimer::singleShot(1000, ()[&]{rho_rhodesapp_callUiCreatedCallback();});

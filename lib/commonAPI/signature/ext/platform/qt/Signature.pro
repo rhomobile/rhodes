@@ -22,7 +22,7 @@ isEqual(QT_MAJOR_VERSION, 5):{
 
         QT += quick multimedia dbus bluetooth
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+        CONFIG += auroraapp c++14 auroraapp_i18n qmlcache
     }
 
     greaterThan(QT_MINOR_VERSION, 6): {
