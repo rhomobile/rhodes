@@ -57,9 +57,9 @@ test_java = java.gsub(/\\/,"/")
 
 
 
-java = "" unless check_answer(java, ["/lib/dt.jar", "/lib/libjava.dylib"])
+java = "" unless check_answer(java, ["/lib/dt.jar", "/lib/libjava.dylib", "/lib/libjava.so", "/bin/java", "/bin/java.exe"])
 
-java = prompt_for("JDK Path", java, false, ["/lib/dt.jar", "/lib/libjava.dylib"])
+java = prompt_for("JDK Path", java, false, ["/lib/dt.jar", "/lib/libjava.dylib", "/lib/libjava.so", "/bin/java", "/bin/java.exe"])
 
 java = File.join( java, 'bin' ) if java
 
