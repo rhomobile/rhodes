@@ -3,21 +3,32 @@ require 'yaml'
 require 'fileutils'
 include FileUtils
 
-def prompt_for(question, suggestion, required, validation = "")
+def check_answer(answer, validations)
+    validations.each do |validation|
+        if File.exists? answer + validation
+            return true
+        end
+    end
+
+    return false
+end
+
+
+def prompt_for(question, suggestion, required, validations = [""])
   newanswer = "X"
 
   if required
-    while  not File.exists? newanswer + validation
+    while  not check_answer(newanswer, validations)
       print "#{question} (required) (#{suggestion}): "
       newanswer = STDIN.gets.chomp!
       newanswer = suggestion if newanswer == ""
-      STDOUT.puts "Invalid #{question}" unless File.exists? newanswer  + validation
+      STDOUT.puts "Invalid #{question}" unless check_answer(newanswer, validations)
     end
   else
-    while newanswer != "" and not File.exists? newanswer + validation
+    while newanswer != "" and not check_answer(newanswer, validations)
       print "#{question} (blank to skip) (#{suggestion}): "
       newanswer = STDIN.gets.chomp!
-      STDOUT.puts "Invalid #{question}" if newanswer != "" and not File.exists? newanswer + validation
+      STDOUT.puts "Invalid #{question}" if newanswer != "" and not check_answer(newanswer, validations)
     end
   end
 
@@ -42,10 +53,13 @@ elsif File.exists? "/Program Files/Java"
   chdir start
 end
 
-java = java.gsub(/\\/,"/")
-java = "" unless File.exists? java  + "/lib/dt.jar"
+test_java = java.gsub(/\\/,"/")
 
-java = prompt_for("JDK Path", java, false, "/lib/dt.jar")
+
+
+java = "" unless check_answer(java, ["/lib/dt.jar", "/lib/libjava.dylib"])
+
+java = prompt_for("JDK Path", java, false, ["/lib/dt.jar", "/lib/libjava.dylib"])
 
 java = File.join( java, 'bin' ) if java
 
