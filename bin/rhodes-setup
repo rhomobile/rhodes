@@ -22,13 +22,13 @@ def prompt_for(question, suggestion, required, validations = [""])
       print "#{question} (required) (#{suggestion}): "
       newanswer = STDIN.gets.chomp!
       newanswer = suggestion if newanswer == ""
-      STDOUT.puts "Invalid #{question}" unless check_answer(newanswer, validations)
+      STDOUT.puts "Alert: Invalid #{question}" unless check_answer(newanswer, validations)
     end
   else
     while newanswer != "" and not check_answer(newanswer, validations)
       print "#{question} (blank to skip) (#{suggestion}): "
       newanswer = STDIN.gets.chomp!
-      STDOUT.puts "Invalid #{question}" if newanswer != "" and not check_answer(newanswer, validations)
+      STDOUT.puts "Alert: Invalid #{question}" if newanswer != "" and not check_answer(newanswer, validations)
     end
   end
 
