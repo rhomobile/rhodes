@@ -1284,14 +1284,14 @@ namespace "config" do
           end
         end
 
-        preload_java_classes.push(*extconf_android["preload_java_classes"]) if (extconf_android && extconf_android["preload_java_classes"])
+        preload_java_classes.push(extconf_android["preload_java_classes"]) if (extconf_android && extconf_android["preload_java_classes"])
 
         puts "#{extpath} is configured"
       end # $app_extensions_list.each
 
       mkdir_p(File.join( $tmpdir, "include" ) )
       File.open( File.join( $tmpdir, "include", "rhojava_extra.inc" ), "w" ) { |f|
-        preload_java_classes.each { |cls| f.puts( "\"#{cls}\"," ) }
+        preload_java_classes.each { |cls| f.puts( "RHODES_DEFINE_JAVA_CLASS(#{cls[0]}, \"#{cls[1]}\")") }
       }
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
