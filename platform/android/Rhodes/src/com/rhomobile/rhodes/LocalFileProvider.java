@@ -41,10 +41,12 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.webkit.MimeTypeMap;
 import android.os.ParcelFileDescriptor;
+import android.provider.OpenableColumns;
 import java.io.FileNotFoundException;
 
 
@@ -240,14 +242,34 @@ public class LocalFileProvider extends ContentProvider
                 "Insert operation is not supported by this provider");
     }
 
-    @Override
-    public Cursor query(Uri uri, String[] proj, String selection, String[] selectionArgs, String sortOrder) {
-        Logger.T(TAG, "query: " + uri);
+    private static final String[] COLUMNS = {
+            OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
 
-        // Some apps want to query some metadata for files being opened. So do not throw form here...  
-        return null;
-//        throw new UnsupportedOperationException(
-//                "Query operation is not supported by this provider");
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Logger.T(TAG, "query: " + uri);
+        // ContentProvider has already checked granted permissions
+        final File file = fileFromUri(uri);
+        if (projection == null) {
+            projection = COLUMNS;
+        }
+        String[] cols = new String[projection.length];
+        Object[] values = new Object[projection.length];
+        int i = 0;
+        for (String col : projection) {
+            if (OpenableColumns.DISPLAY_NAME.equals(col)) {
+                cols[i] = OpenableColumns.DISPLAY_NAME;
+                values[i++] = file.getName();
+            } else if (OpenableColumns.SIZE.equals(col)) {
+                cols[i] = OpenableColumns.SIZE;
+                values[i++] = file.length();
+            }
+        }
+        cols = copyOf(cols, i);
+        values = copyOf(values, i);
+        final MatrixCursor cursor = new MatrixCursor(cols, 1);
+        cursor.addRow(values);
+        return cursor;
     }
 
     @Override
@@ -258,4 +280,14 @@ public class LocalFileProvider extends ContentProvider
                 "Update operation is not supported by this provider");
     }
 
+    private static String[] copyOf(String[] original, int newLength) {
+        final String[] result = new String[newLength];
+        System.arraycopy(original, 0, result, 0, newLength);
+        return result;
+    }
+    private static Object[] copyOf(Object[] original, int newLength) {
+        final Object[] result = new Object[newLength];
+        System.arraycopy(original, 0, result, 0, newLength);
+        return result;
+    }
 }
