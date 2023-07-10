@@ -48,6 +48,9 @@ import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.kioskservices.MyOverlayService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.deviceowner.RhoDeviceAdminReceiver;
+import com.rhomobile.rhodes.deviceowner.KisokModeDeviceOwner;
+
 
 
 import android.os.Build;
@@ -86,6 +89,8 @@ import android.widget.Button;
 import android.app.AlertDialog;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.app.admin.DevicePolicyManager;
+
 
 import java.util.Vector;
 
@@ -132,6 +137,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private AlertDialog mPermissionsDialog = null;
 	private static boolean mIsUseOverlay = false;
 
+    private KisokModeDeviceOwner kisokModeDeviceOwner;
 
 	private class AdditionalContentView {
 		public View view = null;
@@ -1013,47 +1019,56 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		mIsUseOverlay = use_overlay;
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
-		//if (!KioskManager.getKioskModeStatus()) {
-	        if(PermissionManager.checkPermissions(mContext, mActivity)){
-	            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
-	            if(permissionWindowShow) permissionWindowShow = false;
-				if (mPermissionsDialog != null) {
-					try {
-						mPermissionsDialog.dismiss();
-					}
-					catch(Exception ex) {
 
-					}
-					mPermissionsDialog = null;
-				}
-	            KioskManager.setKioskMode(true);
-				if (mIsUseOverlay) {
-					PerformOnUiThread.exec(new Runnable() {
-			             @Override
-			             public void run() {
-			                 startOverlay();
-			             }
-			        }, 500);
+        kisokModeDeviceOwner = new KisokModeDeviceOwner(mActivity);
 
-				}
-	        }
-	        else{
-	            permissionWindowShow = true;
-	            showAlertPermission();
-	        }
-		//}
+        if(kisokModeDeviceOwner.isAdmin()){
+            kisokModeDeviceOwner.setKioskMode(true);
+            KioskManager.setKioskMode(true);
+        }else{
+            if(PermissionManager.checkPermissions(mContext, mActivity)){
+                Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+                if(permissionWindowShow) permissionWindowShow = false;
+                if (mPermissionsDialog != null) {
+                    try {
+                        mPermissionsDialog.dismiss();
+                    }
+                    catch(Exception ex) {
+
+                    }
+                    mPermissionsDialog = null;
+                }
+                KioskManager.setKioskMode(true);
+                if (mIsUseOverlay) {
+                    PerformOnUiThread.exec(new Runnable() {
+                        @Override
+                        public void run() {
+                            startOverlay();
+                        }
+                    }, 500);
+
+                }
+            }
+            else{
+                permissionWindowShow = true;
+                showAlertPermission();
+            }
+        }
     }
 
     @Override
     public void stopKioskMode() {
 		if (KioskManager.getKioskModeStatus()) {
-	        KioskManager.setKioskMode(false);
-
-	        Context mContext = getApplicationContext();
-	        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
-			if (mIsUseOverlay) {
-				stopOverlay();
-			}
+            KioskManager.setKioskMode(false);
+            if(kisokModeDeviceOwner.isAdmin()){
+                kisokModeDeviceOwner.setKioskMode(false);
+            }else{
+                Context mContext = getApplicationContext();
+                Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
+                if (mIsUseOverlay) {
+                    stopOverlay();
+                }
+            }
 
 			//PermissionManager.setDefaultLauncher(this);
 		}
