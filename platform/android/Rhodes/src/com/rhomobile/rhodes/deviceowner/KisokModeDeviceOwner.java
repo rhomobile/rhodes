@@ -24,17 +24,16 @@ public class KisokModeDeviceOwner {
         this.mActivity = mActivity;
     }
 
-
-    public boolean isAdmin(){
-        return mDevicePolicyManager.isDeviceOwnerApp(mActivity.getPackageName());
-    }
-
     public void setKioskMode(boolean enable){
         setRestrictions(enable);
         setAsHomeApp(enable);
         setKeyGuardEnabled(enable);
         setLockTask(enable);
         setImmersiveMode(enable);
+    }
+
+    public void rebootDevice(){
+        mDevicePolicyManager.reboot(mAdminComponentName);
     }
 
     // region restrictions 

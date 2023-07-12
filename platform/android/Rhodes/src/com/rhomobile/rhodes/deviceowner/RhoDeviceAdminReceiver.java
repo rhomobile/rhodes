@@ -1,10 +1,13 @@
 package com.rhomobile.rhodes.deviceowner;
 
 import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+import android.app.Activity;
+
 
 import androidx.annotation.NonNull;
 
@@ -12,6 +15,10 @@ public class RhoDeviceAdminReceiver extends DeviceAdminReceiver {
     
     public static ComponentName getComponentName(Context context){
         return new ComponentName(context.getApplicationContext(), RhoDeviceAdminReceiver.class);
+    }
+    public static boolean isDeviceOwner(Activity activity){
+        DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager)activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        return mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName());
     }
 
     @Override
