@@ -368,10 +368,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                     this,
                     requestedPermissions.toArray(new String[0]),
                     RHODES_PERMISSIONS_REQUEST);
+                
+                Activity mActivity= (Activity) this;
+                if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
+                    getPermission();
+                }
             }
         } catch (NameNotFoundException e) {
             throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
         }
+    }
+
+    private void getPermission(){
+        Context mContext = getApplicationContext();
+        DevicePolicyManager devicePolicyManager = (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminComponentName = RhoDeviceAdminReceiver.getComponentName(mContext);
+        devicePolicyManager.setPermissionPolicy(adminComponentName, DevicePolicyManager.PERMISSION_POLICY_AUTO_GRANT);
     }
 
     @Override
