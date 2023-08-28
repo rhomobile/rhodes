@@ -54,6 +54,7 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //Log.d("myLog", "Kiosk status: "+(KioskManager.getKioskModeStatus()?"true":"false")+"; event: "+ event.toString());
+        Log.d("myLog1", "================================================================");
         Log.d("myLog1", event.toString());
         Log.d("myLog1", "filter: " + filter);
         Log.d("myLog1", "================================================================");
@@ -83,8 +84,8 @@ public class MyAccessibilityService extends AccessibilityService {
 
             Log.d("TESTETST", getPackageName());
 
-            if( (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED && 
-                !event.getPackageName().equals("com.tau.taubrowser")) || 
+            if( (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED &&
+                !event.getPackageName().equals(getPackageName())) ||
                 (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
                 event.getPackageName() != powerPackageName ))
             {

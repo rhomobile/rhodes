@@ -1222,7 +1222,7 @@ def get_archs_string_simulator
 end
 
 def get_archs_string_device
-    archs = "arm64 armv7"
+    archs = "arm64"
     if !$app_config["iphone"].nil?
         archs_array = $app_config["iphone"]["ARCHS_device"]
         if !archs_array.nil?

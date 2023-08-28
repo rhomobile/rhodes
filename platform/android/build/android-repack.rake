@@ -118,8 +118,15 @@ namespace 'device' do
       usesPermissions.uniq!
 
       hidden = get_boolean(prebuilt_config['hidden_app'])
+      home_app = false
+      if app_config['android'] != nil
+          if app_config['android']['home_app'] != nil
+              home_app = app_config['android']['home_app']
+          end
+      end
 
-      generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, usesPermissions
+
+      generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, home_app, usesPermissions
 
       generator.versionName = versionName
       generator.versionCode = version

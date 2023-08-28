@@ -558,25 +558,35 @@ def get_case_insensetive_property(property)
   return nil
 end
 
-def select_aapt2
+def select_aapt2(build_tools_path)
 
-  platform_dir = ''
-  
-  if OS.windows?
-    platform_dir = 'windows'
-  elsif OS.mac?
-    platform_dir = 'osx'
-  elsif OS.linux?
-    platform_dir = 'linux'
+  aapt2 = nil
+
+  buildToolsVerMajor = $build_tools_ver&.split('.')[0].to_i
+  if ( buildToolsVerMajor >= 34 )
+    aapt2 = File.join(build_tools_path,'aapt2'+$exe_ext)
   else
-    raise "unknown host OS"
-  end  
+    platform_dir = ''
+    
+    if OS.windows?
+      platform_dir = 'windows'
+    elsif OS.mac?
+      platform_dir = 'osx'
+    elsif OS.linux?
+      platform_dir = 'linux'
+    else
+      raise "unknown host OS"
+    end  
 
-  File.join($startdir, "res", "build-tools", "aapt2", platform_dir , 'aapt2'+$exe_ext)
+    aapt2 = File.join($startdir, "res", "build-tools", "aapt2", platform_dir , 'aapt2'+$exe_ext)
+  end
+
+  $logger.debug( "AAPT2 path is: #{aapt2}")
+  return aapt2
 end
 
 
-def init_aapt2_helper
+def init_aapt2_helper( build_tools_path )
   helper = Aapt2Helper.instance
 
   helper.logger = $logger
@@ -590,7 +600,7 @@ def init_aapt2_helper
   helper.androidjar = $androidjar
   helper.manifest = $appmanifest
 
-  helper.aapt2 = select_aapt2
+  helper.aapt2 = select_aapt2(build_tools_path)
   helper.bundletool = $bundletool
   helper.javabin = File.join( $java, 'java' + $exe_ext )
   helper.rjava_dir = $app_rjava_dir
@@ -1038,7 +1048,7 @@ namespace "config" do
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
 
-    init_aapt2_helper
+    init_aapt2_helper build_tools_path
 
     print_timestamp('config:android FINISH')
 
@@ -2080,8 +2090,14 @@ namespace "build" do
       usesPermissions.uniq!
 
       hidden = get_boolean($app_config['hidden_app'])
+      home_app = false
+      if $app_config['android'] != nil
+          if $app_config['android']['home_app'] != nil
+              home_app = $app_config['android']['home_app']
+          end
+      end
 
-      generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, usesPermissions
+      generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, home_app, usesPermissions
 
       generator.versionName = $app_config["version"]
       generator.versionCode = version

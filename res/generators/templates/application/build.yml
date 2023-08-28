@@ -140,6 +140,10 @@ android:
 
   #targetSDK: 28
 
+  ## set to true if you want to setup your app as system home app (launcher)
+  ## also recommended add this into manifest also: android:launchMode='singleTask'
+  #home_app = true
+
   ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
   logcatFilter: APP:I StrictMode:I DEBUG:I *:E
 
