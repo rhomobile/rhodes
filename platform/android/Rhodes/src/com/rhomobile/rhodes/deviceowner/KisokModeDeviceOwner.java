@@ -39,12 +39,12 @@ public class KisokModeDeviceOwner {
     // region restrictions 
 
     private void setRestrictions(Boolean disallow) {
-        setUserRestriction(UserManager.DISALLOW_SAFE_BOOT, disallow);               // ограничение на возможность безопасной загрузки (Safe Boot)
-        setUserRestriction(UserManager.DISALLOW_FACTORY_RESET, disallow);           // ограничение на возможность сброса устройства к заводским настройкам
-        setUserRestriction(UserManager.DISALLOW_ADD_USER, disallow);                // ограничение на возможность добавления новых пользователей
-        //setUserRestriction(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, disallow);    // ограничение на возможность монтирования физических носителей данных
-        //setUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME, disallow);           // ограничение на возможность регулировки громкости устройства
-        mDevicePolicyManager.setStatusBarDisabled(mAdminComponentName, disallow);   // отображение статусной строки на устройстве
+        setUserRestriction(UserManager.DISALLOW_SAFE_BOOT, disallow);              	 			// secure download restriction (Safe Boot)
+        setUserRestriction(UserManager.DISALLOW_FACTORY_RESET, disallow);           			// restriction on the ability to reset the device to factory settings
+        setUserRestriction(UserManager.DISALLOW_ADD_USER, disallow);                				// restriction on the ability to add new users
+        //setUserRestriction(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, disallow);   // restriction on the ability to mount physical storage media
+        //setUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME, disallow);          	 	// restriction on the ability to adjust the volume of the device
+        mDevicePolicyManager.setStatusBarDisabled(mAdminComponentName, disallow);   // displaying the status bar on the device
     }
 
     private void setUserRestriction(String restriction, Boolean disallow){
