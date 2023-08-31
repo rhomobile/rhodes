@@ -26,7 +26,6 @@ DISTFILES += rpm/sailfishrhodes.changes.in \
     qml/sailfishrhodes.qml \
     qml/pages/MenuPage.qml \
     privileges/sailfishrhodes \
-    qml/pages/FirstPageWE.qml \
     qml/pages/FirstPageWK.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172

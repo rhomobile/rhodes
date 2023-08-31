@@ -10,15 +10,8 @@ isEqual(QT_MAJOR_VERSION, 5):{
     }
 
     equals(QT_MINOR_VERSION, 6) {
-        DEFINES += ENABLE_Q_WEB_ENGINE
-
-        !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-            QT += webkit
-            message(Deprecated sailfish webkit enabled)
-        }
-        contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-            QT += webengine
-        }
+        QT += webkit
+        message(Deprecated sailfish webkit enabled)
 
         QT += quick multimedia dbus bluetooth
         DEFINES += OS_SAILFISH OS_LINUX

@@ -84,7 +84,6 @@ class BuildScriptGenerator < ScriptGenerator
   attr_accessor :qmlMode
   attr_accessor :makePath
   attr_accessor :makeFile
-  attr_accessor :rpmPath
   attr_accessor :sfdkExe
   attr_accessor :rpmvalPath
   attr_accessor :deployPath
@@ -93,8 +92,9 @@ class BuildScriptGenerator < ScriptGenerator
 
   def build()
     Dir.chdir(projectPath) do
-      qmakeCommand = "\"#{qmakePath}\" #{proPath} -spec linux-g++"
+      qmakeCommand = "\"#{qmakePath}\" #{proPath} -spec linux-g++ \"CONFIG+=release\""
       if system(qmakeCommand) != true
+        puts qmakeCommand
         raise "Error: qmake command failed: #{qmakeCommand}"
       end
       
@@ -108,15 +108,16 @@ class BuildScriptGenerator < ScriptGenerator
       end
 
     end
-    #«C:\AuroraOS\settings\AuroraOS-SDK\libsfdk\build-target-tools\Aurora Build Engine\AuroraOS-4.0.2.209-base-i486.default\qmake.cmd» C:\Users\User\rhotemplate\ru.orgtemplate.rhotemplate.pro -spec linux-g++
-    #«C:\AuroraOS\settings\AuroraOS-SDK\libsfdk\build-target-tools\Aurora Build Engine\AuroraOS-4.0.2.209-base-i486.default\make.cmd» -f C:/Users/User/build-ru.orgtemplate.rhotemplate-AuroraOS_4_0_2_209_base_i486_in_Aurora_Build_Engine-Release/Makefile qmake_all
-    #«C:\AuroraOS\settings\AuroraOS-SDK\libsfdk\build-target-tools\Aurora Build Engine\AuroraOS-4.0.2.209-base-i486.default\make.cmd» 
   end
 
   def clear()
-    #«C:\AuroraOS\bin\sfdk.exe» engine exec sdk-manage target refresh AuroraOS-4.0.2.209-base-i486
-    #«C:\AuroraOS\bin\sfdk.exe» build-requires reset
-    #«C:\AuroraOS\settings\AuroraOS-SDK\libsfdk\build-target-tools\Aurora Build Engine\AuroraOS-4.0.2.209-base-i486.default\make.cmd» clean
+    FileUtils.rm_rf(File.join($app_path, "bin"))
+    FileUtils.rm_rf(File.join($app_path, "project"))
+
+    cleanTarget = "\"#{sfdkExe}\" engine exec sdk-manage target refresh #{$origin_target}"
+    if system(cleanTarget) != true
+      puts "Error: clean command failed: #{cleanTarget}"
+    end
   end
 
   def rpm()
@@ -125,7 +126,7 @@ class BuildScriptGenerator < ScriptGenerator
     Dir.chdir(projectPath) do
       sfdkPackage = "\"#{sfdkExe}\" package"
       if system(sfdkPackage) != true
-        raise "Error: make command failed: #{sfdkPackage}"
+        raise "Error: build rpm command failed: #{sfdkPackage}"
       end
     end
 
@@ -140,12 +141,37 @@ class BuildScriptGenerator < ScriptGenerator
 
   def validateRpm(rpmPath)
     Dir.chdir(projectPath) do
-      sfdkValidate = "\"#{sfdkExe}\" tools exec #{$current_target} rpm-validator --profile regular #{rpmPath}"
+      sfdkValidate = "\"#{sfdkExe}\" tools exec #{$current_target} rpm-validator --profile regular \"#{rpmPath}\""
       if system(sfdkValidate) != true
-        raise "Error: make command failed: #{sfdkValidate}"
+        raise "Error: validate command failed: #{sfdkValidate}"
       end
     end
   end
+
+  def signRpm(rpmPath)
+    Dir.chdir(projectPath) do
+      sfdkSign = "\"#{sfdkExe}\" engine exec -tt sb2 -t #{$origin_target} rpmsign-external sign -k \"#{$key}\" -c \"#{$certificate}\" \"#{rpmPath}\""
+      if system(sfdkSign) != true
+        raise "Error: sign command failed: #{sfdkSign}"
+      end
+
+      checkSign = "\"#{sfdkExe}\"  engine exec -tt sb2 -t #{$origin_target} rpmsign-external verify \"#{rpmPath}\""
+      if system(checkSign) != true
+        raise "Error: sign verify command failed: #{checkSign}"
+      end
+    end
+  end
+
+  def deployToEmulator()
+    #ENV["PWD"] = "C:\\Users\\User\\build-ru.auroraos.test_app-AuroraOS_4_0_2_249_base_i486_in_Aurora_Build_Engine-Release"#$target_path
+    Dir.chdir(projectPath) do
+      deploy_command = "\"#{sfdkExe}\" -c \"device=Aurora OS эмулятор 4.0.2.249-base\" deploy --sdk --all"
+      puts ENV["PWD"]
+      puts deploy_command
+      system(deploy_command)
+    end
+  end
+
 
 end
 
@@ -197,7 +223,6 @@ namespace "config" do
   end
 
   task :sailfish => [:set_sailfish_platform, "switch_app"] do
-
     $homeDir = Dir.home.gsub(":", "").gsub("\\", "/")
     $homeDir[0] = $homeDir[0].downcase
     $homeDir = '/' + $homeDir
@@ -210,6 +235,8 @@ namespace "config" do
     end
     $sailfishdir = $config["env"]["paths"]["sailfish"]
 
+    $certificate = File.join($startdir, "platform", "sailfish", "keys", "regular_cert.pem")
+    $key = File.join($startdir, "platform", "sailfish", "keys", "regular_key.pem")
 
     if !$app_config.nil? && !$app_config["sailfish"].nil?
       $connf_build = "Release"
@@ -220,6 +247,14 @@ namespace "config" do
       $target_arch = "arm"
       if !$app_config["sailfish"]["target"].nil?
         $target_arch = $app_config["sailfish"]["target"]
+      end
+
+      if !$app_config["sailfish"]["certificate"].nil?
+        $certificate = $app_config["sailfish"]["certificate"]
+      end
+
+      if !$app_config["sailfish"]["key"].nil?
+        $key = $app_config["sailfish"]["key"]
       end
 
       puts "Target arch: " + $target_arch
@@ -255,9 +290,11 @@ namespace "config" do
       $current_build_sdk_dir = ""
       doc.xpath("//target").each do |t|
         target = t.attr("name")
+        origin = t.attr("origin")
         puts target
         if target.include? $target_arch and Dir.exist?(getTargetPath(target))
           $current_target = target
+          $origin_target = origin
           break
         end
       end
@@ -369,13 +406,6 @@ namespace "config" do
       $build_threads = 1
     end
 
-#    $enableQWebEngine = ""
-#    if !$app_config["sailfish"]["enable_web_engine"].nil?
-#      if (($app_config["sailfish"]["enable_web_engine"] == true) || ($app_config["sailfish"]["enable_web_engine"] == "true"))
-#        $enableQWebEngine = "ENABLE_Q_WEB_ENGINE"
-#      end
-#    end
-
     if !$app_config["sailfish"]["organization"].nil?
       $organization = $app_config["sailfish"]["organization"]
     end
@@ -389,8 +419,38 @@ namespace "config" do
       $ymlSpdscanner = "- qt5-qtconnectivity-qtsdpscanner"
     end
 
-
+    $buildEnv = BuildScriptGenerator.new
     
+    $buildEnv.isNixSystem = !isWindows?
+    $buildEnv.merAddress = "127.0.0.1"
+    $buildEnv.merPort = 2222
+    $buildEnv.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
+    $buildEnv.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
+    $buildEnv.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
+    $buildEnv.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
+    $buildEnv.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
+    $buildEnv.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
+    $buildEnv.merTgtName = QuotedStrNixWay($current_target)
+    $buildEnv.merUserName = "mersdk"
+    $buildEnv.merDevName = QuotedStrNixWay($dev_name)
+
+    cmd_suffix = isWindows? ? '.cmd' : ''
+    $buildEnv.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
+    $buildEnv.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
+    $buildEnv.makeFile = PathToWindowsWay(File.join($project_path, $final_name_app, "Makefile"))
+    $buildEnv.buildMode = $connf_build.downcase
+    $buildEnv.qmlMode = "qml_#{$connf_build.downcase}" 
+    $buildEnv.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
+    $buildEnv.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
+    $buildEnv.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
+    $buildEnv.nThreads = $build_threads
+    $buildEnv.sfdkExe = QuotedStrNixWay(File.join($sailfishdir, "bin", "sfdk.exe"))
+    
+    ENV["Path"] =  $current_build_sdk_dir + ";" + ENV["Path"]
+    ENV["QTDIR"] = File.join($buildEnv.merShTgtName, $buildEnv.merTgtName, "usr", "share", "qt5")
+    ENV["SFDK_OPTIONS"] = "-c target=#{$origin_target}"
+    ENV["SFDK_NO_SESSION"] = "1"
+
 
     Rake::Task["build:sailfish:startvm"].invoke()
   end
@@ -428,8 +488,8 @@ end
 namespace "run" do
   task :sailfish => ["config:sailfish"] do
 
-      require 'net/ssh'
-      require 'net/scp'
+    require 'net/ssh'
+    require 'net/scp'
 
     session_ssh = nil
     puts $ssh_key
@@ -581,26 +641,8 @@ namespace "device" do
 end
 
 namespace "clean" do
-  task :sailfish => "clean:sailfish:files"
-  namespace "sailfish" do
-    task :files => "config:sailfish" do
-      clean_path = File.join($app_path, "project", "qt", "clean.cmd")
-      system(clean_path)
-      if File.exists?($project_path)
-        Dir.glob(File.join($project_path, "*.*")) { |f| rm f, :force => true }
-        Dir.entries(File.join($project_path)).each do |d|
-          rm_rf File.join($project_path, d)
-        end
-      end
-      rm_rf $srcdir if File.exists?($srcdir)
-      #rm_rf $targetdir
-      #rm_rf $app_builddir
-      #rm_rf $tmpdir
-    end
-    task :build => "config:sailfish" do
-      clean_path = File.join($app_path, "project", "qt", "clean.cmd")
-      system(clean_path)
-    end
+  task :sailfish => ["project:sailfish:qt"] do
+    $buildEnv.clear()
   end
 end
 
@@ -735,8 +777,7 @@ namespace "build"  do
     end
 
     task :deploy => ['config:sailfish'] do
-      deploy_path = File.join($app_path, "project", "qt", "deploy.cmd")
-      system(deploy_path)
+      $buildEnv.deployToEmulator()
     end
 
     task :deploy_bundle => ['config:sailfish'] do
@@ -790,7 +831,7 @@ namespace "build"  do
 
       $buildEnv.build()
       $buildEnv.rpm()
-      exit 0
+      #exit 0
 
       $target_rpm = ""
       Dir[File.join($project_path, $final_name_app, "RPMS/**/*")].each do |file_name|
@@ -800,7 +841,8 @@ namespace "build"  do
         end
       end
 
-      $buildEnv.validateRpm($target_rpm)
+      $buildEnv.signRpm($target_rpm)
+      #$buildEnv.validateRpm($target_rpm)
 
       cp_r $target_rpm, $target_path
     end
@@ -896,7 +938,7 @@ namespace 'project' do
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
         File.rename(
           File.join($project_path, $final_name_app, "qml", "sailfishrhodes.qml"), 
-          File.join($project_path, $final_name_app, "qml", "#{$final_name_app}.qml"))
+          File.join($project_path, $final_name_app, "qml", "#{$organization}.#{$final_name_app}.qml"))
       #end
 
       if !File.exists?(File.join($project_path, $final_name_app, "icons")) 
@@ -951,33 +993,6 @@ namespace 'project' do
         File.open(app_name_project, 'w' ) { |f| f.write generator.render_profile( app_erb_path ) }
       end
       
-      $buildEnv = BuildScriptGenerator.new
-      
-      $buildEnv.isNixSystem = !isWindows?
-      $buildEnv.merAddress = "127.0.0.1"
-      $buildEnv.merPort = 2222
-      $buildEnv.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
-      $buildEnv.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
-      $buildEnv.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
-      $buildEnv.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
-      $buildEnv.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
-      $buildEnv.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
-      $buildEnv.merTgtName = QuotedStrNixWay($current_target)
-      $buildEnv.merUserName = "mersdk"
-      $buildEnv.merDevName = QuotedStrNixWay($dev_name)
-
-      cmd_suffix = isWindows? ? '.cmd' : ''
-      $buildEnv.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
-      $buildEnv.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
-      $buildEnv.makeFile = PathToWindowsWay(File.join($project_path, $final_name_app, "Makefile"))
-      $buildEnv.buildMode = $connf_build.downcase
-      $buildEnv.qmlMode = "qml_#{$connf_build.downcase}" 
-      $buildEnv.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
-      $buildEnv.rpmPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpm" + cmd_suffix))
-      $buildEnv.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
-      $buildEnv.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
-      $buildEnv.nThreads = $build_threads
-      $buildEnv.sfdkExe = QuotedStrNixWay(File.join($sailfishdir, "bin", "sfdk.exe"))
 
     end
   end

@@ -6,7 +6,7 @@ message(Qt version: $$[QT_VERSION])
 CONFIG += auroraapp auroraapp_i18n c++14
 DEFINES += OS_SAILFISH OS_LINUX
 
-TARGET = <%= @nameApp %>
+TARGET = <%= @organization %>.<%= @nameApp %>
 TEMPLATE = app
 
 
@@ -106,7 +106,6 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
 #DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
 #    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/cover/CoverPage.qml \
 #    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/FirstPageWK.qml \
-#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/FirstPageWE.qml \
 #    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/MenuPage.qml
 
 
