@@ -153,18 +153,24 @@ def cpp_def_args
       args << "-std=c++11"
     else
       args << "-stdlib=libc++"
+      #args << "-std=c++17"
     end
 
     args << "-Wno-reorder"
-    #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
-    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
-    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
+
+    if($ndk_rev_major < 18)
+      args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
+      args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
     
-    dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')
-    if !File.directory?(dirArmeabi)
-      dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi-v7a','include')
+      dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')
+      if !File.directory?(dirArmeabi)
+         dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi-v7a','include')
+      end
+      args << "-I\"#{dirArmeabi}\""
+    else
+      #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','llvm-libc++','include')}\""
     end
-    args << "-I\"#{dirArmeabi}\""
+
     args
 end
 

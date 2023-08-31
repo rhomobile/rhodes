@@ -58,6 +58,7 @@ extern "C" {
 enum rho_java_class_t {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) x,
 #include "rhojava.inc"
+#include "rhojava_extra.inc"
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 

@@ -23,11 +23,11 @@ class ManifestGenerator
   attr_accessor :buildToolsVer
   attr_accessor :androidVerMaj
   attr_accessor :androidVerMin
-  
+
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
-  
-  def initialize(javaPackage, appPackage, hidden, permissions, features = {})
+
+  def initialize(javaPackage, appPackage, hidden, home_app, permissions, features = {})
     @javaPackageName = javaPackage
     @appPackageName = appPackage
     @permissions = {}
@@ -41,7 +41,11 @@ class ManifestGenerator
     @rhodesActivityIntentFilters = []
     @rhodesActivityIntentFilters << {:act=>'android.intent.action.VIEW', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.BROWSABLE']}
     unless hidden
-      @rhodesActivityIntentFilters << {:act=>'android.intent.action.MAIN', :cat=>['android.intent.category.DEFAULT', 'android.intent.category.HOME','android.intent.category.LAUNCHER']}
+      categors = ['android.intent.category.DEFAULT','android.intent.category.LAUNCHER']
+      if home_app
+          categors << 'android.intent.category.HOME'
+      end
+      @rhodesActivityIntentFilters << {:act=>'android.intent.action.MAIN', :cat=>categors}
     end
     @screenOrientation = 'unspecified'
     @debuggable = 'false'
@@ -51,21 +55,21 @@ class ManifestGenerator
     @applicationManifestAdds = []
     @apikey = ''
   end
-  
+
   def addGoogleMaps
     @usesLibraries['com.google.android.maps'] = true 
     @usesLibraries['org.apache.http.legacy'] = false 
   end
-  
+
   def addGooglePush(erbPath)
     @permissions["#{@appPackageName}.permission.C2D_MESSAGE"] = 'signature'
     @usesPermissions << "#{@appPackageName}.permission.C2D_MESSAGE"
     @usesPermissions << 'com.google.android.c2dm.permission.RECEIVE'
     @applicationManifestAdds << erbPath
   end
-    
-  
-  
+
+
+
   def addUriParams(scheme, host, pathPrefix = nil)
     @rhodesActivityIntentFilters.each do |filter|
       if filter[:act] == 'android.intent.action.VIEW' && filter[:cat] == ['android.intent.category.DEFAULT', 'android.intent.category.BROWSABLE']
@@ -76,7 +80,7 @@ class ManifestGenerator
       end
     end
   end
-  
+
   def makeIntentFilter(filterHash)
     filter = REXML::Element.new 'intent-filter'
     filter.add_element('action', 'android:name'=>filterHash[:act]) if filterHash[:act]

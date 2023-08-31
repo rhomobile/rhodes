@@ -81,7 +81,7 @@ import android.view.KeyEvent;
 public class GoogleWebView implements IRhoWebView {
     private static final String TAG = GoogleWebView.class.getSimpleName();
 
-    private static final String tauSipValue = "com.tau.taubrowser/com.tau.TauKeyboard";
+    private static String tauSipValue = "com.tau.taubrowser/com.tau.TauKeyboard";
 
     public static String mSavedEnabledInputMethods = null;
     public static String mSavedDefaultInputMethod = null;
@@ -661,7 +661,7 @@ public class GoogleWebView implements IRhoWebView {
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);
 
-
+        tauSipValue = activity.getApplicationContext().getPackageName()+"/com.tau.TauKeyboard";
 
         //if (ourShouldDisableKeyboard) {
             mOnGlobalLayoutListener = new OnGlobalLayoutListener() {
