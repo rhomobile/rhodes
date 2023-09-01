@@ -1,5 +1,8 @@
 package com.rhomobile.rhodes.kioskservices;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -10,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoConf;
 
@@ -22,11 +26,23 @@ public class MyAccessibilityService extends AccessibilityService {
     private boolean filter = true;
     private CharSequence powerPackageName;
     public static boolean isPowerProcessing = false;
+    private static List<String> ignorePackets;
 
     public static void setPowerProcessing(boolean value) {
         isPowerProcessing = value;
     }
 
+    public static void setIgnoreEventsFromPackets(String packets){
+        ignorePackets = Arrays.asList(packets.split(";"));
+    }
+
+    private boolean isIgnorPackages(CharSequence eventPackageName){
+        if(ignorePackets != null && ignorePackets.size() > 0){
+            if(ignorePackets.indexOf(eventPackageName.toString()) >= 0)
+                return false;
+        }
+        return true;
+    }
 
     @Override
     protected void onServiceConnected() {
@@ -67,7 +83,8 @@ public class MyAccessibilityService extends AccessibilityService {
                         
                 if( KioskManager.getKioskModeStatus() && 
                     event.getPackageName() != null && 
-                    !event.getPackageName().equals(getPackageName()))
+                    !event.getPackageName().equals(getPackageName()) &&
+                    isIgnorPackages(event.getPackageName()))
                 {
                     performGlobalAction(GLOBAL_ACTION_HOME);
                     if(event.getPackageName().equals(oldEvent)) {
