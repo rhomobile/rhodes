@@ -1,8 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtWebKit 3.0
 import QtMultimedia 5.5
-import QtWebKit.experimental 1.0
 import Nemo.KeepAlive 1.2
 
 Page {
@@ -109,7 +107,7 @@ Page {
                 height: parent.height
                 border.width: 1
 
-                WebView {
+                SilicaWebView  {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
@@ -155,16 +153,16 @@ Page {
                     }
 
                     onLoadingChanged: {
-                        if (loadRequest.status == WebView.LoadStartedStatus){
+                        if (loadRequest.status === WebView.LoadStartedStatus){
                             modelData.loadStarted();
                             modelData.messageReceived("Loading " + url + " started...");
                         }
-                        if (loadRequest.status == WebView.LoadSucceededStatus){
+                        if (loadRequest.status === WebView.LoadSucceededStatus){
                             rootDelegate.cover = ""
                             modelData.loadFinished(true);
                             modelData.messageReceived("Page " + url + " loaded!");
                         }
-                        if (loadRequest.status == WebView.LoadFailedStatus){
+                        if (loadRequest.status === WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
                             modelData.messageReceived("Loading error: " + url + " : "+
                                                       loadRequest.errorCode.toString() + " " + loadRequest.errorString);
@@ -182,10 +180,7 @@ Page {
                     //experimental.preferences.webGLEnabled: true;
                     experimental.preferences.navigatorQtObjectEnabled: true;
                     experimental.preferences.offlineWebApplicationCacheEnabled: false;
-                    experimental.onMessageReceived: {
-                        modelData.messageReceived(message.data);
-                    }
-
+                    experimental.onMessageReceived: modelData.messageReceived(message.data);
                 }
             }
         }
@@ -234,3 +229,4 @@ Page {
         }
     }
 }
+
