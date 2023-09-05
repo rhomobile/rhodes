@@ -3,7 +3,7 @@ import Sailfish.Silica 1.0
 import QtWebKit 3.0
 import QtMultimedia 5.5
 import QtWebKit.experimental 1.0
-import Nemo.KeepAlive 1.1
+import Nemo.KeepAlive 1.2
 
 Page {
     id: mainPage

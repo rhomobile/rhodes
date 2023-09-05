@@ -164,8 +164,13 @@ class BuildScriptGenerator < ScriptGenerator
 
   def deployToEmulator()
     #ENV["PWD"] = "C:\\Users\\User\\build-ru.auroraos.test_app-AuroraOS_4_0_2_249_base_i486_in_Aurora_Build_Engine-Release"#$target_path
+    if $dev_name.nil?
+      puts "Device name is nil"
+      exit 1
+    end
+
     Dir.chdir(projectPath) do
-      deploy_command = "\"#{sfdkExe}\" -c \"device=Aurora OS эмулятор 4.0.2.249-base\" deploy --sdk --all"
+      deploy_command = "\"#{sfdkExe}\" -c \"device=#{$dev_name}\" deploy --sdk --all"
       puts ENV["PWD"]
       puts deploy_command
       system(deploy_command)
@@ -346,12 +351,6 @@ namespace "config" do
       
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["device_name"].nil?
         $dev_name = $app_config["sailfish"]["device"]["device_name"]
-      elsif $dev_type == "real"
-        raise "Please set device name for real device in device section!\n" +        
-        "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
-        "For list device use: sailfish:device:list\n"
-      elsif $dev_type == "vbox"
-          $dev_name = "#{$sysName} Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -824,8 +823,6 @@ namespace "build"  do
       end
     end
 
-    
-
     task :rhodes => ["project:sailfish:qt"] do
       print_timestamp('build:sailfish:rhodes START')
 
@@ -842,7 +839,7 @@ namespace "build"  do
       end
 
       $buildEnv.signRpm($target_rpm)
-      #$buildEnv.validateRpm($target_rpm)
+      $buildEnv.validateRpm($target_rpm)
 
       cp_r $target_rpm, $target_path
     end
@@ -913,13 +910,6 @@ namespace 'project' do
 
       desktop_erb_path = $rhodes_path + "/platform/sailfish/build/rpm/SailfishRhodes.desktop.erb"
       spec_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/SailfishRhodes.spec.erb"
-      #priv_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/SailfishRhodes.erb"
-
-      build_erb_path = $rhodes_path + "/platform/sailfish/build/rho_build.cmd.erb"
-      clean_erb_path = $rhodes_path + "/platform/sailfish/build/rho_clean.cmd.erb"
-      rpm_erb_path = $rhodes_path + "/platform/sailfish/build/rho_rpm.cmd.erb"
-      rpmval_erb_path = $rhodes_path + "/platform/sailfish/build/rho_rpmvalidation.cmd.erb"
-      deploy_erb_path = $rhodes_path + "/platform/sailfish/build/rho_deploy.cmd.erb"
 
       mkdir_p $project_path
       mkdir_p File.join($project_path, "curl")
@@ -932,7 +922,6 @@ namespace 'project' do
       mkdir_p File.join($project_path, "rhodes")
       mkdir_p File.join($project_path, $final_name_app)
       mkdir_p File.join($project_path, $final_name_app, "rpm")
-      #mkdir_p File.join($project_path, $final_name_app, "privileges")
 
       #if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)

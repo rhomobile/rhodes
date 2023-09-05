@@ -2,7 +2,6 @@
 #define ROOTDELEGATE_H
 
 #include <QObject>
-#include <auroraapp.h>
 #include <QCoreApplication>
 
 class RootDelegate : public QObject

@@ -42,7 +42,7 @@
 #include "customwebviewtab.h"
 #include "customtoolbaritem.h"
 #include "rootdelegate.h"
-#include <auroraapp.h>
+//#include <auroraapp.h>
 #include <QDesktopServices>
 
 class QtMainWindow : public QObject
