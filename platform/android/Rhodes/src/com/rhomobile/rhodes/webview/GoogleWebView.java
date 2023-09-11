@@ -629,6 +629,7 @@ public class GoogleWebView implements IRhoWebView {
 
 
     public final void setKeyboardListener() {
+        removeKeyboardListener();
         final View activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content)).getChildAt(0);
         if (mOnGlobalLayoutListener != null) {
             activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -639,7 +640,11 @@ public class GoogleWebView implements IRhoWebView {
         final View activityRootView = ((ViewGroup) RhodesActivity.safeGetInstance().findViewById(android.R.id.content)).getChildAt(0);
 
         if (mOnGlobalLayoutListener != null) {
-            activityRootView.getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            try {
+                activityRootView.getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -686,9 +691,10 @@ public class GoogleWebView implements IRhoWebView {
             });
 
 
-            if (mIsShouldKillKeyboardMethodUse) {
-                setKeyboardListener();
-            }
+            // will be set by request only
+            //if (mIsShouldKillKeyboardMethodUse) {
+            //    setKeyboardListener();
+            //}
         //}
 
         synchronized(mInitialized) {
