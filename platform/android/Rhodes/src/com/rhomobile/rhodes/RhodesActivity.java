@@ -1015,7 +1015,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Context mContext = getApplicationContext();
 		//if (!KioskManager.getKioskModeStatus()) {
 	        if(PermissionManager.checkPermissions(mContext, mActivity)){
-	            Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+	            //Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
 	            if(permissionWindowShow) permissionWindowShow = false;
 				if (mPermissionsDialog != null) {
 					try {
