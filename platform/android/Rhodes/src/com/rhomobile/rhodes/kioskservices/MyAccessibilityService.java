@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.webview.RhoInputListener;
 
 
 
@@ -111,6 +112,22 @@ public class MyAccessibilityService extends AccessibilityService {
                 powerPackageName = null;
             }
         }
+
+        if( RhoConf.isExist("click_sound_with_accessibility_service") && 
+            RhoConf.getBool("click_sound_with_accessibility_service")){
+            if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED &&
+                event.getSource() != null &&
+                event.getPackageName().equals(getPackageName()) &&
+                event.getClassName().equals("android.widget.EditText")){
+                    playSound();
+            }
+        }
+    }
+
+    private void playSound(){
+        RhoInputListener.IRhoInputListener listener = RhoInputListener.getListener();
+        if (listener != null)
+            listener.onTextInput();
     }
 
     private void powerOff(){

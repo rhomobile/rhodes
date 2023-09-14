@@ -1,6 +1,8 @@
 package com.rhomobile.rhodes.webview;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.mapview.TouchHandler;
 
 import android.content.Context;
 import android.inputmethodservice.InputMethodService;
@@ -13,6 +15,8 @@ import android.view.KeyEvent;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.ExtractedText;
 
+import android.widget.Toast;
+
 
 
 
@@ -20,20 +24,39 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
 
     private String TAG = RhoInputConnectionWrapper.class.getSimpleName();
 
-    private IRhoInputConnectionWrapperListener mListener = null;
-
-    public void setListener(IRhoInputConnectionWrapperListener listener) {
-        mListener = listener;
-        Log.d("myLog", "setRhoInputConnectionWrapperListener ==> rhoInputConnectionWrapper != null ==> setListener");
-    }
-
-    public interface IRhoInputConnectionWrapperListener{
-        public void onTextInput();
-    }
-
     public RhoInputConnectionWrapper (InputConnection target){
         super(target, true);
     }
+
+    @Override
+    public boolean commitText(CharSequence text, int newCursorPosition) {
+        Log.d("myLog", "================================commitText================================");        
+        Log.d("myLog", text.toString());
+        Log.d("myLog", "================================");
+
+        playSound();
+
+        return super.commitText(text, newCursorPosition);
+    }
+
+    @Override
+    public boolean sendKeyEvent(KeyEvent event) {
+        Log.d("myLog", "================================sendKeyEvent================================");        
+        Log.d("myLog", event.toString());
+        Log.d("myLog", "================================");
+        playSound();
+
+        return super.sendKeyEvent(event);
+    }
+
+    private void playSound(){
+        RhoInputListener.IRhoInputListener listener = RhoInputListener.getListener();
+        if (listener != null)
+            listener.onTextInput();
+    }
+
+
+    //region compulsory methods
 
     @Override
     public Handler getHandler() {
@@ -75,32 +98,6 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
     }
 
     @Override
-    public boolean commitText(CharSequence text, int newCursorPosition) {
-        Log.d("myLog", "================================commitText================================");        
-        Log.d("myLog", text.toString());
-        Log.d("myLog", "================================");
-
-        if(mListener != null) {
-            mListener.onTextInput();
-        }
-        return super.commitText(text, newCursorPosition);
-    }
-
-    @Override
-    public boolean sendKeyEvent(KeyEvent event) {
-        Log.d("myLog", "================================sendKeyEvent================================");        
-        Log.d("myLog", event.toString());
-        Log.d("myLog", "================================");
-        if(mListener != null) {
-            mListener.onTextInput();
-        }
-
-        return super.sendKeyEvent(event);
-    }
-
-
-
-    @Override
     public void closeConnection() {
         Logger.T(this.TAG, ".closeConnection()");
         try {
@@ -116,11 +113,6 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         Log.d("myLog", "================================sendKeyEvent================================");        
         Log.d("myLog", Integer.toString(editorAction));
         Log.d("myLog", "================================");
-
-        if(mListener != null) {
-            mListener.onTextInput();
-        }
-
         return super.performEditorAction(editorAction);
     }
 
@@ -134,5 +126,5 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         }
         return false;
     }
-
+    //endregion
 }

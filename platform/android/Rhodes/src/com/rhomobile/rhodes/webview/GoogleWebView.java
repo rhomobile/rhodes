@@ -457,12 +457,6 @@ public class GoogleWebView implements IRhoWebView {
 
         private InputConnection inputConnection = null;
         private RhoInputConnectionWrapper rhoInputConnectionWrapper = null; 
-        private RhoInputConnectionWrapper.IRhoInputConnectionWrapperListener mListener = null;
-
-        public void setRhoInputConnectionWrapperListener(RhoInputConnectionWrapper.IRhoInputConnectionWrapperListener listener){
-            Log.d("myLog", "setRhoInputConnectionWrapperListener");
-            mListener = listener;
-        }
 
         public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
             if (ourShouldDisableKeyboard) {
@@ -488,10 +482,8 @@ public class GoogleWebView implements IRhoWebView {
                     //recursiveLoopChildrenForTextEdit(activityRootView);
                 }
             }
-            if (RhoConf.isExist("ovveride_web_view_input_connection") && RhoConf.getBool("ovveride_web_view_input_connection")){
+            if (RhoConf.isExist("override_web_view_input_connection") && RhoConf.getBool("override_web_view_input_connection")){
                 rhoInputConnectionWrapper = new RhoInputConnectionWrapper(super_connection);
-                Log.d("myLog", "setRhoInputConnectionWrapperListener ==> rhoInputConnectionWrapper != null");
-                rhoInputConnectionWrapper.setListener(mListener);
                 return rhoInputConnectionWrapper;
             }else
                 return inputConnection;
