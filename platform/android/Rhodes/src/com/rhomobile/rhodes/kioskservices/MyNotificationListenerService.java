@@ -8,7 +8,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         if(KioskManager.getKioskModeStatus()){
-            Toast.makeText(this,"kiosk mode enable", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this,"kiosk mode enable", Toast.LENGTH_LONG).show();
             cancelNotification(sbn.getKey());
         }else
             super.onNotificationPosted(sbn);

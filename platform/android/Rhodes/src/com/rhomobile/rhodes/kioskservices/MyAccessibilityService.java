@@ -21,13 +21,13 @@ import com.rhomobile.rhodes.webview.RhoInputListener;
 
 
 public class MyAccessibilityService extends AccessibilityService {
-    private CharSequence oldEvent;
-    private BroadcastReceiver receiver;
+    private CharSequence oldEvent = null;
+    private BroadcastReceiver receiver = null;
     private static final int NOTIFICATION_ID = 1234;
     private boolean filter = true;
     private CharSequence powerPackageName;
     public static boolean isPowerProcessing = false;
-    private static List<String> ignorePackets;
+    private static List<String> ignorePackets = null;
 
     public static void setPowerProcessing(boolean value) {
         isPowerProcessing = value;
@@ -53,7 +53,7 @@ public class MyAccessibilityService extends AccessibilityService {
             @Override
             public void onReceive(Context context, Intent intent){
                 String action = intent.getAction();
-                if( action != null && 
+                if( action != null &&
                     action.equals("com.rhobrowser.poweroff") &&
                     isPowerProcessing)
                 {
@@ -63,9 +63,9 @@ public class MyAccessibilityService extends AccessibilityService {
         };
         IntentFilter filter = new IntentFilter("com.rhobrowser.poweroff");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-        
 
-        Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
+
+        //Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -81,12 +81,13 @@ public class MyAccessibilityService extends AccessibilityService {
             if( event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
                 event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
             {
-                        
-                if( KioskManager.getKioskModeStatus() && 
-                    event.getPackageName() != null && 
+
+                if( KioskManager.getKioskModeStatus() &&
+                    event.getPackageName() != null &&
                     !event.getPackageName().equals(getPackageName()) &&
                     isIgnorPackages(event.getPackageName()))
                 {
+                    Log.d("myLog1", "====================    GLOBAL_ACTION_HOME    =======================");
                     performGlobalAction(GLOBAL_ACTION_HOME);
                     if(event.getPackageName().equals(oldEvent)) {
                         //Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
@@ -103,7 +104,7 @@ public class MyAccessibilityService extends AccessibilityService {
             Log.d("TESTETST", getPackageName());
 
             if( (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED &&
-                !event.getPackageName().equals(getPackageName())) ||
+                !event.getPackageName().equals(getPackageName()) && !event.getPackageName().equals(powerPackageName)) ||
                 (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
                 event.getPackageName() != powerPackageName ))
             {
