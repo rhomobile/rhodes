@@ -17,10 +17,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.webview.RhoInputListener;
-
+import com.rhomobile.rhodes.Logger;
 
 
 public class MyAccessibilityService extends AccessibilityService {
+
+    private static final String TAG = MyAccessibilityService.class.getSimpleName();
+
     private CharSequence oldEvent = null;
     private BroadcastReceiver receiver = null;
     private static final int NOTIFICATION_ID = 1234;
@@ -71,10 +74,10 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //Log.d("myLog", "Kiosk status: "+(KioskManager.getKioskModeStatus()?"true":"false")+"; event: "+ event.toString());
-        Log.d("myLog1", "================================================================");
-        Log.d("myLog1", event.toString());
-        Log.d("myLog1", "filter: " + filter);
-        Log.d("myLog1", "================================================================");
+        Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
+        Logger.T(this.TAG, event.toString());
+        Logger.T(this.TAG, "filter: " + filter);
+        Logger.T(this.TAG, "================================================================");
 
         if (filter){
 
@@ -87,7 +90,7 @@ public class MyAccessibilityService extends AccessibilityService {
                     !event.getPackageName().equals(getPackageName()) &&
                     isIgnorPackages(event.getPackageName()))
                 {
-                    Log.d("myLog1", "====================    GLOBAL_ACTION_HOME    =======================");
+                    Logger.T(this.TAG, "====================    GLOBAL_ACTION_HOME    =======================");
                     performGlobalAction(GLOBAL_ACTION_HOME);
                     if(event.getPackageName().equals(oldEvent)) {
                         //Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
@@ -101,21 +104,24 @@ public class MyAccessibilityService extends AccessibilityService {
                 powerPackageName = event.getPackageName();
             }
 
-            Log.d("TESTETST", getPackageName());
+            Logger.T(this.TAG, "Package name = "+getPackageName());
 
             if( (event.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED &&
                 !event.getPackageName().equals(getPackageName()) && !event.getPackageName().equals(powerPackageName)) ||
                 (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
                 event.getPackageName() != powerPackageName ))
             {
-                Log.d("myLog1", "FILTER ON");
+                Logger.T(this.TAG, "FILTER ON");
                 filter = true;
                 powerPackageName = null;
             }
         }
 
-        if( RhoConf.isExist("click_sound_with_accessibility_service") && 
+        if( RhoConf.isExist("click_sound_with_accessibility_service") &&
             RhoConf.getBool("click_sound_with_accessibility_service")){
+            Logger.T(this.TAG, "click_sound_with_accessibility_service");
+            Logger.T(this.TAG, "event.getClassName() = "+event.getClassName());
+            Logger.T(this.TAG, "Package name = "+getPackageName());
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED &&
                 event.getSource() != null &&
                 event.getPackageName().equals(getPackageName()) &&
@@ -127,8 +133,9 @@ public class MyAccessibilityService extends AccessibilityService {
 
     private void playSound(){
         RhoInputListener.IRhoInputListener listener = RhoInputListener.getListener();
-        if (listener != null)
+        if (listener != null) {
             listener.onTextInput();
+        }
     }
 
     private void powerOff(){
