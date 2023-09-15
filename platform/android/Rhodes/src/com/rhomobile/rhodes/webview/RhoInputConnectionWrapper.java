@@ -30,9 +30,9 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
 
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
-        Log.d("myLog", "================================commitText================================");        
-        Log.d("myLog", text.toString());
-        Log.d("myLog", "================================");
+        Logger.T(this.TAG, "================================commitText================================");
+        Logger.T(this.TAG, text.toString());
+        Logger.T(this.TAG, "================================");
 
         playSound();
 
@@ -41,9 +41,9 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
 
     @Override
     public boolean sendKeyEvent(KeyEvent event) {
-        Log.d("myLog", "================================sendKeyEvent================================");        
-        Log.d("myLog", event.toString());
-        Log.d("myLog", "================================");
+        Logger.T(this.TAG, "================================sendKeyEvent================================");
+        Logger.T(this.TAG, event.toString());
+        Logger.T(this.TAG, "================================");
         playSound();
 
         return super.sendKeyEvent(event);
@@ -51,8 +51,9 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
 
     private void playSound(){
         RhoInputListener.IRhoInputListener listener = RhoInputListener.getListener();
-        if (listener != null)
+        if (listener != null) {
             listener.onTextInput();
+        }
     }
 
 
@@ -80,7 +81,7 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         try {
             return super.getExtractedText(request, flags);
         } catch (Exception e){
-            Log.d("myLog", e.toString());
+            Logger.E(this.TAG, e.toString());
         }
         return null;
     }
@@ -88,11 +89,11 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
     @Override
     public boolean finishComposingText() {
         Logger.T(this.TAG, ".finishComposingText()");
-        
+
         try{
             return super.finishComposingText();
         }  catch (Exception e){
-            Log.d("myLog", e.toString());
+            Logger.E(this.TAG, e.toString());
         }
         return false;
     }
@@ -109,10 +110,10 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
     }
 
     @Override
-        public boolean performEditorAction(int editorAction) {
-        Log.d("myLog", "================================sendKeyEvent================================");        
-        Log.d("myLog", Integer.toString(editorAction));
-        Log.d("myLog", "================================");
+    public boolean performEditorAction(int editorAction) {
+        Logger.T(this.TAG, "================================sendKeyEvent================================");
+        Logger.T(this.TAG, Integer.toString(editorAction));
+        Logger.T(this.TAG, "================================");
         return super.performEditorAction(editorAction);
     }
 
@@ -122,9 +123,24 @@ public class RhoInputConnectionWrapper extends InputConnectionWrapper {
         try {
             return super.requestCursorUpdates(cursorUpdateMode);
         } catch(Exception e){
-            Log.d("myLog", e.toString());
+            Logger.E(this.TAG, e.toString());
         }
         return false;
     }
     //endregion
+
+
+    @Override
+    public boolean reportFullscreenMode(boolean enabled) {
+        Logger.T(this.TAG, ".reportFullscreenMode()");
+        boolean h = false;
+        try {
+            h = super.reportFullscreenMode(enabled);
+        }
+        catch (Exception ex) {
+            Logger.E(this.TAG, ".reportFullscreenMode() ERROR = "+ex.getMessage());
+        }
+        return h;
+    }
+
 }
