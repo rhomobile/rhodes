@@ -1107,14 +1107,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     private void showAlertPermission() {
         mActivity= (Activity) this;
 
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Permission check")
-            .setCancelable(false);
-
-        LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
-        adb.setView(view);
-
-		if (mPermissionsDialog != null) {
+        if (mPermissionsDialog != null) {
 			try {
 				mPermissionsDialog.dismiss();
 			}
@@ -1123,6 +1116,19 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			}
 			mPermissionsDialog = null;
 		}
+
+        if(isKioskMode())
+        {
+            permissionWindowShow = false;
+            return;
+        }
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Permission check")
+            .setCancelable(false);
+
+        LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
+        adb.setView(view);
 
         mPermissionsDialog = adb.create();
 
