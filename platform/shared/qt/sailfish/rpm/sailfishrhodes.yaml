@@ -1,4 +1,4 @@
-Name: harbour-sailfishrhodes
+Name: sailfishrhodes
 Summary: My Sailfish OS Application
 Version: 0.1
 Release: 1
@@ -21,7 +21,7 @@ Builder: qtc5
 # This section specifies build dependencies that are resolved using pkgconfig.
 # This is the preferred way of specifying build dependencies for your package.
 PkgConfigBR:
-  - sailfishapp >= 1.0.2
+  - auroraapp >= 1.0.2
   - Qt5Core
   - Qt5Qml
   - Qt5WebKit

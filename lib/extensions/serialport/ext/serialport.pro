@@ -18,7 +18,7 @@ equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6): {
         QT += webkit widgets
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n
+        CONFIG += auroraapp c++14 auroraapp_i18n
     }
     greaterThan(QT_MINOR_VERSION, 7): {
         QT += webengine webenginecore webenginewidgets multimediawidgets

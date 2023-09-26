@@ -226,29 +226,17 @@ SOURCES += $$PWD/CameraImageWrapper.cpp \
     $$PWD/zxing/bigint/BigIntegerAlgorithms.cc \
     $$PWD/zxing/bigint/BigInteger.cc
 
-symbian {
-    TARGET.UID3 = 0xE618743C
-    TARGET.EPOCALLOWDLLDATA = 1
 
-    #TARGET.CAPABILITY = All -TCB -AllFiles -DRM
-    TARGET.CAPABILITY += NetworkServices \
-        ReadUserData \
-        WriteUserData \
-        LocalServices \
-        UserEnvironment \
-        Location
-}
+#unix:!symbian {
+#    maemo5 {
+#        target.path = /opt/usr/lib
+#    } else {
+#        target.path = /usr/lib
+#    }
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-
-    DEFINES += NOFMAXL
-    INSTALLS += target
-}
+#    DEFINES += NOFMAXL
+#    INSTALLS += target
+#}
 
 win32-msvc*{
 

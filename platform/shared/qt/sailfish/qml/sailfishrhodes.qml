@@ -8,7 +8,7 @@ ApplicationWindow
 
     Loader {
        id: firstPage
-       source: rootDelegate.webEngineEnabled ? "pages/FirstPageWE.qml" : "pages/FirstPageWK.qml"
+       source: "pages/FirstPageWK.qml"
     }
 
     initialPage: firstPage.item
