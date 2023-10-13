@@ -40,6 +40,9 @@ namespace rho {
 		virtual void stopListening(apiGenerator::CMethodResult& oResult) {
 			stopApplicationMessageNotifications(oResult);
 		} 
+		virtual void cleanStartParameters(rho::apiGenerator::CMethodResult& oResult){
+			
+		}
 
 	private:
 		void sendApplicationMessage(const String& appName, const String& params, apiGenerator::CMethodResult& oResult) {

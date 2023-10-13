@@ -259,6 +259,7 @@ public class RhodesApplication extends Application{
     private native static void startRhodesApp();
     private native static void stopRhodesApp();
     private native static boolean canStartApp(String strCmdLine, String strSeparators);
+    private native static void setStartParameters(String startParam);
     
     public static void create()
     {
@@ -281,6 +282,10 @@ public class RhodesApplication extends Application{
 	public static boolean canStart(String strCmdLine)
 	{
 	    return canStartApp(strCmdLine, "&#");
+	}
+    public static void setStartParametersApp(String startParam)
+	{
+	    setStartParameters(startParam);
 	}
 	
     public static void stop() {

@@ -518,7 +518,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         	intent.setAction("android.intent.action.VIEW");
         	intent.setData(Uri.parse(url));
         }
-        handleStartParams(intent);
+        handleStartParams(intent, false);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         lastIntent = intent.getAction();
@@ -813,7 +813,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
-        handleStartParams(getIntent());
+        handleStartParams(getIntent(), true);
 
         if(mIsServiceAllreadyExist)
         {
@@ -825,7 +825,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }
 	}
 
-    private void handleStartParams(Intent intent)
+    private void handleStartParams(Intent intent, boolean writeStartParam)
     {
         StringBuilder startParams = new StringBuilder();
         boolean firstParam = true;
@@ -869,6 +869,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }
         String paramString = startParams.toString();
         Logger.I(TAG, "New start parameters: " + paramString);
+        if (writeStartParam){
+            RhodesApplication.setStartParametersApp(paramString);
+        }
         if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");

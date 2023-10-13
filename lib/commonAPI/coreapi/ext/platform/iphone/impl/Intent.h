@@ -5,7 +5,7 @@
 @interface Intent : IntentBase<IIntent> {
 }
 
-
+-(void) cleanStartParameters:(id<IMethodResult>)methodResult;
 
 
 @end
