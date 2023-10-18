@@ -1201,6 +1201,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Button cpBtn = view.findViewById(R.id.callPhoneBtn);
         ImageView cpImg = view.findViewById(R.id.callPhoneStatus);
 
+        LinearLayout callPhoneLayout = view.findViewById(R.id.callPhoneLinearLayout);
+        if( RhoConf.isExist("call_phone_permission_ignor") &&
+            RhoConf.getBool("call_phone_permission_ignor")){
+                callPhoneLayout.setVisibility(View.GONE);
+        }else{
+            callPhoneLayout.setVisibility(View.VISIBLE);
+        }
+
         cpBtn.setVisibility(
             (!PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.GONE)
         );

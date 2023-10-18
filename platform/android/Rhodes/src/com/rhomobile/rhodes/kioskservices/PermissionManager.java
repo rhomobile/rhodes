@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import java.util.function.Predicate;
+
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
@@ -30,10 +32,15 @@ public class PermissionManager {
     final static private Integer MY_PERMISSIONS_REQUEST = 343457842;
 
     static public Boolean checkPermissions(Context context, Activity activity){
+        boolean callPhonePermissionIgnor = RhoConf.isExist("call_phone_permission_ignor") && RhoConf.getBool("call_phone_permission_ignor");
+        boolean callPhonePermission = true;
+        if(!callPhonePermissionIgnor)
+            callPhonePermission = checkCallPhonePermission(context);
+            
         return checkAccessibilityServicePermission(context)
                 && checkNotificationServicePermission(activity, context)
                 && isMyLauncherDefault(context)
-                && checkCallPhonePermission(context)
+                && callPhonePermission
                 && checkOverlayPermission(context);
     }
 
