@@ -1,0 +1,166 @@
+pool:
+  vmImage: macOS-latest
+
+variables:
+- name: ruby_ver
+  value: 2.7.8
+
+- name: sdk_manager
+  value: $ANDROID_HOME/tools/bin/sdkmanager
+
+- name: ndk_version
+  value: 24.0.8215888
+
+- name: ndk_home
+  value: $ANDROID_HOME/ndk/${{variables.ndk_version}}
+
+- name: rhodesVersion
+  value: 0
+
+
+jobs:
+- job: PrepareEnvironment
+  steps:
+  - task: UseRubyVersion@0
+    inputs:
+      versionSpec: '~= ${{variables.ruby_ver}}'
+
+  - script: |
+      bundle install
+      ruby lib/build/buildgem.rb
+      VERSION=$(cat ./version)
+      gem install --no-document ./rhodes-$VERSION.gem
+      gem list
+      printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
+      echo "##vso[task.setvariable variable=rhodesVersion]$VERSION"
+    displayName: "Install & Configurate Rhodes"
+      
+  - script: |
+      rhodes jsapp vanilla_rhodes_jsapp
+      rhodes nodejsapp vanilla_rhodes_nodejsapp
+    displayName: "Create jsapp & nodejsapp project"
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'rhodesGem'
+      targetPath: '$(System.DefaultWorkingDirectory)/rhodes-$(rhodesVersion).gem'
+
+- job:
+  dependsOn: PrepareEnvironment
+  strategy:
+    matrix:
+      Android10:
+        android_sdk_version: 29
+      Android12:
+        android_sdk_version: 31
+      Android12L:
+        android_sdk_version: 32
+  
+  steps:
+    - task: UseRubyVersion@0
+      inputs:
+        versionSpec: '~= ${{variables.ruby_ver}}'
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'rhodesGem'
+        targetPath: $(Build.ArtifactStagingDirectory)
+    
+    - script: |
+        ${{variables.sdk_manager}} --install 'build-tools;32.0.0'
+        ${{variables.sdk_manager}} --uninstall 'build-tools;34.0.0'
+        ${{variables.sdk_manager}} --uninstall 'platforms;android-32'
+        ${{variables.sdk_manager}} --uninstall 'platforms;android-33'
+        ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
+        ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext4'
+        ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext5'
+        ${{variables.sdk_manager}} --install 'ndk;${{ variables.ndk_version }}'
+      displayName: "Setup Android environment"
+
+    - script: |
+        ${{variables.sdk_manager}} --install 'platforms;android-$(android_sdk_version)'
+      displayName: "Install platform android $(android_sdk_version)"
+
+    - script: 
+        adb kill-server
+        adb start-server
+      displayName: "Restart adb"
+
+    - task: Bash@3
+      inputs:
+        filePath: .ci/run_emulator.sh
+        arguments: ${{variables.sdk_manager}} $(android_sdk_version)
+      displayName: "Create and start android emulator"
+
+    # - task: JavaToolInstaller@0
+    #   inputs:
+    #     jdkSourceOption: PreInstalled
+    #     versionSpec: 11
+    #     jdkArchitectureOption: x64
+
+    - script: |
+        echo $JAVA_HOME
+        echo $ANDROID_HOME
+        echo ${{ variables.ndk_home }}
+      displayName: "print debug info"
+
+
+    - script: |
+        bundle install
+        gem install --no-document $(Build.ArtifactStagingDirectory)/rhodes-$(cat ./version).gem
+        gem list
+        printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | bin/rhodes-setup
+      displayName: Install rhodes
+
+    - script: |
+        git clone https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
+        cd $HOME/rhoconnect-client
+        rake gem:make_gem
+        gem install ./rhoconnect-client-$(cat ./version).gem --no-document
+      displayName: "Installing Rhoconnect client"
+
+    - script: |
+        rhodes app vanila_rhodes_app
+        cd vanila_rhodes_app
+        ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
+      displayName: "Create project"
+    
+    - script: |
+        rhodes extension testtext
+      displayName: Create extension
+    
+    - script: |
+        if [ ! -e "$HOME/.android/debug.keystore" ]; then
+          cd $HOME/.android && printf "android\nandroid\nAZURE-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
+        else
+          echo "Keystore exist"
+        fi
+      displayName: "Generate debug keystore"
+
+    - script: |
+        cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
+        ruby -e "require 'yaml';target_sdk=ARGV[0].to_i;c=YAML.load_file('build.yml');c['android']['targetSDK'] = target_sdk;File.write('build.yml',c.to_yaml)" $(android_sdk_version)
+      displayName: "Configurate project for Android SDK $(android_sdk_version)"
+    
+    - script: |
+        cd $(System.DefaultWorkingDirectory)
+        pwd
+        ls
+        echo "=====rhobuild.yml====="
+        cat rhobuild.yml
+        cd vanila_rhodes_app
+        echo "=====vanila_rhodes_app====="
+        pwd
+        ls
+        echo "=====build.yml====="
+        cat build.yml
+      displayName: DebugInfo
+
+    - script: |
+        cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
+        pwd
+        echo "==================================="
+        rake run:android:spec --trace
+      displayName: "Build and start project"
+      timeoutInMinutes: 15
+      
