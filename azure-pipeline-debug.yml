@@ -1,5 +1,5 @@
 pool:
-  vmImage: macOS-latest
+  vmImage: macOS-11
 
 variables:
 - name: ruby_ver
@@ -91,6 +91,7 @@ jobs:
         filePath: .ci/run_emulator.sh
         arguments: ${{variables.sdk_manager}} $(android_sdk_version)
       displayName: "Create and start android emulator"
+      timeoutInMinutes: 20
 
     # - task: JavaToolInstaller@0
     #   inputs:
