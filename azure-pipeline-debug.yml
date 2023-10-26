@@ -165,6 +165,8 @@ jobs:
 
 
     - script: |
+        RHO_APP=${{variables.RHO_APP}}
+        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         pwd
         $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/run_test_on_simulator.sh
       displayName: "Build and start app"
