@@ -149,7 +149,23 @@ jobs:
       displayName: "Clone test app"
 
     - script: |
-        cd $(System.DefaultWorkingDirectory)/${{variables.RHO_APP}}
+        RHO_APP=${{variables.RHO_APP}}
+        cd $(System.DefaultWorkingDirectory)
+        pwd
+        ls
+        echo "=====rhobuild.yml====="
+        cat rhobuild.yml
+        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        echo "=====auto_common_spec====="
+        pwd
+        ls
+        echo "=====build.yml====="
+        cat build.yml
+      displayName: DebugInfo
+
+
+    - script: |
+        pwd
         $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/run_test_on_simulator.sh
       displayName: "Build and start app"
     
