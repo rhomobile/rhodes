@@ -150,6 +150,14 @@ jobs:
 
     - script: |
         RHO_APP=${{variables.RHO_APP}}
+        ANDROID_ABIS="arm,x86"
+        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $ANDROID_ABIS
+      displayName: "Set abis"
+
+
+    - script: |
+        RHO_APP=${{variables.RHO_APP}}
         cd $(System.DefaultWorkingDirectory)
         pwd
         ls
