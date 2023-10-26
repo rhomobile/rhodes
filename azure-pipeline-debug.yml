@@ -150,7 +150,7 @@ jobs:
 
     - script: |
         cd $(System.DefaultWorkingDirectory)/${{variables.RHO_APP}}
-        $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/androidrun_test_on_simulator.sh
+        $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/run_test_on_simulator.sh
       displayName: "Build and start app"
     
 
