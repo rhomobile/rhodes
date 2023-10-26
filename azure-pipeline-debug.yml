@@ -17,6 +17,9 @@ variables:
 - name: rhodesVersion
   value: 0
 
+- name: RHO_APP
+  value: "auto_common_spec"
+
 
 jobs:
 - job: PrepareEnvironment
@@ -36,9 +39,13 @@ jobs:
     displayName: "Install & Configurate Rhodes"
       
   - script: |
+      rhodes app vanila_rhodes_app
+      cd vanila_rhodes_app 
+      rhodes extension testtext
+      cd ../
       rhodes jsapp vanilla_rhodes_jsapp
       rhodes nodejsapp vanilla_rhodes_nodejsapp
-    displayName: "Create jsapp & nodejsapp project"
+    displayName: "Create apps"
 
   - task: PublishPipelineArtifact@0
     inputs:
@@ -49,12 +56,12 @@ jobs:
   dependsOn: PrepareEnvironment
   strategy:
     matrix:
-      Android10:
-        android_sdk_version: 29
       Android12:
         android_sdk_version: 31
-      Android12L:
-        android_sdk_version: 32
+      # Android12:
+      #   android_sdk_version: 31
+      # Android12L:
+      #   android_sdk_version: 32
   
   steps:
     - task: UseRubyVersion@0
@@ -114,23 +121,6 @@ jobs:
       displayName: Install rhodes
 
     - script: |
-        git clone https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
-        cd $HOME/rhoconnect-client
-        rake gem:make_gem
-        gem install ./rhoconnect-client-$(cat ./version).gem --no-document
-      displayName: "Installing Rhoconnect client"
-
-    - script: |
-        rhodes app vanila_rhodes_app
-        cd vanila_rhodes_app
-        ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
-      displayName: "Create project"
-    
-    - script: |
-        rhodes extension testtext
-      displayName: Create extension
-    
-    - script: |
         if [ ! -e "$HOME/.android/debug.keystore" ]; then
           cd $HOME/.android && printf "android\nandroid\nAZURE-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
         else
@@ -138,30 +128,62 @@ jobs:
         fi
       displayName: "Generate debug keystore"
 
-    - script: |
-        cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
-        ruby -e "require 'yaml';target_sdk=ARGV[0].to_i;c=YAML.load_file('build.yml');c['android']['targetSDK'] = target_sdk;File.write('build.yml',c.to_yaml)" $(android_sdk_version)
-      displayName: "Configurate project for Android SDK $(android_sdk_version)"
-    
-    - script: |
-        cd $(System.DefaultWorkingDirectory)
-        pwd
-        ls
-        echo "=====rhobuild.yml====="
-        cat rhobuild.yml
-        cd vanila_rhodes_app
-        echo "=====vanila_rhodes_app====="
-        pwd
-        ls
-        echo "=====build.yml====="
-        cat build.yml
-      displayName: DebugInfo
 
     - script: |
-        cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
-        pwd
-        echo "==================================="
-        rake run:android:spec --trace
-      displayName: "Build and start project"
-      timeoutInMinutes: 15
+        if [[ -n $RHO_TAU_EXTENSIONS ]]; then
+          .ci/install_rho-tau-extensions.sh;
+        fi
+      displayName: "Installing Rhoconnect client"
+
+    - script: |
+        wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
+        unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
+      displayName: "install EMDK"
+
+    - script: |
+        RHO_APP=${{variables.RHO_APP}}
+        git clone $($(System.DefaultWorkingDirectory)/.ci/app_repo.rb) $(System.DefaultWorkingDirectory)/$RHO_APP
+        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        cp -r $(System.DefaultWorkingDirectory)/res/generators/templates/application/resources resources
+        ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
+      displayName: "Clone test app"
+
+    - script: |
+        cd $(System.DefaultWorkingDirectory)/${{variables.RHO_APP}}
+        $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/target/android/run_test_on_simulator.sh
+      displayName: "Build and start app"
+    
+
+    # - script: |
+    #     rhodes app vanila_rhodes_app
+    #     cd vanila_rhodes_app
+    #     ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
+    #   displayName: "Create project"
+      
+    # - script: |
+    #     cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
+    #     ruby -e "require 'yaml';target_sdk=ARGV[0].to_i;c=YAML.load_file('build.yml');c['android']['targetSDK'] = target_sdk;File.write('build.yml',c.to_yaml)" $(android_sdk_version)
+    #   displayName: "Configurate project for Android SDK $(android_sdk_version)"
+    
+    # - script: |
+    #     cd $(System.DefaultWorkingDirectory)
+    #     pwd
+    #     ls
+    #     echo "=====rhobuild.yml====="
+    #     cat rhobuild.yml
+    #     cd vanila_rhodes_app
+    #     echo "=====vanila_rhodes_app====="
+    #     pwd
+    #     ls
+    #     echo "=====build.yml====="
+    #     cat build.yml
+    #   displayName: DebugInfo
+
+    # - script: |
+    #     cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
+    #     pwd
+    #     echo "==================================="
+    #     rake run:android:spec --trace
+    #   displayName: "Build and start project"
+    #   timeoutInMinutes: 15
       
