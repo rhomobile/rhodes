@@ -56,8 +56,8 @@ jobs:
   dependsOn: PrepareEnvironment
   strategy:
     matrix:
-      Android12:
-        android_sdk_version: 31
+      Android11:
+        android_sdk_version: 30
       # Android12:
       #   android_sdk_version: 31
       # Android12L:
@@ -153,7 +153,7 @@ jobs:
         ANDROID_ABIS="arm,x86"
         cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $ANDROID_ABIS
-        ruby -e "require 'yaml';version=ARGV[0].to_i;targetSdkVer=ARGV[1].to_i;minSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" 12 31 31 
+        ruby -e "require 'yaml';version=ARGV[0].to_i;targetSdkVer=ARGV[1].to_i;minSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" 11 30 30 
 
       displayName: "Set abis and Android version"
 
