@@ -40,12 +40,12 @@ end
 
 if device == nil
 
-    devicetype = SimCtl.devicetype(name: 'iPhone 7')
-    devicename = 'Rhomobile iPhone7 '+sdk_ver
+    devicetype = SimCtl.devicetype(name: 'iPhone 12')
+    devicename = 'Rhomobile iPhone12 '+sdk_ver
 
     if ARGV[3] == 'ipad'
-        devicetype = SimCtl.devicetype(name: 'iPad Air 2')
-        devicename = 'Rhomobile iPad Air 2 '+sdk_ver
+        devicetype = SimCtl.devicetype(name: 'iPad Air (4th generation)')
+        devicename = 'Rhomobile iPad Air (4th generation) '+sdk_ver
     end
 
     device = SimCtl.device(name: devicename)
