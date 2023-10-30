@@ -276,6 +276,10 @@ class NDKWrapper
     @rev_major
   end
 
+  def abi_triple( abi )
+    @@abi_triple[abi]
+  end
+
   def select_tool_abi_prefix( tool, abi )
     prefix = abi
 
