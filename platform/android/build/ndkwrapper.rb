@@ -276,8 +276,16 @@ class NDKWrapper
     @rev_major
   end
 
-  def abi_triple( abi )
-    @@abi_triple[abi]
+  def get_llvm_stl_path( arch )
+    if @rev_major <= 24
+      arch = 'arm64-v8a' if arch == "aarch64"
+      localabi = arch
+      localabi = "armeabi-v7a" if arch == "armeabi"
+      File.join(@root_path, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
+    else
+      arch = "arm" if arch == "armeabi"
+      File.join(@root_path, "toolchains", "llvm", "prebuilt", "darwin-x86_64", "sysroot", "usr", "lib", @@abi_triple[arch], "libc++_shared.so")
+    end
   end
 
   def select_tool_abi_prefix( tool, abi )

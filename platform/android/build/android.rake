@@ -2251,22 +2251,10 @@ namespace "build" do
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
 
-        llvm_stl = nil
-        ndk = NDKWrapper.new($androidndkpath)
-        ndk_rev_major = ndk.rev_major
-
-        if ndk_rev_major <= 24
-          arch = 'arm64-v8a' if arch == "aarch64"
-          cp_r lib, File.join($applibs,arch,file)
-
-          localabi = arch
-          localabi = "armeabi-v7a" if arch == "armeabi"
-          llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
-        else
-          llvm_stl = File.join($androidndkpath, "toolchains", "llvm", "prebuilt", "darwin-x86_64", "sysroot", "usr", "lib", ndk.abi_triple(arch), "libc++_shared.so")
-          arch = 'arm64-v8a' if arch == "aarch64"
-          cp_r lib, File.join($applibs,arch,file)
-        end
+        ndkwrapper = NDKWrapper.new($androidndkpath)
+        llvm_stl = ndkwrapper.get_llvm_stl_path(arch)
+        arch = 'arm64-v8a' if arch == "aarch64"
+        cp_r lib, File.join($applibs,arch,file)
 
         if File.exists? llvm_stl
           cp_r llvm_stl, File.join($applibs,arch)
