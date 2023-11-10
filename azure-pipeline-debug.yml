@@ -190,7 +190,7 @@ jobs:
     - script: |
         RHO_APP=${{variables.RHO_APP}}
         cd $(System.DefaultWorkingDirectory)
-        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)bin/
+        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
       displayName: CreateArchi
 
     - task: PublishPipelineArtifact@0
