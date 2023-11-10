@@ -189,16 +189,14 @@ jobs:
 
     - script: |
         RHO_APP=${{variables.RHO_APP}}
-        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        zip -r bin_rhoApp.zip bin/
-        echo "##vso[task.setvariable variable=rhodes_app_path]pwd"
-        echo ${{variables.rhodes_app_path}}
+        cd $(System.DefaultWorkingDirectory)
+        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)bin/
       displayName: CreateArchi
 
     - task: PublishPipelineArtifact@0
       inputs:
         artifactName: 'bin rhodes_app'
-        targetPath: '${{variables.rhodes_app_path}}/bin'
+        targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp.zip'
     
 
     # - script: |
