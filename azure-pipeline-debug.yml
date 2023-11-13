@@ -51,27 +51,39 @@ jobs:
 
 - job:
   dependsOn: PrepareEnvironment
+
+#-----------Notes-----------
+# RHO_RUNNER_SCRIPT: run_test_on_simulator.sh; run_app_on_simulator.sh;
+# RHO_APP: framework_spec; auto_common_spec; rhodes_fcm_test; rhodes_lib_examples;
+# ANDROID_ABIS: x86; aarch64
+#---------------------------
+# SKIP_BUILD
+# SKIP_TESTS
+# RHO_TAU_EXTENSIONS
+#---------------------------
   strategy:
     matrix:
-      # Android_10:
-      #   RHO_ANDROID_MIN_SDK: 29
-      #   ANDROID_TARGET_SDK: 31
-      #   RHO_APP: "framework_spec"
-      #   ANDROID_ABIS: "x86"
+      Android_10:
+        ANDROID_VERSION: 10
+        RHO_ANDROID_MIN_SDK: 29
+        ANDROID_TARGET_SDK: 31
+        ANDROID_ABIS: "x86"
+        RHO_APP: "framework_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       Android_11:
         ANDROID_VERSION: 11
         ANDROID_TARGET_SDK: 31
         RHO_ANDROID_MIN_SDK: 30
         ANDROID_ABIS: "x86"
+        RHO_APP: "rhodes_fcm_test"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+      Android_12:
+        ANDROID_VERSION: 12
+        RHO_ANDROID_MIN_SDK: 31
+        ANDROID_TARGET_SDK: 31
+        ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-        # SKIP_BUILD: "yes"
-        # SKIP_TESTS: "yes"
-      # Android_12:
-      #   RHO_ANDROID_MIN_SDK: 31
-      #   ANDROID_TARGET_SDK: 31
-      #   RHO_APP: "rhodes_fcm_test"
-      #   ANDROID_ABIS: "aarch64,x86"
   
   steps:
     - task: UseRubyVersion@0
