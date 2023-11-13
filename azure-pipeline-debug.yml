@@ -94,8 +94,9 @@ jobs:
       displayName: "Setup Android environment"
 
     - script: |
+        ${{variables.sdk_manager}} --install 'platforms;android-$(ANDROID_TARGET_SDK)'
         ${{variables.sdk_manager}} --install 'platforms;android-$(RHO_ANDROID_MIN_SDK)'
-      displayName: "Install platform android $(RHO_ANDROID_MIN_SDK)"
+      displayName: "Install platform android $(ANDROID_TARGET_SDK) and $(RHO_ANDROID_MIN_SDK)"
 
     - script: 
         adb kill-server
@@ -156,7 +157,7 @@ jobs:
     - script: |
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $(ANDROID_ABIS)
-        ruby -e "require 'yaml';targetSdkVer=ARGV[0].to_i;minSdkVer=ARGV[1].to_i;c=YAML.load_file('build.yml');c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
+        ruby -e "require 'yaml';minSdkVer=ARGV[0].to_i;targetSdkVer=ARGV[1].to_i;c=YAML.load_file('build.yml');c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
       displayName: "Set abis and Android minSDK and target"
 
     - script: |
@@ -178,16 +179,16 @@ jobs:
           cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
           $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/build_artefact_for_deploy.sh
         fi
-      displayName: "Build and start app"
+      displayName: "Build testable app binary artefact unless otherwise specified by matrix config"
       continueOnError: true
 
 
     - script: |
-        if [[ -z $(SKIP_TESTS)]]; then
+        if [[ -z $(SKIP_TESTS) ]]; then
           cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
           $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/$(RHO_RUNNER_SCRIPT)
         fi
-      displayName: "Build and start app"
+      displayName: "Build testable and start test "
       continueOnError: true
 
     - script: |
