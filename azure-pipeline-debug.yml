@@ -220,5 +220,5 @@ jobs:
     - task: PublishPipelineArtifact@0
       inputs:
         artifactName: 'bin rhodes_app'
-        targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp-android$(ANDROID_VERSION)-$(framework_spec).zip'
+        targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp-android$(ANDROID_VERSION)-$(RHO_APP).zip'
       displayName: "Publication an application bin folder archive"
