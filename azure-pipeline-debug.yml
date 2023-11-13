@@ -57,9 +57,9 @@ jobs:
 # RHO_APP: framework_spec; auto_common_spec; rhodes_fcm_test; rhodes_lib_examples;
 # ANDROID_ABIS: x86; aarch64
 #---------------------------
-# SKIP_BUILD
-# SKIP_TESTS
-# RHO_TAU_EXTENSIONS
+# SKIP_BUILD: "yes"
+# SKIP_TESTS: "yes"
+# RHO_TAU_EXTENSIONS: "no"
 #---------------------------
   strategy:
     matrix:
@@ -70,6 +70,7 @@ jobs:
         ANDROID_ABIS: "x86"
         RHO_APP: "framework_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
       Android_11:
         ANDROID_VERSION: 11
         ANDROID_TARGET_SDK: 31
@@ -77,6 +78,7 @@ jobs:
         ANDROID_ABIS: "x86"
         RHO_APP: "rhodes_fcm_test"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
       Android_12:
         ANDROID_VERSION: 12
         RHO_ANDROID_MIN_SDK: 31
@@ -84,6 +86,7 @@ jobs:
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
   
   steps:
     - task: UseRubyVersion@0
@@ -163,9 +166,17 @@ jobs:
 
     - script: |
         git clone $($(System.DefaultWorkingDirectory)/.ci/app_repo.rb) $(System.DefaultWorkingDirectory)/$(RHO_APP)
-        cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        cp -r $(System.DefaultWorkingDirectory)/res/generators/templates/application/resources resources
       displayName: "Clone testable app"
+
+    - script: |
+        cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        if ! [[ -f resources/android/res/xml/provider_paths.xml ]]; then
+          if ! [[ -d resources/android/res/xml/ ]]; then
+            mkdir -p resources/android/res/xml/
+          fi
+          cp $(System.DefaultWorkingDirectory)/res/generators/templates/application/resources/android/res/xml/provider_paths.xml resources/android/res/xml/
+        fi
+      displayName: "Copy provider_paths.xml"
 
     - script: |
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
@@ -174,18 +185,13 @@ jobs:
       displayName: "Set abis and Android version, minSDK and target SDK"
 
     - script: |
-        cd $(System.DefaultWorkingDirectory)
-        pwd
-        ls
-        echo "=====rhobuild.yml====="
-        cat rhobuild.yml
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        echo "=====auto_common_spec====="
+        echo "=====$(RHO_APP)====="
         pwd
         ls
         echo "=====build.yml====="
         cat build.yml
-      displayName: "Debug Info"
+      displayName: "Project info"
 
     - script: |
         if [[ -z $(SKIP_BUILD) ]]; then
@@ -206,10 +212,11 @@ jobs:
 
     - script: |
         cd $(System.DefaultWorkingDirectory)
-        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
-      displayName: "Archive creation12345 "
+        zip -r bin_rhoApp-android$(ANDROID_VERSION)-$(framework_spec).zip $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
+      displayName: "Creating an application bin folder archive"
 
     - task: PublishPipelineArtifact@0
       inputs:
         artifactName: 'bin rhodes_app'
-        targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp.zip'
+        targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp-android$(ANDROID_VERSION)-$(framework_spec).zip'
+      displayName: "Publication an application bin folder archive"
