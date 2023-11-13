@@ -170,7 +170,9 @@ jobs:
 
     - script: |
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        if ! [[ -f resources/android/res/xml/provider_paths.xml ]]; then
+        if ! [[ -d resources/ ]]; then
+          cp -r $(System.DefaultWorkingDirectory)/res/generators/templates/application/resources resources
+        elif ! [[ -f resources/android/res/xml/provider_paths.xml ]]; then
           if ! [[ -d resources/android/res/xml/ ]]; then
             mkdir -p resources/android/res/xml/
           fi
