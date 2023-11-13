@@ -17,12 +17,6 @@ variables:
 - name: rhodesVersion
   value: 0
 
-- name: RHO_APP
-  value: "auto_common_spec"
-
-- name: rhodes_app_path
-  value: ""
-
 
 jobs:
 - job: PrepareEnvironment
@@ -48,7 +42,7 @@ jobs:
       cd ../
       rhodes jsapp vanilla_rhodes_jsapp
       rhodes nodejsapp vanilla_rhodes_nodejsapp
-    displayName: "Create apps"
+    displayName: "Create jsapp and nodejsapp apps"
 
   - task: PublishPipelineArtifact@0
     inputs:
@@ -59,14 +53,24 @@ jobs:
   dependsOn: PrepareEnvironment
   strategy:
     matrix:
-      # Android10:
-      #     android_sdk_version: 29
-      Android12:
-        android_sdk_version: 31
-      # Android12:
-      #   android_sdk_version: 31
-      # Android12L:
-      #   android_sdk_version: 32
+      # Android_10:
+      #   RHO_ANDROID_MIN_SDK: 29
+      #   ANDROID_TARGET_SDK: 31
+      #   RHO_APP: "framework_spec"
+      #   ANDROID_ABIS: "x86"
+      Android_11:
+        RHO_ANDROID_MIN_SDK: 30
+        ANDROID_TARGET_SDK: 31
+        ANDROID_ABIS: "x86"
+        RHO_APP: "auto_common_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        # SKIP_BUILD: "yes"
+        # SKIP_TESTS: "yes"
+      # Android_12:
+      #   RHO_ANDROID_MIN_SDK: 31
+      #   ANDROID_TARGET_SDK: 31
+      #   RHO_APP: "rhodes_fcm_test"
+      #   ANDROID_ABIS: "aarch64,x86"
   
   steps:
     - task: UseRubyVersion@0
@@ -90,8 +94,8 @@ jobs:
       displayName: "Setup Android environment"
 
     - script: |
-        ${{variables.sdk_manager}} --install 'platforms;android-$(android_sdk_version)'
-      displayName: "Install platform android $(android_sdk_version)"
+        ${{variables.sdk_manager}} --install 'platforms;android-$(RHO_ANDROID_MIN_SDK)'
+      displayName: "Install platform android $(RHO_ANDROID_MIN_SDK)"
 
     - script: 
         adb kill-server
@@ -101,7 +105,7 @@ jobs:
     - task: Bash@3
       inputs:
         filePath: .ci/run_emulator.sh
-        arguments: ${{variables.sdk_manager}} $(android_sdk_version)
+        arguments: ${{variables.sdk_manager}} $(RHO_ANDROID_MIN_SDK)
       displayName: "Create and start android emulator"
       timeoutInMinutes: 20
 
@@ -117,12 +121,11 @@ jobs:
         echo ${{ variables.ndk_home }}
       displayName: "print debug info"
 
-
     - script: |
         bundle install
         gem install --no-document $(Build.ArtifactStagingDirectory)/rhodes-$(cat ./version).gem
         gem list
-        printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | bin/rhodes-setup
+        printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
       displayName: Install rhodes
 
     - script: |
@@ -131,11 +134,10 @@ jobs:
         else
           echo "Keystore exist"
         fi
-      displayName: "Generate debug keystore"
-
+      displayName: "Generate keystore"
 
     - script: |
-        if [[ -n $RHO_TAU_EXTENSIONS ]]; then
+        if [[ -n $(RHO_TAU_EXTENSIONS) ]]; then
           .ci/install_rho-tau-extensions.sh;
         fi
       displayName: "Installing Rhoconnect client"
@@ -143,92 +145,57 @@ jobs:
     - script: |
         wget -q https://s3.amazonaws.com/files.tau-platform.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
         unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
-      displayName: "install EMDK"
+      displayName: "Install EMDK"
 
     - script: |
-        RHO_APP=${{variables.RHO_APP}}
-        git clone $($(System.DefaultWorkingDirectory)/.ci/app_repo.rb) $(System.DefaultWorkingDirectory)/$RHO_APP
-        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        git clone $($(System.DefaultWorkingDirectory)/.ci/app_repo.rb) $(System.DefaultWorkingDirectory)/$(RHO_APP)
+        cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         cp -r $(System.DefaultWorkingDirectory)/res/generators/templates/application/resources resources
-        ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
-      displayName: "Clone test app"
+      displayName: "Clone testable app"
 
     - script: |
-        RHO_APP=${{variables.RHO_APP}}
-        ANDROID_ABIS="aarch64,x86"
-        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $ANDROID_ABIS
-        ruby -e "require 'yaml';version=ARGV[0].to_i;targetSdkVer=ARGV[1].to_i;minSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" 12 31 31 
-
-      displayName: "Set abis and Android version"
+        cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $(ANDROID_ABIS)
+        ruby -e "require 'yaml';targetSdkVer=ARGV[0].to_i;minSdkVer=ARGV[1].to_i;c=YAML.load_file('build.yml');c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
+      displayName: "Set abis and Android minSDK and target"
 
     - script: |
-        RHO_APP=${{variables.RHO_APP}}
         cd $(System.DefaultWorkingDirectory)
         pwd
         ls
         echo "=====rhobuild.yml====="
         cat rhobuild.yml
-        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+        cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         echo "=====auto_common_spec====="
         pwd
         ls
         echo "=====build.yml====="
         cat build.yml
-      displayName: DebugInfo
+      displayName: "Debug Info"
+
+    - script: |
+        if [[ -z $(SKIP_BUILD) ]]; then
+          cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+          $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/build_artefact_for_deploy.sh
+        fi
+      displayName: "Build and start app"
+      continueOnError: true
 
 
     - script: |
-        RHO_APP=${{variables.RHO_APP}}
-        cd $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-        echo "##vso[task.setvariable variable=rhodes_app_path]pwd"
-        pwd
-        $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/run_test_on_simulator.sh
+        if [[ -z $(SKIP_TESTS)]]; then
+          cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
+          $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/$(RHO_RUNNER_SCRIPT)
+        fi
       displayName: "Build and start app"
       continueOnError: true
 
     - script: |
-        RHO_APP=${{variables.RHO_APP}}
         cd $(System.DefaultWorkingDirectory)
-        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$RHO_APP/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
-      displayName: CreateArchi
+        zip -r bin_rhoApp.zip $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
+      displayName: "Archive creation12345 "
 
     - task: PublishPipelineArtifact@0
       inputs:
         artifactName: 'bin rhodes_app'
         targetPath: '$(System.DefaultWorkingDirectory)/bin_rhoApp.zip'
-    
-
-    # - script: |
-    #     rhodes app vanila_rhodes_app
-    #     cd vanila_rhodes_app
-    #     ruby -e "require 'yaml';rhodes_sdk_path=ARGV[0];c=YAML.load_file('build.yml');if c['sdk']==nil then File.write('build.yml',{'sdk'=>rhodes_sdk_path}.merge(c).to_yaml);else c['sdk']=rhodes_sdk_path;File.write('build.yml',c.to_yaml);end" $(System.DefaultWorkingDirectory)
-    #   displayName: "Create project"
-      
-    # - script: |
-    #     cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
-    #     ruby -e "require 'yaml';target_sdk=ARGV[0].to_i;c=YAML.load_file('build.yml');c['android']['targetSDK'] = target_sdk;File.write('build.yml',c.to_yaml)" $(android_sdk_version)
-    #   displayName: "Configurate project for Android SDK $(android_sdk_version)"
-    
-    # - script: |
-    #     cd $(System.DefaultWorkingDirectory)
-    #     pwd
-    #     ls
-    #     echo "=====rhobuild.yml====="
-    #     cat rhobuild.yml
-    #     cd vanila_rhodes_app
-    #     echo "=====vanila_rhodes_app====="
-    #     pwd
-    #     ls
-    #     echo "=====build.yml====="
-    #     cat build.yml
-    #   displayName: DebugInfo
-
-    # - script: |
-    #     cd $(System.DefaultWorkingDirectory)/vanila_rhodes_app
-    #     pwd
-    #     echo "==================================="
-    #     rake run:android:spec --trace
-    #   displayName: "Build and start project"
-    #   timeoutInMinutes: 15
-      
