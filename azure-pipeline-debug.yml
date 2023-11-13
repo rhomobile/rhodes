@@ -59,8 +59,9 @@ jobs:
       #   RHO_APP: "framework_spec"
       #   ANDROID_ABIS: "x86"
       Android_11:
-        RHO_ANDROID_MIN_SDK: 30
+        ANDROID_VERSION: 11
         ANDROID_TARGET_SDK: 31
+        RHO_ANDROID_MIN_SDK: 30
         ANDROID_ABIS: "x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
@@ -157,8 +158,8 @@ jobs:
     - script: |
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $(ANDROID_ABIS)
-        ruby -e "require 'yaml';minSdkVer=ARGV[0].to_i;targetSdkVer=ARGV[1].to_i;c=YAML.load_file('build.yml');c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
-      displayName: "Set abis and Android minSDK and target"
+        ruby -e "require 'yaml';version=ARGV[0].to_i;minSdkVer=ARGV[1].to_i;targetSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(ANDROID_VERSION) $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
+      displayName: "Set abis and Android version, minSDK and target SDK"
 
     - script: |
         cd $(System.DefaultWorkingDirectory)
