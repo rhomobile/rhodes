@@ -214,7 +214,7 @@ jobs:
 
     - script: |
         cd $(System.DefaultWorkingDirectory)
-        zip -r bin_rhoApp-android$(ANDROID_VERSION)-$(framework_spec).zip $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
+        zip -r bin_rhoApp-android$(ANDROID_VERSION)-$(RHO_APP).zip $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)/bin/
       displayName: "Creating an application bin folder archive"
 
     - task: PublishPipelineArtifact@0
