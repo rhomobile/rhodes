@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.view.KeyEvent;
 
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoConf;
@@ -126,15 +127,21 @@ public class MyAccessibilityService extends AccessibilityService {
                 event.getSource() != null &&
                 event.getPackageName().equals(getPackageName()) &&
                 event.getClassName().equals("android.widget.EditText")){
-                    playSound();
+                    playSound(event);
             }
         }
     }
 
-    private void playSound(){
+    protected boolean onKeyEvent (KeyEvent event) {
+        Logger.E(this.TAG, "$$$## KEY CODE = ["+String.valueOf(event.getKeyCode())+"]");
+        return super.onKeyEvent(event);
+    }
+
+    private void playSound(AccessibilityEvent event){
         RhoInputListener.IRhoInputListener listener = RhoInputListener.getListener();
         if (listener != null) {
             listener.onTextInput();
+            listener.onAccessibitityEvent(event);
         }
     }
 
