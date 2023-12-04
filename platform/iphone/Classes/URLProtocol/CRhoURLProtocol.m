@@ -266,7 +266,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
               
             if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
+                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"mohus",rho_http_get_port(),spath];
             }
             else {
                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
@@ -505,7 +505,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
     const char* scheme = [[url scheme] UTF8String];
     if (scheme != 0) {
-        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
+        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "mohus") !=0 )) {
             if (is_net_trace()) {
                 RAWTRACE("$NetRequestProcess$ isLocalURL END : return NO");
             }

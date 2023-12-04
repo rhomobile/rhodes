@@ -199,6 +199,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
                 [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
                 [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"mohus"];
 
                 // return original static method
                 method_exchangeImplementations(bogusHandle, handleOriginal);
