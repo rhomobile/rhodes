@@ -223,8 +223,8 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
         String addr_number;
         String addr_local;
         if (force_https) {
-            addr_number = "https";
-            addr_local = "https";
+            addr_number = "mohus";
+            addr_local = "mohus";
         }
         else {
             addr_number = "http";
@@ -1844,7 +1844,7 @@ void CRhodesApp::initAppUrls()
 #endif
 
     if (force_https) {
-        m_strHomeUrl = "https://127.0.0.1:";
+        m_strHomeUrl = "mohus://127.0.0.1:";
     }
     else {
         m_strHomeUrl = "http";
