@@ -197,8 +197,8 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
                 method_exchangeImplementations(bogusHandle, handleOriginal);
 
 
-                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
-                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
+                //[configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
+                //[configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
                 [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"mohus"];
 
                 // return original static method
@@ -214,6 +214,9 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2 or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3 capability/s to build.yml !!!");
         }
     }
+    
+    configuration.preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
 
     //w.scalesPageToFit = YES;
