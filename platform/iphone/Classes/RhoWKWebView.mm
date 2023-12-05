@@ -216,6 +216,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     }
     
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    configuration.limitsNavigationsToAppBoundDomains = NO;
     
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
 
