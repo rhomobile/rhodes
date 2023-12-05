@@ -263,6 +263,11 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
         __block NSString *resultString = nil;
         __block BOOL finished = NO;
 
+    if (!wantAnswer) {
+        [webview evaluateJavaScript:script completionHandler:nil];
+        return nil;
+    }
+    
         [webview evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
             if (error == nil) {
                 if (result != nil) {
