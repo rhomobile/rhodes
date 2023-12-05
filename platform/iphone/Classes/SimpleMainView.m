@@ -732,7 +732,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	
 	//[self loadHTMLString:datas];
     NSString* jscode = [NSString stringWithFormat:@"document.body.style.backgroundColor = \"#%6X\";", bkg_color];
-    [self.rhoWebView stringByEvaluatingJavaScriptFromString:jscode];
+    [self.rhoWebView stringByEvaluatingJavaScriptFromString:jscode wantAnswer:NO];
 
 	//self.webView.hidden = YES;
 }
@@ -983,7 +983,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[self.view.superview bringSubviewToFront:self.view];
     }
     RAWLOG_INFO1("Executing JS: %s", [js UTF8String]);
-    [rhoWebView stringByEvaluatingJavaScriptFromString:js];
+    [rhoWebView stringByEvaluatingJavaScriptFromString:js wantAnswer:NO];
 }
 
 - (NSString*)currentLocation:(int)index {
@@ -993,7 +993,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #define CUR_URL_DICT_KEY @"CUR_URL_DICT_KEY"
 
 -(void) get_current_url_command:(NSMutableDictionary*)dict {
-    NSString* res = [rhoWebView stringByEvaluatingJavaScriptFromString:@"window.location.href"];
+    NSString* res = [rhoWebView stringByEvaluatingJavaScriptFromString:@"window.location.href" wantAnswer:YES];
     //NSString* res = [[webView.request mainDocumentURL] absoluteString];
     [dict setValue:res forKey:CUR_URL_DICT_KEY];
 }
@@ -1181,7 +1181,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)webViewDidFinishLoad:(id<RhoWebView,NSObject>)webView {
     // Disable default context menu on touch
-    [rhoWebView stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    [rhoWebView stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";" wantAnswer:NO];
     
     PROF_STOP("BROWSER_PAGE");
     
