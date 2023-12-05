@@ -259,7 +259,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 //UIWebView
 
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script wantAnswer:(BOOL)wantAnswer{
         __block NSString *resultString = nil;
         __block BOOL finished = NO;
 
@@ -274,7 +274,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             finished = YES;
         }];
 
-        while (!finished)
+        while (!finished && wantAnswer)
         {
             [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
@@ -339,7 +339,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
     // force Ajax CommonAPI calls
     NSString* jscode = @"window['__rho_nativeBridgeType']='ajax'";
-    [self stringByEvaluatingJavaScriptFromString:jscode];
+    [self stringByEvaluatingJavaScriptFromString:jscode wantAnswer:NO];
 
     [delegate webViewDidFinishLoad:self];
 }

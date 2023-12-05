@@ -54,7 +54,7 @@
 
 //UIWebView
 
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script;
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script wantAnswer:(BOOL)wantAnswer;
 
 - (void)loadRequest:(NSURLRequest *)request;
 
