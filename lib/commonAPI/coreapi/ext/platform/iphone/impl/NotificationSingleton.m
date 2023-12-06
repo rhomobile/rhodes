@@ -510,4 +510,9 @@ static NotificationReminder* reminder = nil;
     [Rhodes performOnUiThread:runnable wait:NO];
 }
 
+
++(void) init_notification_object {
+    NotificationReminder* rem = [NotificationReminder instance];
+}
+
 @end
