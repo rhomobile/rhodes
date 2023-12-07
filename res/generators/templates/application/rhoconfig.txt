@@ -116,6 +116,10 @@ sync_poll_interval=0
 # Now UIWebView was deprecated by Apple and you can not submit application with UIWebView to AppStore !
 # If you want to use UIWebView(set ios_use_WKWebView = 0) - you must add "ios_uiwebview" capability to your build.yml !
 
+#ios_request_notification_permission_on_start = 1
+# default value is FALSE
+# with this option = 1 application will ask repmission for send notifications on start instead of fisrt use of Rho:Nofication API
+
 # show status bar on windows mobile. default 1
 #wm_show_statusbar = 1
 
