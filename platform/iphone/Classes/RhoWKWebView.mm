@@ -126,8 +126,26 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             isDirectRequestActivated = YES;
         }
     }
-    if (isDirectRequestActivated) {
+    BOOL isDirectRequestCustomProtocol = NO;
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        if (rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0 ) {
+            isDirectRequestCustomProtocol = YES;
+        }
+    }
+
+    if (isDirectRequestActivated || isDirectRequestCustomProtocol) {
+        
         BOOL isDirectProcessingActivated = NO;
+        
+            
+        if (!isDirectProcessingActivated) {
+            if (isDirectRequestCustomProtocol) {
+                
+                CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"rhoctp"];
+                isDirectProcessingActivated = YES;
+            }
+        }
 
 #ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3
         if (!isDirectProcessingActivated) {
@@ -197,9 +215,8 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
                 method_exchangeImplementations(bogusHandle, handleOriginal);
 
 
-                //[configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
-                //[configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
-                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"mohus"];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
 
                 // return original static method
                 method_exchangeImplementations(bogusHandle, handleOriginal);
@@ -210,6 +227,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             }
         }
 #endif
+        
         if (!isDirectProcessingActivated) {
             RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2 or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3 capability/s to build.yml !!!");
         }
