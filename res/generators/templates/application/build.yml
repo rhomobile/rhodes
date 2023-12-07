@@ -81,6 +81,7 @@ iphone:
   #ARCHS_simulator : ["i386", "x86_64"]
   #ARCHS_device : ["arm64", "arm64e", "armv7", "armv7s"]
   #leave one architecture for decrease build time during development
+  #You must define "arm64" architecture for ARCHS_simulator on M CPU based computers !
   ARCHS_simulator : ["x86_64"]
   ARCHS_device : ["arm64"]
   ## Note: Provisioning
