@@ -249,6 +249,19 @@
                     android:src="@drawable/baseline_check_24"
                     android:visibility="gone"/>
             </LinearLayout>
+            <Button
+              android:id="@+id/restartBtn"
+              android:layout_width="wrap_content"
+              android:layout_height="40dp"
+              android:layout_gravity="left"
+              android:layout_margin="3dp"
+              android:layout_marginRight="3dp"
+              android:background="#5CD9FF"
+              android:gravity="center"
+              android:text="Restart Browser"
+              android:textColor="#FFFFFF"
+              android:textSize="15sp"
+              android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
