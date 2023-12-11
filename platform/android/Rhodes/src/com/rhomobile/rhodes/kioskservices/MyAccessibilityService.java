@@ -32,6 +32,7 @@ public class MyAccessibilityService extends AccessibilityService {
     private CharSequence powerPackageName;
     public static boolean isPowerProcessing = false;
     private static List<String> ignorePackets = null;
+    private static boolean isEnabled = false;
 
     public static void setPowerProcessing(boolean value) {
         isPowerProcessing = value;
@@ -67,9 +68,14 @@ public class MyAccessibilityService extends AccessibilityService {
         };
         IntentFilter filter = new IntentFilter("com.rhobrowser.poweroff");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        isEnabled = true;
 
 
         //Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
+    }
+
+    public static boolean getStatus(){
+        return isEnabled;
     }
 
     @Override
