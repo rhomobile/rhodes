@@ -162,7 +162,10 @@ int on_http_cb(http_parser* parser) { return 0; }
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
         canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
     }
-  
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        canHandle = canHandle || (rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0);
+    }
+
     if ( canHandle ) {
         if (is_net_trace()) {
             RAWTRACE("$NetRequestProcess$ canInitWithRequest: ios_direct_local_requests = true !");
@@ -257,20 +260,28 @@ int on_http_cb(http_parser* parser) { return 0; }
               NSMutableString* s = nil;//[NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
             
             bool force_https = false;
+            bool force_custom_protocol = false;
             if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
                 force_https = rho_conf_getBool("ios_https_local_server")!=0;
             }
-              
+            if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+                force_custom_protocol = rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0;
+            }
+
             NSString* spath = [url path];
             spath = [spath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
 
-              
-            if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
-            }
-            else {
-                s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
-            }
+              if (force_custom_protocol) {
+                  s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"rhoctp",rho_http_get_port(),spath];
+              }
+              else {
+                  if (force_https) {
+                      s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
+                  }
+                  else {
+                      s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
+                  }
+              }
   
               
             NSString* squery = [url query];
@@ -505,7 +516,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
     const char* scheme = [[url scheme] UTF8String];
     if (scheme != 0) {
-        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
+        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 ) && (strcmp(scheme, "rhoctp") !=0 )) {
             if (is_net_trace()) {
                 RAWTRACE("$NetRequestProcess$ isLocalURL END : return NO");
             }
