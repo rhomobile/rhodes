@@ -73,7 +73,7 @@
 
     <% if  @androidVerMaj >= 7 %>
       <provider
-        android:name='androidx.core.content.FileProvider'
+        android:name='com.rhomobile.rhodes.RhoFileProvider'
         android:authorities='<%=@appPackageName%>.provider'
         android:exported='false'
         android:grantUriPermissions='true'>
