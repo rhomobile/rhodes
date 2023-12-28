@@ -17,6 +17,8 @@
 #include "unzip/zip.h"
 #include "db/DBAdapter.h"
 
+#import "../impl/NotificationSingleton.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -438,13 +440,10 @@ extern "C" void Init_System()
 {
     rho::CSystemFactoryBase::setInstance( new rho::CSystemImplIphoneAccessFactory() );
     Init_System_API();
-    
+
+    [NotificationSingleton init_notification_object];
+
 #ifndef RHO_NO_RUBY_API
     RHODESAPP().getExtManager().requireRubyFile("RhoSystemApi");
 #endif
 }
-
-
-
-
-

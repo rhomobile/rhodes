@@ -49,10 +49,16 @@
 
     BOOL shouldMakeWkWebView = YES;
     BOOL isDirectRequestActivated = NO;
+    BOOL isDirectRequestCustomProtocol = NO;
     BOOL isWKWebViewCLassExist = NO;
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
         if (rho_conf_getBool("ios_direct_local_requests")!=0 ) {
             isDirectRequestActivated = YES;
+        }
+    }
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        if (rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0 ) {
+            isDirectRequestCustomProtocol = YES;
         }
     }
     if (rho_conf_is_property_exists("ios_use_WKWebView")!=0) {
@@ -72,7 +78,7 @@
 
     if (shouldMakeWkWebView) {
         RAWLOG_INFO("Try to create WKWebView ...");
-        if (isDirectRequestActivated) {
+        if (isDirectRequestActivated && (!isDirectRequestCustomProtocol)) {
 #ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
 
 #elif defined APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2

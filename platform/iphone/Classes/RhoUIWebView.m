@@ -108,7 +108,7 @@
 
 //UIWebView
 
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script wantAnswer:(BOOL)wantAnswer{
     return [webview stringByEvaluatingJavaScriptFromString:script];
 }
 

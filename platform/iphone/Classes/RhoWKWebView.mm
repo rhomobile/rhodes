@@ -126,8 +126,26 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             isDirectRequestActivated = YES;
         }
     }
-    if (isDirectRequestActivated) {
+    BOOL isDirectRequestCustomProtocol = NO;
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        if (rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0 ) {
+            isDirectRequestCustomProtocol = YES;
+        }
+    }
+
+    if (isDirectRequestActivated || isDirectRequestCustomProtocol) {
+        
         BOOL isDirectProcessingActivated = NO;
+        
+            
+        if (!isDirectProcessingActivated) {
+            if (isDirectRequestCustomProtocol) {
+                
+                CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+                [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"rhoctp"];
+                isDirectProcessingActivated = YES;
+            }
+        }
 
 #ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3
         if (!isDirectProcessingActivated) {
@@ -209,10 +227,15 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             }
         }
 #endif
+        
         if (!isDirectProcessingActivated) {
             RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_2 or/and APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING_METHOD_3 capability/s to build.yml !!!");
         }
     }
+    
+    configuration.preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    //configuration.limitsNavigationsToAppBoundDomains = NO;
+    
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
 
     //w.scalesPageToFit = YES;
@@ -258,10 +281,15 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 //UIWebView
 
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script wantAnswer:(BOOL)wantAnswer{
         __block NSString *resultString = nil;
         __block BOOL finished = NO;
 
+    if (!wantAnswer) {
+        [webview evaluateJavaScript:script completionHandler:nil];
+        return nil;
+    }
+    
         [webview evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
             if (error == nil) {
                 if (result != nil) {
@@ -273,7 +301,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             finished = YES;
         }];
 
-        while (!finished)
+        while (!finished && wantAnswer)
         {
             [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
@@ -338,7 +366,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
     // force Ajax CommonAPI calls
     NSString* jscode = @"window['__rho_nativeBridgeType']='ajax'";
-    [self stringByEvaluatingJavaScriptFromString:jscode];
+    [self stringByEvaluatingJavaScriptFromString:jscode wantAnswer:NO];
 
     [delegate webViewDidFinishLoad:self];
 }

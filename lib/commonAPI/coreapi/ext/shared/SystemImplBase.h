@@ -19,6 +19,8 @@ public:
     virtual void getIsSymbolDevice(CMethodResult& oResult);
     virtual void getLocalServerPort(CMethodResult& oResult);
     virtual void setLocalServerPort( int value, CMethodResult& oResult);
+    virtual void getRubyLocalServerURL(CMethodResult& oResult);
+    virtual void setRubyLocalServerURL( const rho::String& value, CMethodResult& oResult);
     virtual void getNodejsServerPort(CMethodResult& oResult);
     virtual void setNodejsServerPort( int value, CMethodResult& oResult);
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);

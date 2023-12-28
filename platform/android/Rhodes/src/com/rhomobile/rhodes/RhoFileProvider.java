@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
 *
-* Copyright (c) 2008-2016 TAU Technologies, Inc.
+* Copyright (c) 2008-2011 Rhomobile, Inc.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -21,52 +21,12 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 *
-* http://tau-platform.com
+* http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#import <UIKit/UIKit.h>
+package com.rhomobile.rhodes;
 
+import androidx.core.content.FileProvider;
 
-@protocol RhoWebView;
-
-@protocol RhoWebViewDelegate <NSObject>
-
-@optional
-- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView request:(NSURLRequest *)request;
-- (void)webViewDidStartLoad:(id<RhoWebView,NSObject>)webView;
-- (void)webViewDidFinishLoad:(id<RhoWebView,NSObject>)webView;
-- (void)didFailLoadWithError:(id<RhoWebView,NSObject>)webView error:(NSError *)error;
-
-@end
-
-
-
-@protocol RhoWebView <NSObject>
-
-
-- (UIView*)view;
-
-- (void) setupDelegate:(id<RhoWebViewDelegate,NSObject>)delegate;
-
-- (NSString*)currentLocation;
-
-- (UIView*)containerView;
-
-//UIWebView
-
-- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script wantAnswer:(BOOL)wantAnswer;
-
-- (void)loadRequest:(NSURLRequest *)request;
-
-- (void)loadHTMLString:(NSString *)string baseURL:(nullable NSURL *)baseURL;
-
-- (void)stopLoading;
-
-- (void)reload;
-
-- (void)goBack;
-
-- (void)goForward;
-
-
-@end
+public class RhoFileProvider extends FileProvider {
+}

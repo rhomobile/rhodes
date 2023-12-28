@@ -3380,7 +3380,7 @@ namespace "run" do
       File.delete(log_name) if File.exist?(log_name)
 
       rhorunner = File.join(File.join($app_path, "/project/iphone"),"build/#{$configuration}-iphonesimulator/rhorunner.app")
-      commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+      commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' "' + $emulatortarget + '" "' +log_name+'"'
 
       kill_iphone_simulator
 
@@ -3461,7 +3461,7 @@ namespace "run" do
             # run spec
             rhorunner = File.join(File.join($app_path, "project","iphone"),"build","#{$configuration}-iphonesimulator","rhorunner.app")
             #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
-            commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+            commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' "' + $emulatortarget + '" "' +log_name+'"'
             puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad) '
             puts 'execute command : ' + commandis
             system(commandis)
@@ -3694,7 +3694,7 @@ namespace "run" do
         log_name  =   File.join($app_path, 'rholog.txt')
         File.delete(log_name) if File.exist?(log_name)
 
-        commandis = $iphonesim + ' launch "' + app_file + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+        commandis = $iphonesim + ' launch "' + app_file + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' "' + $emulatortarget + '" "' +log_name+'"'
 
         kill_iphone_simulator
 

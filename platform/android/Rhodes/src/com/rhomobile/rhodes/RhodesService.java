@@ -456,21 +456,33 @@ public class RhodesService extends Service {
 		mUriHandlers.addElement(new SmsUriHandler(context));
 		mUriHandlers.addElement(new VideoUriHandler(context));
 
-        mConnectionChangeReceiver = new ConnectionChangeReceiver();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(mConnectionChangeReceiver,filter);
-
 		RhodesApplication.start();
 
 		if (BaseActivity.getActivitiesCount() > 0)
 			handleAppActivation();
 	}
 
+	public void startConnectionChangeReciver(){
+		mConnectionChangeReceiver = new ConnectionChangeReceiver();
+		IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		registerReceiver(mConnectionChangeReceiver,filter);
+	}
+
 	public static void handleAppStarted()
 	{
 		RhodesApplication.handleAppStarted();
-		if(rhoMain != null)
+		if(rhoMain != null) {
 		   rhoMain.onAppStart();
+		 }
+
+		 PerformOnUiThread.exec(new Runnable(){
+
+ 			@Override
+ 			public void run() {
+				RhodesService.getInstance().startConnectionChangeReciver();
+ 			}
+ 		});
+
 	}
 
 	private void initForegroundServiceApi() {
@@ -1279,7 +1291,7 @@ public class RhodesService extends Service {
 			try {
 				updateDownloadNotification(url, -1, 0);
 
-				
+
 				// List<File> folders = new ArrayList<File>();
 				// folders.add(Environment.getDownloadCacheDirectory());
 				// folders.add(Environment.getDataDirectory());
@@ -1314,7 +1326,7 @@ public class RhodesService extends Service {
 				// 	tmpFile = of;
 				// 	break;
 				// }
-				
+
 
 				tmpFile = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UUID.randomUUID().toString() + ".apk" );
 				os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_PRIVATE);
@@ -1426,7 +1438,7 @@ public class RhodesService extends Service {
         }
 	}
 
-	public static void installApplication(final String url) {	
+	public static void installApplication(final String url) {
 		Thread bgThread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -1439,7 +1451,7 @@ public class RhodesService extends Service {
 							public void run() {
 								try {
 									Logger.D(TAG, "Install package " + tmpFile.getAbsolutePath());
-									
+
 									Log.e(TAG, "Version android SDK: " + android.os.Build.VERSION.SDK_INT);
 									if(android.os.Build.VERSION.SDK_INT >= 24)
 									{
@@ -1453,14 +1465,14 @@ public class RhodesService extends Service {
 										intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
 										r.startActivity(intent);
-	
+
 									} else {
 										Uri uri = Uri.fromFile(tmpFile);
 										Logger.D(TAG, "Path uri for old: " + uri.toString());
 										Intent intent = new Intent(Intent.ACTION_VIEW);
 
 										intent.setDataAndType(uri, "application/vnd.android.package-archive");
-										r.startActivity(intent);	
+										r.startActivity(intent);
 									}
 								}
 								catch (Exception e) {
