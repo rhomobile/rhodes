@@ -5,11 +5,14 @@ variables:
 - name: ruby_ver
   value: 2.7.8
 
+- name: ndk_version
+  value: 25.2.9519653
+
 - name: sdk_manager
   value: $ANDROID_HOME/tools/bin/sdkmanager
 
 - name: ndk_home
-  value: $ANDROID_HOME/ndk/${{variables.NDK_VERSION}}
+  value: $ANDROID_HOME/ndk/${{variables.ndk_version}}
 
 - name: rhodesVersion
   value: 0
@@ -96,7 +99,6 @@ jobs:
         ANDROID_VERSION: 12
         RHO_ANDROID_MIN_SDK: 31
         ANDROID_TARGET_SDK: 31
-        NDK_VERSION: 24.0.8215888
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
@@ -105,7 +107,6 @@ jobs:
         ANDROID_VERSION: 12
         RHO_ANDROID_MIN_SDK: 31
         ANDROID_TARGET_SDK: 31
-        NDK_VERSION: 24.0.8215888
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "framework_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
@@ -114,23 +115,18 @@ jobs:
         ANDROID_VERSION: 13
         RHO_ANDROID_MIN_SDK: 33
         ANDROID_TARGET_SDK: 33
-        NDK_VERSION: 24.0.8215888
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
         SKIP_BUILD: "yes"
-        NDK_VERSION: 25.2.9519653
       Android_13_framework_spec:
         ANDROID_VERSION: 13
         RHO_ANDROID_MIN_SDK: 33
         ANDROID_TARGET_SDK: 33
-        NDK_VERSION: 25.2.9519653
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "framework_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
         SKIP_BUILD: "yes"
-
-
 
   steps:
     - task: UseRubyVersion@0
@@ -150,7 +146,7 @@ jobs:
         ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext4'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext5'
-        ${{variables.sdk_manager}} --install 'ndk;${{ variables.NDK_VERSION }}'
+        ${{variables.sdk_manager}} --install 'ndk;${{ variables.ndk_version }}'
       displayName: "Setup Android environment"
 
     - script: |
