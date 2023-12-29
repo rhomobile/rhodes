@@ -8,11 +8,8 @@ variables:
 - name: sdk_manager
   value: $ANDROID_HOME/tools/bin/sdkmanager
 
-- name: ndk_version
-  value: 24.0.8215888
-
 - name: ndk_home
-  value: $ANDROID_HOME/ndk/${{variables.ndk_version}}
+  value: $ANDROID_HOME/ndk/${{variables.NDK_VERSION}}
 
 - name: rhodesVersion
   value: 0
@@ -34,10 +31,10 @@ jobs:
       printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
       echo "##vso[task.setvariable variable=rhodesVersion]$VERSION"
     displayName: "Install & Configurate Rhodes"
-      
+
   - script: |
       rhodes app vanila_rhodes_app
-      cd vanila_rhodes_app 
+      cd vanila_rhodes_app
       rhodes extension testtext
       cd ../
       rhodes jsapp vanilla_rhodes_jsapp
@@ -63,14 +60,31 @@ jobs:
 #---------------------------
   strategy:
     matrix:
-      # Android_10:
+      # Android_10_framework_spec:
+      #   ANDROID_VERSION: 10
+      #   RHO_ANDROID_MIN_SDK: 29
+      #   ANDROID_TARGET_SDK: 31
+      #   ANDROID_ABIS: "x86"
+      #   RHO_APP: "framework_spec"
+      #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+      #   SKIP_BUILD: "yes"
+      # Android_10_auto_common_spec:
       #   ANDROID_VERSION: 10
       #   RHO_ANDROID_MIN_SDK: 29
       #   ANDROID_TARGET_SDK: 31
       #   ANDROID_ABIS: "x86"
       #   RHO_APP: "auto_common_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-      # Android_11:
+      #   SKIP_BUILD: "yes"
+      # Android_11_framework_spec:
+      #   ANDROID_VERSION: 11
+      #   ANDROID_TARGET_SDK: 31
+      #   RHO_ANDROID_MIN_SDK: 30
+      #   ANDROID_ABIS: "x86"
+      #   RHO_APP: "framework_spec"
+      #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+      #   SKIP_BUILD: "yes"
+      # Android_11_auto_common_spec:
       #   ANDROID_VERSION: 11
       #   ANDROID_TARGET_SDK: 31
       #   RHO_ANDROID_MIN_SDK: 30
@@ -78,15 +92,46 @@ jobs:
       #   RHO_APP: "auto_common_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
-      Android_12:
+      Android_12_auto_common_spec:
         ANDROID_VERSION: 12
         RHO_ANDROID_MIN_SDK: 31
         ANDROID_TARGET_SDK: 31
+        NDK_VERSION: 24.0.8215888
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
         SKIP_BUILD: "yes"
-  
+      Android_12_framework_spec:
+        ANDROID_VERSION: 12
+        RHO_ANDROID_MIN_SDK: 31
+        ANDROID_TARGET_SDK: 31
+        NDK_VERSION: 24.0.8215888
+        ANDROID_ABIS: "aarch64,x86"
+        RHO_APP: "framework_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
+      Android_13_auto_common_spec:
+        ANDROID_VERSION: 13
+        RHO_ANDROID_MIN_SDK: 33
+        ANDROID_TARGET_SDK: 33
+        NDK_VERSION: 24.0.8215888
+        ANDROID_ABIS: "aarch64,x86"
+        RHO_APP: "auto_common_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
+        NDK_VERSION: 25.2.9519653
+      Android_13_framework_spec:
+        ANDROID_VERSION: 13
+        RHO_ANDROID_MIN_SDK: 33
+        ANDROID_TARGET_SDK: 33
+        NDK_VERSION: 25.2.9519653
+        ANDROID_ABIS: "aarch64,x86"
+        RHO_APP: "framework_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
+
+
+
   steps:
     - task: UseRubyVersion@0
       inputs:
@@ -96,7 +141,7 @@ jobs:
       inputs:
         artifactName: 'rhodesGem'
         targetPath: $(Build.ArtifactStagingDirectory)
-    
+
     - script: |
         ${{variables.sdk_manager}} --install 'build-tools;32.0.0'
         ${{variables.sdk_manager}} --uninstall 'build-tools;34.0.0'
@@ -105,7 +150,7 @@ jobs:
         ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext4'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext5'
-        ${{variables.sdk_manager}} --install 'ndk;${{ variables.ndk_version }}'
+        ${{variables.sdk_manager}} --install 'ndk;${{ variables.NDK_VERSION }}'
       displayName: "Setup Android environment"
 
     - script: |
@@ -113,7 +158,7 @@ jobs:
         ${{variables.sdk_manager}} --install 'platforms;android-$(RHO_ANDROID_MIN_SDK)'
       displayName: "Install platform android $(ANDROID_TARGET_SDK) and $(RHO_ANDROID_MIN_SDK)"
 
-    - script: 
+    - script:
         adb kill-server
         adb start-server
       displayName: "Restart adb"
@@ -182,7 +227,7 @@ jobs:
     - script: |
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         $(System.DefaultWorkingDirectory)/.ci/modify_target_abi.rb ./build.yml $(ANDROID_ABIS)
-        ruby -e "require 'yaml';version=ARGV[0].to_i;minSdkVer=ARGV[1].to_i;targetSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(ANDROID_VERSION) $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK) 
+        ruby -e "require 'yaml';version=ARGV[0].to_i;minSdkVer=ARGV[1].to_i;targetSdkVer=ARGV[2].to_i;c=YAML.load_file('build.yml');c['android']['version']=version;c['android']['targetSdkVer']=targetSdkVer;c['android']['minSdkVer']=minSdkVer;File.write('build.yml',c.to_yaml)" $(ANDROID_VERSION) $(RHO_ANDROID_MIN_SDK) $(ANDROID_TARGET_SDK)
       displayName: "Set abis and Android version, minSDK and target SDK"
 
     - script: |
