@@ -181,6 +181,7 @@ jobs:
     - script: |
         bundle install
         gem install --no-document $(Build.ArtifactStagingDirectory)/rhodes-$(cat ./version).gem
+        gem install webrick
         gem list
         printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
       displayName: Install rhodes
