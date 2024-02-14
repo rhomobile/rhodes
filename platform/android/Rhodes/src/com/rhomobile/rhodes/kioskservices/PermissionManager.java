@@ -60,6 +60,10 @@ public class PermissionManager {
     //===================== ACCESSIBILITY SERVICE =====================
 
     static public Boolean checkAccessibilityServicePermission(Context context){
+        if (MyAccessibilityService.getStatus()){
+            return true;
+        }
+        
         AccessibilityManager am = (AccessibilityManager)context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> enabledService = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
         for (AccessibilityServiceInfo service: enabledService){

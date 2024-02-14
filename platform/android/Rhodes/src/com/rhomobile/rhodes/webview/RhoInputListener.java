@@ -6,6 +6,7 @@ public class RhoInputListener {
     public interface IRhoInputListener{
         public void onTextInput();
         public void onAccessibitityEvent(AccessibilityEvent event);
+        public void onRestartBrowser();
     }
 
     private static IRhoInputListener mListener;
