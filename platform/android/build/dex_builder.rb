@@ -75,7 +75,9 @@ module AndroidTools
                     args << "#{File.dirname(outdex)}"
                     #args << '--no-desugaring'
                     args.concat jarlist
-
+                    args << '--min-api' 
+                    args << $app_config["android"]["minSDK"]
+                    
                     return d8, args
                 else
                     @logger.error( "Can't find proper DEX builder in the build tools")
