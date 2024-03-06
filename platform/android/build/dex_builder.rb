@@ -9,13 +9,10 @@ module AndroidTools
 
       attr_accessor :logger, :sdk_path, :build_tools_path, :androidplatform, :javabin
 
-      $min_sdk_level=""
-
-      def build( jarlist = [], outdex, min_sdk_level )
+      def build( jarlist = [], outdex, min_sdk )
         tools_path = detect_tools_path
-        $min_sdk_level = min_sdk_level
 
-        bin,args = build_cmd_line(tools_path, jarlist, outdex)
+        bin,args = build_cmd_line(tools_path, jarlist, outdex, min_sdk)
 
         @logger.debug "BIN: #{bin}, ARGS: #{args}"
         return false unless bin
@@ -44,7 +41,7 @@ module AndroidTools
         path
       end
 
-        def build_cmd_line(tools_path, jarlist, outdex)
+        def build_cmd_line(tools_path, jarlist, outdex, min_sdk)
 
             @logger.error( "DEX builder: path to build tools not set" ) unless @build_tools_path
 
@@ -79,7 +76,7 @@ module AndroidTools
                     #args << '--no-desugaring'
                     args.concat jarlist
                     args << '--min-api' 
-                    args << $min_sdk_level.to_s
+                    args << min_sdk.to_s
                     
                     return d8, args
                 else
