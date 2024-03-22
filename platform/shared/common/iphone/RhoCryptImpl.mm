@@ -701,15 +701,12 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 
 #ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
     if ([swift_aes_gcm is_aes_gcm_available]) {
-        NSData* page = [NSData dataWithBytes:(const void *)data length:sizeof(unsigned char)*size];
-        NSData* key = [NSData dataWithBytes:(const void *)m_dbKeyData length:sizeof(unsigned char)*currentKeySize];
         
-        NSData* encrypted = [swift_aes_gcm encrypt_page:page :key];
-        if (encrypted == nil) {
+        BOOL res = [swift_aes_gcm encrypt_page:data :size :m_dbKeyData :currentKeySize :dataOut];
+        
+        if (!res) {
             return 0;
         }
-        
-        memcpy(dataOut, [encrypted bytes], size);
         
         return 1;
     }
@@ -746,15 +743,13 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
 #ifdef APP_BUILD_CAPABILITY_IOS_CRYPTO_FORCE_AES_GCM
     
     if ([swift_aes_gcm is_aes_gcm_available]) {
-        NSData* page = [NSData dataWithBytes:(const void *)data length:sizeof(unsigned char)*size];
-        NSData* key = [NSData dataWithBytes:(const void *)m_dbKeyData length:sizeof(unsigned char)*currentKeySize];
         
-        NSData* decrypted = [swift_aes_gcm decrypt_page:page :key];
-        if (decrypted == nil) {
+        BOOL res = [swift_aes_gcm decrypt_page:data :size :m_dbKeyData :currentKeySize :data];
+        
+        
+        if (!res) {
             return 0;
         }
-        
-        memcpy(data, [decrypted bytes], size);
         
         return 1;
     }
