@@ -13,7 +13,6 @@ import CryptoKit
 @objc(RhoCryptAESGCM)
 public class RhoCryptAESGCM : NSObject {
     
-    
     @objc(generate_new_key)
     public func generate_new_key() -> Data? {
         if #available(iOS 13.0, *) {
@@ -24,49 +23,58 @@ public class RhoCryptAESGCM : NSObject {
         return nil;
     }
     
-    @objc(encrypt_page::)
-    public func encrypt_page(page : Data, key : Data) -> Data? {
+    @objc(encrypt_page:::::)
+    public func encrypt_page(page_ptr : UnsafeMutablePointer<UInt8>, page_size : Int, key_ptr : UnsafeMutablePointer<UInt8>, key_size : Int, ptr : UnsafeMutablePointer<UInt8>) -> Bool {
         
         if #available(iOS 13.0, *) {
-            let data_to_encrypt : Data = page.subdata(in: 0 ..< (page.count-32) )
-            let symm_key = SymmetricKey(data: key)
             
             // encrypt
             do {
+                
+                let page = Data(bytes: page_ptr, count: page_size)
+                let key = Data(bytes: key_ptr, count: key_size)
+
+                let data_to_encrypt : Data = page.subdata(in: 0 ..< (page.count-32) )
+                let symm_key = SymmetricKey(data: key)
             
                 let sealedBox = try AES.GCM.seal(data_to_encrypt, using: symm_key)
                 
-                //
-                var result_data : Data = sealedBox.ciphertext
+                var outputData : Data = sealedBox.ciphertext
+                
                 let nonce_data : Data = Data(sealedBox.nonce)
                 let tag_data : Data = sealedBox.tag
                 
                 let random_4_bytes_data : Data = Data((0 ..< 4).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
                 
-                result_data.append(nonce_data)
-                result_data.append(random_4_bytes_data)
-                result_data.append(tag_data)
+                outputData.append(nonce_data)
+                outputData.append(random_4_bytes_data)
+                outputData.append(tag_data)
 
-                return result_data
+                outputData.copyBytes(to: ptr, count: outputData.count)
+                
+                return true
             }
             catch {
-                return nil
+                return false
             }
 
         }
         else {
-            return nil
+            return false
         }
         
     }
     
-    @objc(decrypt_page::)
-    public func decrypt_page(page : Data, key : Data) -> Data? {
+    @objc(decrypt_page:::::)
+    public func decrypt_page(page_ptr : UnsafeMutablePointer<UInt8>, page_size : Int, key_ptr : UnsafeMutablePointer<UInt8>, key_size : Int, ptr : UnsafeMutablePointer<UInt8>) -> Bool {
         
         
         if #available(iOS 13.0, *) {
             
             do {
+                let page = Data(bytes: page_ptr, count: page_size)
+                let key = Data(bytes: key_ptr, count: key_size)
+                
                 let data_to_decrypt : Data = page.subdata(in: 0 ..< (page.count-32) )
                 
                 let nonce_data : Data = page.subdata(in: (page.count-32) ..< (page.count-32+12))
@@ -78,16 +86,18 @@ public class RhoCryptAESGCM : NSObject {
                 
                 
                 let sealedBoxRestored = try AES.GCM.SealedBox(nonce: nonce, ciphertext: data_to_decrypt, tag: tag_data)
-                let result_data : Data = try AES.GCM.open(sealedBoxRestored, using: symm_key)
+                let decrypted_data : Data = try AES.GCM.open(sealedBoxRestored, using: symm_key)
                 
-                return result_data
+                decrypted_data.copyBytes(to: ptr, count: decrypted_data.count)
+                          
+                return true
             }
             catch {
-                return nil
+                return false
             }
         }
         else {
-            return nil
+            return false
         }
         
     }
