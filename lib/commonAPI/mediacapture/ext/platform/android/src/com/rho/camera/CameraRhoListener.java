@@ -593,6 +593,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
 
 					saveTransformedBitmap(bitmapPath, scaledBitmap, bitmap, rotate_angle);
+					rotate_angle = 0;
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -614,6 +615,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
 				Bitmap gray = toGrayscale(bitmap);
 				saveTransformedBitmap(bitmapPath, gray, bitmap, rotate_angle);
+				rotate_angle = 0;
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
