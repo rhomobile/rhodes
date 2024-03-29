@@ -106,16 +106,16 @@ jobs:
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
       #   GMSAAS_DEVICE_RECIPE: "8830dda0-b5a7-47bb-8d1f-5efddba56c1c"
-      # Android_12_auto_common_spec:
-      #   ANDROID_VERSION: 12
-      #   ANDROID_TARGET_SDK: 31
-      #   NDK_VERSION: 24.0.8215888
-      #   RHO_ANDROID_MIN_SDK: 31
-      #   ANDROID_ABIS: "aarch64,x86"
-      #   RHO_APP: "auto_common_spec"
-      #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-      #   SKIP_BUILD: "yes"
-      #   GMSAAS_DEVICE_RECIPE: "dfe01edc-8900-4d2e-8a79-d256ee833324"
+      Android_12_auto_common_spec:
+        ANDROID_VERSION: 12
+        ANDROID_TARGET_SDK: 31
+        NDK_VERSION: 24.0.8215888
+        RHO_ANDROID_MIN_SDK: 31
+        ANDROID_ABIS: "aarch64,x86"
+        RHO_APP: "auto_common_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
+        GMSAAS_DEVICE_RECIPE: "dfe01edc-8900-4d2e-8a79-d256ee833324"
       # Android_12_framework_spec:
       #   ANDROID_VERSION: 12
       #   ANDROID_TARGET_SDK: 31
