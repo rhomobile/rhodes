@@ -1,21 +1,25 @@
 pool:
-  vmImage: macOS-11
+  vmImage: 'ubuntu-20.04'
 
 variables:
 - name: ruby_ver
-  value: 3.0.0
+  value: '3.1.4'
 
 - name: ndk_version
-  value: 25.2.9519653
+  value: 24.0.8215888
 
 - name: sdk_manager
-  value: $ANDROID_HOME/tools/bin/sdkmanager
+  value: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
 
 - name: ndk_home
-  value: $ANDROID_HOME/ndk/${{variables.ndk_version}}
+  value: $ANDROID_HOME/ndk/
+
+- name: platform_tools
+  value: /usr/local/lib/android/sdk/platform-tools/
 
 - name: rhodesVersion
   value: 0
+
 
 
 jobs:
@@ -31,7 +35,7 @@ jobs:
       VERSION=$(cat ./version)
       gem install --no-document ./rhodes-$VERSION.gem
       gem list
-      printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
+      printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}${{variables.ndk_version}}\n\n\n\n\n\n\n" | rhodes-setup
       echo "##vso[task.setvariable variable=rhodesVersion]$VERSION"
     displayName: "Install & Configurate Rhodes"
 
@@ -65,68 +69,83 @@ jobs:
     matrix:
       # Android_10_framework_spec:
       #   ANDROID_VERSION: 10
-      #   RHO_ANDROID_MIN_SDK: 29
       #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
+      #   RHO_ANDROID_MIN_SDK: 29
       #   ANDROID_ABIS: "x86"
       #   RHO_APP: "framework_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
-      # Android_10_auto_common_spec:
+      #   GMSAAS_DEVICE_RECIPE: "502a65e6-bc98-4b30-99fd-b22c71875b36"
+      # Android_10_auto_common_spec: 
       #   ANDROID_VERSION: 10
-      #   RHO_ANDROID_MIN_SDK: 29
       #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
+      #   RHO_ANDROID_MIN_SDK: 29
       #   ANDROID_ABIS: "x86"
       #   RHO_APP: "auto_common_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
+      #   GMSAAS_DEVICE_RECIPE: "502a65e6-bc98-4b30-99fd-b22c71875b36"
       # Android_11_framework_spec:
       #   ANDROID_VERSION: 11
       #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
       #   RHO_ANDROID_MIN_SDK: 30
-      #   ANDROID_ABIS: "x86"
+      #   ANDROID_ABIS: "aarch64,x86"
       #   RHO_APP: "framework_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
       # Android_11_auto_common_spec:
       #   ANDROID_VERSION: 11
       #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
       #   RHO_ANDROID_MIN_SDK: 30
-      #   ANDROID_ABIS: "x86"
-      #   RHO_APP: "auto_common_spec"
-      #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-      #   SKIP_BUILD: "yes"
-      # Android_12_auto_common_spec:
-      #   ANDROID_VERSION: 12
-      #   RHO_ANDROID_MIN_SDK: 31
-      #   ANDROID_TARGET_SDK: 31
       #   ANDROID_ABIS: "aarch64,x86"
       #   RHO_APP: "auto_common_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
+      #   GMSAAS_DEVICE_RECIPE: "8830dda0-b5a7-47bb-8d1f-5efddba56c1c"
+      # Android_12_auto_common_spec:
+      #   ANDROID_VERSION: 12
+      #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
+      #   RHO_ANDROID_MIN_SDK: 31
+      #   ANDROID_ABIS: "aarch64,x86"
+      #   RHO_APP: "auto_common_spec"
+      #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+      #   SKIP_BUILD: "yes"
+      #   GMSAAS_DEVICE_RECIPE: "dfe01edc-8900-4d2e-8a79-d256ee833324"
       # Android_12_framework_spec:
       #   ANDROID_VERSION: 12
-      #   RHO_ANDROID_MIN_SDK: 31
       #   ANDROID_TARGET_SDK: 31
+      #   NDK_VERSION: 24.0.8215888
+      #   RHO_ANDROID_MIN_SDK: 31
       #   ANDROID_ABIS: "aarch64,x86"
       #   RHO_APP: "framework_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
+      #   GMSAAS_DEVICE_RECIPE: "dfe01edc-8900-4d2e-8a79-d256ee833324"
       Android_13_auto_common_spec:
         ANDROID_VERSION: 13
-        RHO_ANDROID_MIN_SDK: 33
         ANDROID_TARGET_SDK: 33
+        NDK_VERSION: 25.0.8775105
+        RHO_ANDROID_MIN_SDK: 33
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
         SKIP_BUILD: "yes"
+        GMSAAS_DEVICE_RECIPE: "82a51db0-8ec4-4932-a8f8-e2dd4d226c6a"
       # Android_13_framework_spec:
       #   ANDROID_VERSION: 13
-      #   RHO_ANDROID_MIN_SDK: 33
       #   ANDROID_TARGET_SDK: 33
+      #   NDK_VERSION: 25.2.9519653
+      #   RHO_ANDROID_MIN_SDK: 33
       #   ANDROID_ABIS: "aarch64,x86"
       #   RHO_APP: "framework_spec"
       #   RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
       #   SKIP_BUILD: "yes"
+      #   GMSAAS_DEVICE_RECIPE: "82a51db0-8ec4-4932-a8f8-e2dd4d226c6a"
 
   steps:
     - task: UseRubyVersion@0
@@ -137,45 +156,44 @@ jobs:
       inputs:
         artifactName: 'rhodesGem'
         targetPath: $(Build.ArtifactStagingDirectory)
+      
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.11'
 
     - script: |
         ${{variables.sdk_manager}} --install 'build-tools;32.0.0'
+        ${{variables.sdk_manager}} --install 'platform-tools'
         ${{variables.sdk_manager}} --uninstall 'build-tools;34.0.0'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-32'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext4'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext5'
-        ${{variables.sdk_manager}} --install 'ndk;${{ variables.ndk_version }}'
+        ${{variables.sdk_manager}} --install 'ndk;$(NDK_VERSION)'
       displayName: "Setup Android environment"
 
     - script: |
         ${{variables.sdk_manager}} --install 'platforms;android-$(ANDROID_TARGET_SDK)'
         ${{variables.sdk_manager}} --install 'platforms;android-$(RHO_ANDROID_MIN_SDK)'
       displayName: "Install platform android $(ANDROID_TARGET_SDK) and $(RHO_ANDROID_MIN_SDK)"
+      
+    - script: |
+        echo ${{variables.platform_tools}}
+      displayName: Show Tree SDK
 
-    - script:
-        adb kill-server
-        adb start-server
-      displayName: "Restart adb"
-
-    - task: Bash@3
+    - task: JavaToolInstaller@0
       inputs:
-        filePath: .ci/run_emulator.sh
-        arguments: ${{variables.sdk_manager}} $(RHO_ANDROID_MIN_SDK)
-      displayName: "Create and start android emulator"
-      timeoutInMinutes: 20
+        jdkSourceOption: PreInstalled
+        versionSpec: 11
+        jdkArchitectureOption: x64
 
-    # - task: JavaToolInstaller@0
-    #   inputs:
-    #     jdkSourceOption: PreInstalled
-    #     versionSpec: 11
-    #     jdkArchitectureOption: x64
+#------------------------------------------------------------
 
     - script: |
         echo $JAVA_HOME
         echo $ANDROID_HOME
-        echo ${{ variables.ndk_home }}
+        echo ${{ variables.ndk_home }}$(NDK_VERSION)
       displayName: "print debug info"
 
     - script: |
@@ -183,7 +201,7 @@ jobs:
         gem install --no-document $(Build.ArtifactStagingDirectory)/rhodes-$(cat ./version).gem
         gem install webrick
         gem list
-        printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}\n\n\n\n\n\n\n" | rhodes-setup
+        printf "$JAVA_HOME\n$ANDROID_HOME\n${{ variables.ndk_home }}$(NDK_VERSION)\n\n\n\n\n\n\n" | rhodes-setup
       displayName: Install rhodes
 
     - script: |
@@ -244,16 +262,44 @@ jobs:
       displayName: "Build testable app binary artefact unless otherwise specified by matrix config"
       continueOnError: true
 
+    - script: |
+        pip3 install gmsaas
+      displayName: "Install gmsaas"
+      
+    - script: |
+        gmsaas config set android-sdk-path $ANDROID_HOME
+        gmsaas auth token $(GMSAAS_API_TOKEN)
+      displayName: "Test setup config gmsaas"
+
+    # - script: |
+    #     gmsaas recipes list --name android_11_device
+    #     echo $(GMSAAS_DEVICE_RECIPE)
+    #     echo ------------------------------------------------------
+    #     echo "##vso[task.setvariable variable=gmsaas_android_instance;]$(gmsaas instances start $(GMSAAS_DEVICE_RECIPE) android)"
+    #   displayName: "Create instance and show detals"
+
+    # - script: |
+    #     echo $(gmsaas_android_instance)
+    #     gmsaas instances get $(gmsaas_android_instance)
+    #   displayName: "Debug info"
+
+    # - script: |
+    #     gmsaas instances adbconnect $(gmsaas_android_instance)
+    #     ${{variables.platform_tools}}adb devices
+    #   displayName: "Connect ADB"
 
     - script: |
         if [[ -z $(SKIP_TESTS) ]]; then
           cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
-          $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/$(RHO_RUNNER_SCRIPT)
+          # $(System.DefaultWorkingDirectory)/.ci/safe_run.sh $(System.DefaultWorkingDirectory)/.ci/targets/android/$(RHO_RUNNER_SCRIPT)
+          set -x
+          rake "run:android:gmsaas:spec[$(GMSAAS_DEVICE_RECIPE)]" --trace
         fi
       displayName: "Build testable and start test "
       continueOnError: true
 
     - script: |
+        # gmsaas instances stop $(gmsaas_android_instance)
         cd $(System.DefaultWorkingDirectory)/$(RHO_APP)/$($(System.DefaultWorkingDirectory)/.ci/app_build_root.rb)
         cat RhoLogSpec.txt
       displayName: 'Show RhoLogSpec.txt'

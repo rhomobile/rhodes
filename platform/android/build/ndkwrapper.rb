@@ -284,7 +284,16 @@ class NDKWrapper
       File.join(@root_path, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
     else
       arch = "arm" if arch == "armeabi"
-      File.join(@root_path, "toolchains", "llvm", "prebuilt", "darwin-x86_64", "sysroot", "usr", "lib", @@abi_triple[arch], "libc++_shared.so")
+
+      platform = "linux-x86_64"
+
+      if HostPlatform.mac?
+        platform = "darwin-x86_64"
+      elsif HostPlatform.windows?
+        platform = "windows-x86_64"
+      end
+
+      File.join(@root_path, "toolchains", "llvm", "prebuilt", platform, "sysroot", "usr", "lib", @@abi_triple[arch], "libc++_shared.so")
     end
   end
 
