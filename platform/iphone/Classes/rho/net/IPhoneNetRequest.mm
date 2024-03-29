@@ -174,6 +174,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
     [super dealloc];
   }
 
+  - (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection {
+      return NO;
+  }
+
   - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)err
   {
       if (is_net_trace()) {
