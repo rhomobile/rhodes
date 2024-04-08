@@ -49,6 +49,7 @@
 		FA5890522117F05C006768DB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5890512117F05C006768DB /* WebKit.framework */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
 		FA6747E71D3DD1D000F0A09D /* rhorunner_production.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */; };
+		FA75B4972BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */; };
 		FA8266821BC05F46006871AB /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8266811BC05F46006871AB /* GameKit.framework */; };
 		FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */; };
 		FAA714AB1DDE835500E5E7AD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA714AA1DDE835500E5E7AD /* WebKit.framework */; };
@@ -135,6 +136,7 @@
 		FA5890512117F05C006768DB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		FA6A403318319D0E00794752 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
+		FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FA8266811BC05F46006871AB /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
 		FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libstdc++.dylib"; sourceTree = DEVELOPER_DIR; };
 		FAA714AA1DDE835500E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -218,6 +220,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */,
 				A81EA26920228C0600E2F8AD /* Media.xcassets */,
 				<PLACEHOLDER FOR RESOURCES 03>
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
@@ -415,6 +418,7 @@
 				FA20C1B1182AFD870036D304 /* BluePushpin.png in Resources */,
 				FAD18F251E3AF8100064808C /* forward_btn@2x.png in Resources */,
 				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
+				FA75B4972BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy in Resources */,
 				FA20C1AA182AFD760036D304 /* forward_btn.png in Resources */,
 				FA20C1B4182AFD870036D304 /* esri@2x.png in Resources */,
 				FA20C1AB182AFD760036D304 /* gears.png in Resources */,
