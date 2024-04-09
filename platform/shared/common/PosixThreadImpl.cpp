@@ -71,7 +71,10 @@ void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority eP
 {
     pthread_attr_t  attr;
     int return_val = pthread_attr_init(&attr);
-    //return_val = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+#if defined(OS_ANDROID)
+    return_val = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+#endif
     RHO_ASSERT(!return_val);
 
     if ( ePriority != IRhoRunnable::epNormal)
