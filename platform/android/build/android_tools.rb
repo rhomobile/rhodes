@@ -31,6 +31,7 @@
 
 require 'pp'
 require 'open3'
+require 'find'
 
 module AndroidTools
 
@@ -978,9 +979,17 @@ module_function :read_manifest_package
     puts "Building APK file..."
     
     #just put dex file to a copy of already prepared intermediate APK
-    cp res_name, apk_name    
-    params = [ '-uf', apk_name, '-C', File.dirname(dex_name), File.basename(dex_name) ]
-    Jake.run( @@jarbin, params)
+    cp res_name, apk_name
+    dex_files = []
+
+    Find.find(File.dirname(dex_name)) do |path|
+      dex_files << path if path.end_with?('.dex')
+    end
+
+    dex_files.each do |dex_file|
+      params = [ '-uf', apk_name, '-C', File.dirname(dex_file), File.basename(dex_file)]
+      Jake.run( @@jarbin, params)
+    end
 
     unless $?.success?
         raise 'Error building APK file'

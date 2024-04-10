@@ -3031,7 +3031,7 @@ namespace "package" do
       jarsForDX << File.join(proguardPostBuild, "classes-processed.jar")
     end
 
-    unless AndroidTools::DexBuilder.instance.build( jarsForDX, "#{File.join($bindir,'classes.dex')}")
+    unless AndroidTools::DexBuilder.instance.build( jarsForDX, "#{File.join($bindir,'classes.dex')}", $min_sdk_level)
       raise "Error running DEX builder"
     end
 
