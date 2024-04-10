@@ -432,9 +432,17 @@ public class KeyCaptureSingleton implements IKeyCaptureSingleton
 					Map<String, Object> returnMap = new HashMap<String, Object>(1);
 					int returnKeyCode=KeyCodeRemapper.getProperReturnValue(keyCode);
 					returnMap.put(CAPTURE_KEY_VALUE, returnKeyCode);
-					if(keyCode !=0 )
+					if(keyCode !=0 ){
 					//record.getResult().set(returnMap); //fire the callback
-						new Thread(new KeyEventRunnable(record,CAPTURE_KEY_VALUE,returnKeyCode)).start();
+						// new Thread(new KeyEventRunnable(record,CAPTURE_KEY_VALUE,returnKeyCode)).start();
+						Thread t = new Thread(new KeyEventRunnable(record,CAPTURE_KEY_VALUE,returnKeyCode));
+						t.start();
+						try {
+							t.join(20);	
+						} catch (InterruptedException ex) {
+							Logger.E(TAG, ex);
+						}
+					}
 				}
 			}
 			
