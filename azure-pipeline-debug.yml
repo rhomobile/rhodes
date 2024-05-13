@@ -147,6 +147,16 @@ jobs:
         RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
         SKIP_BUILD: "yes"
         GMSAAS_DEVICE_RECIPE: "f90338c7-5e36-4e30-b376-f3252b08c23f"
+      Android_14_auto_common_spec:
+        ANDROID_VERSION: 14
+        ANDROID_TARGET_SDK: 34
+        NDK_VERSION: 25.0.8775105
+        RHO_ANDROID_MIN_SDK: 34
+        ANDROID_ABIS: "aarch64,x86"
+        RHO_APP: "auto_common_spec"
+        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+        SKIP_BUILD: "yes"
+        GMSAAS_DEVICE_RECIPE: "37499e5d-6bee-46d1-b07a-e594ff3fcb0d"
 
   steps:
     - task: UseRubyVersion@0
@@ -163,9 +173,9 @@ jobs:
         versionSpec: '3.11'
 
     - script: |
-        ${{variables.sdk_manager}} --install 'build-tools;32.0.0'
+        ${{variables.sdk_manager}} --install 'build-tools;34.0.0'
         ${{variables.sdk_manager}} --install 'platform-tools'
-        ${{variables.sdk_manager}} --uninstall 'build-tools;34.0.0'
+        ${{variables.sdk_manager}} --uninstall 'build-tools;32.0.0'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-32'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
