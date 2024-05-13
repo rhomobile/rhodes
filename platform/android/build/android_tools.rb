@@ -419,6 +419,19 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
 end
 module_function :prepare_avd
 
+def run_gmsaas_emulator(gmsaas_recipe_uuid)
+  system("\"#{$adb}\" start-server")
+  gmsaas_android_instance = `gmsaas instances start #{gmsaas_recipe_uuid} android`
+  system("gmsaas instances adbconnect #{gmsaas_android_instance}")
+  return gmsaas_android_instance
+end
+module_function :run_gmsaas_emulator
+
+def stop_gmsaas_emulator(gmsaas_instance_uuid)
+  system("gmsaas instances stop #{gmsaas_instance_uuid}")
+end
+module_function :stop_gmsaas_emulator
+
 def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 

@@ -3209,10 +3209,12 @@ end
 #  end
 #end
 
-def run_as_spec(device_flag, uninstall_app)
+def run_as_spec(device_flag, uninstall_app, gmsaas_recipe_uuid = "")
   Rake::Task["device:android:debug"].invoke
 
-  if device_flag == '-e'
+  if gmsaas_recipe_uuid.to_s != ''
+    gmsaas_android_instance = AndroidTools.run_gmsaas_emulator(gmsaas_recipe_uuid)
+  elsif device_flag == '-e'
     Rake::Task["config:android:emulator"].invoke
   else
     Rake::Task["config:android:device"].invoke
@@ -3223,7 +3225,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   AndroidTools.logclear(device_flag)
   # Start emulator with options: hidden window display and wipe user data
-  AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e'
+  AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e' && gmsaas_recipe_uuid.to_s == ''
 
   begin
     do_uninstall(device_flag)
@@ -3418,6 +3420,10 @@ def run_as_spec(device_flag, uninstall_app)
   #AndroidTools.kill_adb_logcat(device_flag, log_name)
   #end
 
+  if gmsaas_recipe_uuid.to_s != ''
+    AndroidTools.stop_gmsaas_emulator(gmsaas_android_instance)
+  end
+
   $stdout.flush
 
   exit 1 if is_timeout
@@ -3490,6 +3496,12 @@ namespace "run" do
 
     desc "build, install and run on device"
     task :device, [:device_id] => ['run:android:device:build', 'run:android:device:run']
+
+    namespace "gmsaas" do
+      task :spec, [:arg1] do |t, args|
+        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app, args[:arg1]) }
+      end
+    end
 
     namespace "device" do
 
