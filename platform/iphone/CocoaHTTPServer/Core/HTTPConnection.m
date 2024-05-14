@@ -82,6 +82,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 // the HTTP_RESPONSE tag. For all other segments prior to the last segment use HTTP_PARTIAL_RESPONSE, or some other
 // tag of your own invention.
 
+
+extern int rho_conf_getBool(const char* szName);
+
 @interface HTTPConnection (PrivateAPI)
 - (void)startReadingRequest;
 - (void)sendResponseHeadersAndBody;
@@ -590,6 +593,63 @@ static NSMutableArray *recentNonces;
 	}});
 }
 
+
+
+
+
+- (void)socket:(GCDAsyncSocket *)sock didReceiveTrust:(SecTrustRef)trust completionHandler:(void (^)(BOOL shouldTrustPeer))completionHandler {
+    NSLog(@"didReceiveTrust");
+    
+    
+    if (rho_conf_getBool("ios_https_local_server")) {
+        completionHandler(YES);
+        return;
+    }
+
+    //server certificate
+    SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(trust, 0);
+    CFDataRef serverCertificateData = SecCertificateCopyData(serverCertificate);
+
+    const UInt8* const serverData = CFDataGetBytePtr(serverCertificateData);
+    const CFIndex serverDataSize = CFDataGetLength(serverCertificateData);
+    NSData* cert1 = [NSData dataWithBytes:serverData length:(NSUInteger)serverDataSize];
+
+
+    //local certificate
+    NSString *localCertFilePath = [[NSBundle mainBundle] pathForResource:@"LocalCertificate" ofType:@"cer"];
+    NSData *localCertData = [NSData dataWithContentsOfFile:localCertFilePath];
+    CFDataRef myCertData = (__bridge CFDataRef)localCertData;
+
+
+    const UInt8* const localData = CFDataGetBytePtr(myCertData);
+    const CFIndex localDataSize = CFDataGetLength(myCertData);
+    NSData* cert2 = [NSData dataWithBytes:localData length:(NSUInteger)localDataSize];
+
+
+    if (cert1 == nil || cert2 == nil) {
+        NSLog(@"Certificate NULL");
+        completionHandler(NO);
+        return;
+    }
+
+
+    const BOOL equal = [cert1 isEqualToData:cert2];
+
+    if (equal) {
+
+        NSLog(@"Certificate match");
+        completionHandler(YES);
+
+    }else{
+
+        NSLog(@"Certificate not match");
+        completionHandler(NO);
+    }
+    
+}
+
+
+
 /**
  * Starting point for the HTTP connection.
 **/
@@ -605,7 +665,18 @@ static NSMutableArray *recentNonces;
 	{
 		// We are configured to be an HTTPS server.
 		// That is, we secure via SSL/TLS the connection prior to any communication.
-		
+        
+        
+        
+        //MOHUS
+        /*NSMutableDictionary *settings = [[NSMutableDictionary alloc] init];
+
+        [settings setObject:[NSNumber numberWithBool:YES]
+                     forKey:GCDAsyncSocketManuallyEvaluateTrust];
+
+        [asyncSocket startTLS:settings];
+        */
+		///*
 		NSArray *certificates = [self sslIdentityAndCertificates];
 		
 		if ([certificates count] > 0)
@@ -621,11 +692,12 @@ static NSMutableArray *recentNonces;
 						 forKey:(NSString *)kCFStreamSSLCertificates];
 			
 			// Configure this connection to use the highest possible SSL level
-			[settings setObject:(NSString *)kCFStreamSocketSecurityLevelNegotiatedSSL
-						 forKey:(NSString *)kCFStreamSSLLevel];
+			//[settings setObject:(NSString *)kCFStreamSocketSecurityLevelNegotiatedSSL
+			//			 forKey:(NSString *)kCFStreamSSLLevel];
 			
 			[asyncSocket startTLS:settings];
 		}
+        //*/
 	}
 	
 	[self startReadingRequest];

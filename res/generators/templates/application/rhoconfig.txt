@@ -104,7 +104,9 @@ sync_poll_interval=0
 # Default value is FALSE
 
 #ios_https_local_server = 0
-#ATTENTION !!! this option works only with ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+#ATTENTION !!! this option works only with:
+# 1) ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+# 2) ios_net_curl = 0 AND ios_use_old_legacy_socket = 0 AND ios_direct_local_requests_with_custom_protocol = 0 !!! When use default Cocoa Server with this property Cocoa Server will be HTTPS secured.
 #default value is FALSE
 # If TRUE local server URL is https://127.0.0.1 instead of http://127.0.0.1
 # It help solve some security issues like work geolocation HTTP5 API in WebView, because this API works only if secure connection.

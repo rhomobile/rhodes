@@ -41,6 +41,8 @@
 
 #import "common/app_build_capabilities.h"
 
+
+
 #ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
 
 #import <objc/runtime.h>
@@ -278,6 +280,28 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 
 
+- (void)webView:(WKWebView *)webView
+didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+    if ( rho_conf_getBool("ios_https_local_server") == 1 ) {
+        SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+          CFDataRef exceptions = SecTrustCopyExceptions (serverTrust);
+          SecTrustSetExceptions (serverTrust, exceptions);
+          CFRelease (exceptions);
+          completionHandler (NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+    }
+    else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
+
+    
+}
+
+//- (void)webView:(WKWebView *)webView
+//authenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+//shouldAllowDeprecatedTLS:(void (^)(BOOL))decisionHandler {
+//    decisionHandler(YES);
+//}
 
 //UIWebView
 
