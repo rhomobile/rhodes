@@ -228,7 +228,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
       }
       
     //will skip peer check if disabled for SSL
-    if ( (!m_pCppDelegate->verifySSLPeers()) && [authMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
+    if ( ( (!m_pCppDelegate->verifySSLPeers()) || rho_conf_getBool("ios_https_local_server") ) && [authMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
     {
       SecTrustRef trust = challenge.protectionSpace.serverTrust;
       NSURLCredential *cred = [NSURLCredential credentialForTrust:trust];
