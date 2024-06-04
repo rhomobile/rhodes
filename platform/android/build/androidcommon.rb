@@ -118,6 +118,9 @@ def cc_def_args
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << '-Wno-unused-parameter'
+    if($ndk_rev_major >= 26)
+      args << '-Wno-implicit-function-declaration'
+    end
     if($ndk_rev_major < 18)
       args << "-mandroid"
     end
@@ -153,6 +156,7 @@ def cpp_def_args
       args << "-std=c++11"
     else
       args << "-stdlib=libc++"
+      args << "-std=c++14"
       #args << "-std=c++17"
     end
 

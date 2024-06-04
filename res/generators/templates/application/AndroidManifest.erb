@@ -28,6 +28,12 @@
   
   <permission android:name="<%= @appPackageName %>.permission.RECEIVE_BROADCAST" android:protectionLevel="signature"/>
 
+  <% if  @androidVerMaj >= 14 %>
+    <uses-permission android:name='android.permission.FOREGROUND_SERVICE'/>
+    <uses-permission android:name='android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED'/>
+    <uses-permission android:name='android.permission.SCHEDULE_EXACT_ALARM'/>
+    <uses-permission android:name='android.permission.USE_EXACT_ALARM'/>
+  <% end %>
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
   <application android:requestLegacyExternalStorage='true'
@@ -70,7 +76,7 @@
     <activity android:name='com.rhomobile.rhodes.datetime.DateTimePickerScreen' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
-    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
+    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false' <% if  @androidVerMaj >= 14 %> android:foregroundServiceType="systemExempted" <% end %>/>
 
 
     <% if  @androidVerMaj >= 7 %>
