@@ -43,6 +43,8 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
 import android.util.Log;
+import android.os.Build;
+import androidx.core.content.ContextCompat;
 
 
 import com.rhomobile.rhodes.ScreenReceiver.DeviceScreenEvent;
@@ -248,7 +250,7 @@ public class RhodesApplication extends Application{
         filter.addAction(Intent.ACTION_USER_PRESENT);
 
         mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, filter);
+        registerReceiver(mReceiver, filter, appInfo.packageName + ".permission.RECEIVE_BROADCAST", null);
 
         Logger.I(TAG, "Initialized");
     }
