@@ -43,8 +43,6 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
 import android.util.Log;
-import android.os.Build;
-import androidx.core.content.ContextCompat;
 
 
 import com.rhomobile.rhodes.ScreenReceiver.DeviceScreenEvent;
