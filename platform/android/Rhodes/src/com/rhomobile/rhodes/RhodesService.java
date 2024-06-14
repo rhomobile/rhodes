@@ -1426,12 +1426,11 @@ public class RhodesService extends Service {
                         unregisterReceiver(this);
                         installApplication(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + packageName);
                         Logger.D(TAG, "File stored to " + packageName);
-                        Log.d(TAG, "File stored to " + packageName);
                     }
                 }
             };
 
-            registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), getContext().getPackageManager() + ".permission.RECEIVE_BROADCAST", null);
         } catch (Exception e){
             Logger.D(TAG, e.toString());
             e.printStackTrace();
@@ -1476,14 +1475,12 @@ public class RhodesService extends Service {
 									}
 								}
 								catch (Exception e) {
-									Log.e(TAG, "Can't install file from " + tmpFile.getAbsolutePath(), e);
 									Logger.E(TAG, "Can't install file from " + tmpFile.getAbsolutePath() + ": " + e.getMessage());
 								}
 							}
 						});
 					}
 				}catch (IOException e) {
-					Log.e(TAG, "Can't download package from " + url, e);
 					Logger.E(TAG, "Can't download package from " + url + ": " + e.getMessage());
 				}
 			}
