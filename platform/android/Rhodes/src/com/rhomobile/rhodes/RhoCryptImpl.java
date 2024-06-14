@@ -39,7 +39,6 @@ import java.nio.ByteBuffer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 
