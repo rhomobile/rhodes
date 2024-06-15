@@ -41,6 +41,7 @@ import android.content.SharedPreferences;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.ContextFactory;
 
+
 public class RhoCryptImpl 
 {
     private static final String TAG = "RhoCryptJava";
@@ -134,11 +135,20 @@ public class RhoCryptImpl
 
 	    initKey(szPartition);
 	    
-		byte[] iv = new byte[]
-     	{
-     	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-     	};
-	    
+		byte[] iv;
+
+        if (RhoConf.isExist("using_an_old_encryption_system") && RhoConf.getInt("using_an_old_encryption_system") == 1) {
+            iv = new byte[]
+            {
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+            };
+        } else {
+            iv = new byte[]
+            {
+                65, -85, 28, 2, 39, 53, 106, -67, 15, -81, -20, -95, 111, -4, 47, -90
+            };   
+        }
+
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
     	
 		SecretKeySpec skeySpec = new SecretKeySpec(m_dbKeyData, "AES");  
@@ -154,7 +164,7 @@ public class RhoCryptImpl
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
         try
-        {
+        {        
             initContext(szPartition);
 
             dataOut.rewind();

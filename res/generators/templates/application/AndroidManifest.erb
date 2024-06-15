@@ -23,8 +23,10 @@
   <% end %>
 
 
-  <%# <!-- Установка пакета -->
+  <%# <!-- Installing the package -->
   <uses-permission android:name='android.permission.REQUEST_INSTALL_PACKAGES'/> %>
+  
+  <permission android:name="<%= @appPackageName %>.permission.RECEIVE_BROADCAST" android:protectionLevel="signature"/>
 
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>

@@ -248,7 +248,7 @@ public class RhodesApplication extends Application{
         filter.addAction(Intent.ACTION_USER_PRESENT);
 
         mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, filter);
+        registerReceiver(mReceiver, filter, appInfo.packageName + ".permission.RECEIVE_BROADCAST", null);
 
         Logger.I(TAG, "Initialized");
     }
