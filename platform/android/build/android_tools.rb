@@ -858,6 +858,11 @@ module_function :read_manifest_package
       keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
     end
 
+    unless File.file? keystore
+      @@logger.info "Android debug keystore not found in expected location. Creating new one. Please answer few questions below:"
+      AndroidTools.generateKeystore( keystore, 'androiddebugkey', 'android', 'android' )
+    end
+
     raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
 
     signApk( inputApk, outputApk, keystore, 'android', 'android', 'androiddebugkey' )
@@ -899,6 +904,11 @@ module_function :read_manifest_package
     #Try to find debug keystore in another location
     if ENV['USERPROFILE']
       keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    end
+
+    unless File.file? keystore
+      @@logger.info "Android debug keystore not found in expected location. Creating new one. Please answer few questions below:"
+      AndroidTools.generateKeystore( keystore, 'androiddebugkey', 'android', 'android' )
     end
 
     raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
