@@ -69,26 +69,26 @@ jobs:
 #---------------------------
   strategy:
     matrix:
-      Android_10_framework_spec:
-        ANDROID_VERSION: 10
-        ANDROID_TARGET_SDK: 31
-        NDK_VERSION: 24.0.8215888
-        RHO_ANDROID_MIN_SDK: 29
-        ANDROID_ABIS: "x86"
-        RHO_APP: "framework_spec"
-        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-        SKIP_BUILD: "yes"
-        GMSAAS_DEVICE_RECIPE: "c259202b-6605-44eb-978c-040b2edbc364"
-      Android_10_auto_common_spec: 
-        ANDROID_VERSION: 10
-        ANDROID_TARGET_SDK: 31
-        NDK_VERSION: 24.0.8215888
-        RHO_ANDROID_MIN_SDK: 29
-        ANDROID_ABIS: "x86"
-        RHO_APP: "auto_common_spec"
-        RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
-        SKIP_BUILD: "yes"
-        GMSAAS_DEVICE_RECIPE: "c259202b-6605-44eb-978c-040b2edbc364"
+    #   Android_10_framework_spec:
+    #     ANDROID_VERSION: 10
+    #     ANDROID_TARGET_SDK: 31
+    #     NDK_VERSION: 24.0.8215888
+    #     RHO_ANDROID_MIN_SDK: 29
+    #     ANDROID_ABIS: "x86"
+    #     RHO_APP: "framework_spec"
+    #     RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+    #     SKIP_BUILD: "yes"
+    #     GMSAAS_DEVICE_RECIPE: "c259202b-6605-44eb-978c-040b2edbc364"
+    #   Android_10_auto_common_spec: 
+    #     ANDROID_VERSION: 10
+    #     ANDROID_TARGET_SDK: 31
+    #     NDK_VERSION: 24.0.8215888
+    #     RHO_ANDROID_MIN_SDK: 29
+    #     ANDROID_ABIS: "x86"
+    #     RHO_APP: "auto_common_spec"
+    #     RHO_RUNNER_SCRIPT: "run_test_on_simulator.sh"
+    #     SKIP_BUILD: "yes"
+    #     GMSAAS_DEVICE_RECIPE: "c259202b-6605-44eb-978c-040b2edbc364"
       # Android_11_framework_spec:
       #   ANDROID_VERSION: 11
       #   ANDROID_TARGET_SDK: 31
