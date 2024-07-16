@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--inline-source", "--charset=UTF-8", '--exclude=bin', '--exclude=doc', '--exclude=ext', '--exclude=installer', '--exclude=lib/build', '--exclude=lib/commonAPI', '--exclude=lib/extensions', '--exclude=lib/rhodes', '--exclude=lib/test', '--exclude=lib/rhodes.rb', '--exclude=platform', '--exclude=res', '--exclude=spec']
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.3'
-  s.add_dependency('highline')
+  s.add_dependency('highline', '>= 2.1.0')
   s.add_dependency('cocoapods', '~> 1.10.2') if RUBY_PLATFORM =~ /darwin/i
   s.add_dependency('templater', '1.0.0')
   s.add_dependency('rake', '12.3.3')
