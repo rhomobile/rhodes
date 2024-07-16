@@ -52,9 +52,12 @@ stages:
           inputs:
             targetType: 'inline'
             script: 'mkdir $BUILD_ARTEFACTS_DIR'
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'gem install highline'
+        - script: $BUILD_DIR/.ci/azure-build.sh
 
-        - script: $BUILD_DIR/.ci/azure-build.sh        
-        
         - task: S3Upload@1
           inputs:
             regionName: 'eu-central-1'
