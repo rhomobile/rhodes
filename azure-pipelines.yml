@@ -39,7 +39,7 @@ stages:
     jobs:
       - job: build
         pool:
-          vmImage: 'macos-11'
+          vmImage: 'macos-12'
         steps:
 #        - task: Bash@3
 #          inputs:
