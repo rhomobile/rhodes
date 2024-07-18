@@ -127,7 +127,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 })
         end
 
-        qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1"
+        qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1  -early QMAKE_DEFAULT_LIBDIRS=$(xcrun -show-sdk-path)/usr/lib"
         Jake.run3(qmake                        , $qt_project_dir, {}, false)
         #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, false)
         Jake.run3("#{$make} all"               , $qt_project_dir, {}, false)
