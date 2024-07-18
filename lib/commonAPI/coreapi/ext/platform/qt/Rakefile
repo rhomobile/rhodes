@@ -3,7 +3,10 @@ require File.join(pwd, '../../../../../build/jake.rb')
 def build_extension(name)
   dir = File.join($rootdir, "lib/commonAPI/#{name}/ext/platform/qt")
 #  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG+=debug CONFIG-=release #{$qmakevars}"
-  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
+    qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
+  if $platform == 'osx'
+      qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars} -early QMAKE_DEFAULT_LIBDIRS=$(xcrun -show-sdk-path)/usr/lib"
+  end
 
   Jake.run3(qmake           , dir)
   #Jake.run3("#{$make} clean", dir)

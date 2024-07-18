@@ -4,6 +4,9 @@ require File.join(pwd, '../../../build/jake.rb')
 def build_extension(name, arch)
   if (ENV['RHO_PLATFORM'] == 'osx') or (ENV['RHO_PLATFORM'] == 'win32')  or (ENV['RHO_PLATFORM'] == 'linux')
     args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "#{name}.pro", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
+    if (ENV['RHO_PLATFORM'] == 'osx')
+        args = ['-o', 'Makefile', '-r', '-spec', $qmake_spec, "-early", "QMAKE_DEFAULT_LIBDIRS=$(xcrun -show-sdk-path)/usr/lib", "#{name}.pro", 'CONFIG-=debug', 'CONFIG+=release', $qmakevars]
+    end
     puts Jake.run($qmake,args)
     fail "[qmake #{name}.pro]" unless $? == 0
     #puts Jake.run($make, ['clean'])
