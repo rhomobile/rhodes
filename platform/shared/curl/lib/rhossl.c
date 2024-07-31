@@ -158,7 +158,7 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
     return 0;
 }
 
-#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
+#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) || defined(ANDROID)
 
 ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len, CURLcode *err)
 {

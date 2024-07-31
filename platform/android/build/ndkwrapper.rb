@@ -337,8 +337,10 @@ class NDKWrapper
   end
 
   def sysincludes(api,abi)
-    if @rev_major >= 16      
-      if @rev_major >= 22
+    if @rev_major >= 16
+      if @rev_major >= 26
+        nil
+      elsif @rev_major >= 22 # TODO: check if this really works with differend configurations: ABI, min NDK levels, build tools etc
         File.join( sysroot_18, 'usr', 'include' )
       elsif  @rev_major >= 18
         File.join( sysroot_18, 'usr', 'include', @@abi_triple[abi])
