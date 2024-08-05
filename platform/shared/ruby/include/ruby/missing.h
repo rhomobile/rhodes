@@ -136,7 +136,7 @@ RUBY_EXTERN double lgamma_r(double, int *);
 RUBY_EXTERN double cbrt(double);
 #endif
 
-#if 0
+#if !defined(OS_ANDROID)
 #if !defined(HAVE_INFINITY) || !defined(HAVE_NAN)
 union bytesequence4_or_float {
   unsigned char bytesequence[4];
