@@ -33,6 +33,8 @@ require 'openssl'
 require 'base64'
 require 'stringio'
 
+require_relative 'compat'
+require_relative 'os'
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
