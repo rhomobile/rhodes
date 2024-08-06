@@ -773,9 +773,8 @@ namespace "config" do
     $logger.debug "Use Google addon API (1): #{$use_google_addon_api}"    
 
     $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
-    $uri_scheme = "http" if $uri_scheme.nil?
-
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
+    $uri_path_prefix = "/#{$app_package_name}"
 
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
@@ -923,12 +922,7 @@ namespace "config" do
     $app_package_name.gsub!(/\.[\d]/, "._")
 
     puts "$vendor = #{$vendor}"
-    puts "$app_package_name = #{$app_package_name}"
-
-    if $uri_host.nil?
-      $uri_host = 'rhomobile.com'
-      $uri_path_prefix = "/#{$app_package_name}"
-    end
+    puts "$app_package_name = #{$app_package_name}"    
 
     $no_compression = ['html','htm','js','css']
     $no_compression = $app_config['android']['no_compression'] if $app_config['android'] and $app_config['android']['no_compression']
@@ -2118,7 +2112,9 @@ namespace "build" do
       generator.androidVerMaj = $major_version
       generator.androidVerMin = $minor_version
 
-      generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
+      if ( $uri_scheme != nil )
+        generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
+      end
 
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.rb')).each do |extscript|
         puts "Evaluating #{extscript}"
