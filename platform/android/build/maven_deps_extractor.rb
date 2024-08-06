@@ -30,7 +30,7 @@ class MavenDepsExtractor
     @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       @mvnbin += '.cmd'
     end
 

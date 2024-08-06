@@ -103,7 +103,7 @@ task OBJ_AARCH64 => OBJDIR_AARCH64
 def find_source(objfile)
   base = File.basename(objfile, '.o')
   src = SRC.find { |s| File.basename(s) == base }
-  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exists?(src)
+  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exist?(src)
   src
 end
 
@@ -144,7 +144,7 @@ def add_data_to_string(name, dataFromJson)
   $xmlFileWithDataFromJson << "\n\t<string name=\"" << name << "\" translatable=\"false\">" << dataFromJson << "</string>"
 end
 
-$jsonfile = File.read(File.join($app_dir, 'google-services.json')) if File.exists?(File.join($app_dir, 'google-services.json'))
+$jsonfile = File.read(File.join($app_dir, 'google-services.json')) if File.exist?(File.join($app_dir, 'google-services.json'))
 
 if $jsonfile.nil? 
 
@@ -194,7 +194,7 @@ end
 $xmlFileWithDataFromJson << "\n</resources>"
 resGoogleDir = File.join($curdir, 'res', 'res', 'values')
 
-FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
+FileUtils.mkdir_p(resGoogleDir) unless File.exist?(resGoogleDir)
 File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
 puts "fireBaseValues.xml created"
 

@@ -3,13 +3,13 @@ describe "RhoFile" do
     before(:all) do
         clear()
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
-		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+		Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
     end
     
     it "should write" do
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.txt')
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
 
         write_data  = "this is rhodes test"
         #File.open(file_name, "w"){|file| file.write(write_data)}
@@ -38,8 +38,8 @@ if !defined?(RHO_WP7)
         File.size(file_testname).should == test_content.length
     
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.png')
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
 
         f = File.new(file_name, "wb")
         f.write(test_content)
@@ -53,7 +53,7 @@ end
 	    # get full file path
 	    f = File.join(dir_name, "#{file}"+ "#{ext}")
         #check if file exists and return to fileName action if yes.
-	    return "exist" if File.exists?(f)
+	    return "exist" if File.exist?(f)
 	   
         dd = 0    
 if !defined?(RHO_WP7)     
@@ -78,7 +78,7 @@ end
 
     it "should dir" do
         dir_name = Rho::RhoApplication::get_app_path('cache')
-        Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+        Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
         
         (1..2).each do |n|
             res = create_file_in_cache(dir_name, "cache_test", n.to_s())
@@ -133,10 +133,10 @@ end
     def clear
         (1..2).each do |n|
     	    file_name = File.join(Rho::RhoApplication::get_app_path('cache'), "cache_test"+ n.to_s())
-            File.delete(file_name) if File.exists?(file_name)
+            File.delete(file_name) if File.exist?(file_name)
         end
     
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'temp.txt')
-        File.delete(file_name) if File.exists?(file_name)
+        File.delete(file_name) if File.exist?(file_name)
     end
 end    

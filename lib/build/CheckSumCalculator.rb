@@ -50,7 +50,7 @@ class CheckSumSerializer
   end
 
   def cansave
-    return !File.exists?(@@hash_filepath)
+    return !File.exist?(@@hash_filepath)
   end
 end
 

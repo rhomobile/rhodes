@@ -28,8 +28,8 @@ unless $app_config["env"].nil? #if env is here then it is an old app
   end
 end
 
-unless File.exists? "icon/icon.png"
-  mkdir_p "icon" unless File.exists? "icon"
+unless File.exist? "icon/icon.png"
+  mkdir_p "icon" unless File.exist? "icon"
   cp File.dirname(__FILE__) + '/../res/generators/templates/application/icon/icon.ico', 'icon/'
   cp File.dirname(__FILE__) + '/../res/generators/templates/application/icon/icon.png', 'icon/'
   

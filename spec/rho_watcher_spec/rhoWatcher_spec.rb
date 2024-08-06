@@ -31,7 +31,7 @@ describe RhoWatcher do
   end
 
   it 'Directory for server root should be created after creating instance of RhoWatcher' do
-    expect(File.exists?(watcher.serverRoot)).to be true
+    expect(File.exist?(watcher.serverRoot)).to be true
   end
 
   it 'Set application root' do

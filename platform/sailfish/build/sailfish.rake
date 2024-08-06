@@ -181,11 +181,7 @@ class BuildScriptGenerator < ScriptGenerator
 end
 
 def isWindows?
-  if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
-      return true
-  else
-      return false
-  end
+  OS.windows?
 end
 
 def PathToWindowsWay(path)
@@ -316,7 +312,7 @@ namespace "config" do
       
     $sysName = "Aurora"
 
-    if !File.exists?($current_build_sdk_dir)
+    if !File.exist?($current_build_sdk_dir)
       puts "No such target (" + $current_target + ") exists"
       exit 1
     end
@@ -582,7 +578,7 @@ namespace "device" do
       mkdir_p File.join(ssh_dir, $dev_name)
 
       yes = true
-      if(File.exists? File.join(ssh_dir, $dev_name, "defaultuser"))
+      if(File.exist? File.join(ssh_dir, $dev_name, "defaultuser"))
         puts "Key for this device exists, do you want to replace it? (yes/no)"      
         yes = STDIN.gets == "yes\n"
       end
@@ -923,14 +919,14 @@ namespace 'project' do
       mkdir_p File.join($project_path, $final_name_app)
       mkdir_p File.join($project_path, $final_name_app, "rpm")
 
-      #if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
+      #if !File.exist?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
         File.rename(
           File.join($project_path, $final_name_app, "qml", "sailfishrhodes.qml"), 
           File.join($project_path, $final_name_app, "qml", "#{$organization}.#{$final_name_app}.qml"))
       #end
 
-      if !File.exists?(File.join($project_path, $final_name_app, "icons")) 
+      if !File.exist?(File.join($project_path, $final_name_app, "icons")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/icons"), File.join($project_path, $final_name_app)
         Dir[File.join($project_path, $final_name_app, "icons/**/*")].each do |file_name|
           File.rename(file_name, File.join(File.dirname(file_name), "#{$organization}.#{$final_name_app}.png")) if File.file? file_name
@@ -973,12 +969,12 @@ namespace 'project' do
       #File.open(File.join($project_path, $final_name_app, "privileges", "#{$final_name_app}"), 'w' ) { |f| f.write generator.render_profile( priv_erb_path ) }
       
       rho_name_project = File.join($project_path, "rhodes", "rhodes.pro")
-      if !File.exists?(rho_name_project)
+      if !File.exist?(rho_name_project)
         File.open(rho_name_project, 'w' ) { |f| f.write generator.render_profile( rhodes_erb_path ) }
       end
       
       app_name_project = File.join($project_path, $final_name_app, "#{$final_name_app}.pro")
-      if !File.exists?(app_name_project)
+      if !File.exist?(app_name_project)
         File.open(app_name_project, 'w' ) { |f| f.write generator.render_profile( app_erb_path ) }
       end
       

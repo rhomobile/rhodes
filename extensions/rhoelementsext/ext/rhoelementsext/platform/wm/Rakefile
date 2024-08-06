@@ -10,7 +10,7 @@ def run_command(cmdline)
 end
 
 def build_extension(name, arch)
-  mkdir_p $tempdir unless File.exists? $tempdir
+  mkdir_p $tempdir unless File.exist? $tempdir
   mkdir_p $targetdir unless File.exist? $targetdir
 
   if ENV['RHO_PLATFORM'] == 'wm'

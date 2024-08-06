@@ -3,11 +3,7 @@ require 'open3'
 class AndroidDebug
     
     def isWindows?
-        if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
-            return true
-        else
-            return false
-        end
+        OS.windows?
     end
 
     def initialize(android_package, a_p, p, p2, t)

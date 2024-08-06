@@ -636,7 +636,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
   log_pids += log_shell_pids
 
   log_pids.each do |pid|
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       system "taskkill /PID #{pid}"
     else
       system "kill -TERM #{pid}"
@@ -655,7 +655,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
   end
 
   log_pids1.each do |pid|
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       system "taskkill /F /PID #{pid}"
     else
       system "kill -KILL #{pid}"
@@ -666,7 +666,7 @@ end
 module_function :kill_adb_logcat
 
 def kill_adb_and_emulator
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+  if OS.windows?
     # Windows
     `taskkill /F /IM adb.exe`
   else
@@ -762,7 +762,7 @@ module_function :logclear
 
 def read_manifest_package(path)
   manifestpath = File.join path, 'AndroidManifest.xml'
-  if File.exists? manifestpath
+  if File.exist? manifestpath
     puts "library manifest: #{manifestpath}"
 
     manifestdoc = REXML::Document.new(File.new(manifestpath))
@@ -1054,7 +1054,7 @@ def start_emulator(cmd)
 end
 
 def stop_emulator
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+  if OS.windows?
     # Windows
     Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
     Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
@@ -1066,11 +1066,7 @@ def stop_emulator
 end
 
 def isWindows?
-  if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
-      return true
-  else
-      return false
-  end
+  OS.windows?
 end
 
 def PathToWindowsWay(path)

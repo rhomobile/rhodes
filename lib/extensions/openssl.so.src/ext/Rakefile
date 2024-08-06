@@ -8,7 +8,7 @@ def build_extension(name, arch)
 
     #cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/android/libs/armeabi/libopenssl.so"), $targetdir
     objects = []
-    mkdir_p $tempdir unless File.exists? $tempdir
+    mkdir_p $tempdir unless File.exist? $tempdir
 
     Dir.glob("#{$rootdir}/lib/extensions/openssl.so/ext/sources/**/*.c").each do |f|
 

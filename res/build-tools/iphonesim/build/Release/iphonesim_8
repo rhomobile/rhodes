@@ -116,7 +116,7 @@ if app_files_root == nil
         if File.directory? path and !(entry =='.' || entry == '..')
             #puts "iphonesim_8      check app files folder ["+path+"]"
             plist_path = File.join(path, '.com.apple.mobile_container_manager.metadata.plist')
-            if File.exists? plist_path
+            if File.exist? plist_path
                 plist_obj = CFPropertyList::List.new(:file => plist_path)
                 app_files_info_plist_hash = CFPropertyList.native_types(plist_obj.value)
 

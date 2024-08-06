@@ -228,7 +228,7 @@ namespace 'device' do
 
       manifest_changes.each do |ext_manifest|
 
-        if File.exists? ext_manifest
+        if File.exist? ext_manifest
           puts 'AndroidManifest.xml['+ext_manifest+'] from native extension found !'
 
           manifest_ext_doc = REXML::Document.new(File.new(ext_manifest))
@@ -416,7 +416,7 @@ namespace 'device' do
 
       print_timestamp('build APK FINISH')
 
-      if not File.exists? $keystore
+      if not File.exist? $keystore
         puts "Generating private keystore..."
         mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
 
@@ -623,7 +623,7 @@ namespace 'build' do
       Rake::Task['config:android'].execute
       Rake::Task['build:android:rhobundle'].execute
 
-      if File.exists?(resourcepkg) then
+      if File.exist?(resourcepkg) then
         puts 'Make diff maps and repack only changed files'
 
         begin

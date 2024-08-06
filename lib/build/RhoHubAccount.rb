@@ -233,7 +233,7 @@ class RhoHubAccount
 
       begin
         files.each do |f_name|
-          if File.exists?(f_name)
+          if File.exist?(f_name)
             File.delete(f_name)
           end
         end
@@ -421,12 +421,12 @@ class RhoHubAccount
     token_file = File.join(token_folder, @@token_file_name)
     salt_file = File.join(token_folder, @@salt_file_name)
 
-    if File.exists?(token_file)
+    if File.exist?(token_file)
       begin
         data = JSON.parse(File.read(token_file))
 
         if !data["lt"].nil? || data["salt"].nil?
-          if File.exists?(salt_file)
+          if File.exist?(salt_file)
             salt = File.read(salt_file)
 
             result = self.class.decode_validate_token_old(data, salt)

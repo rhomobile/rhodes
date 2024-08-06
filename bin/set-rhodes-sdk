@@ -5,7 +5,7 @@ require 'fileutils'
 include FileUtils
 puts File.dirname(__FILE__)
 
-if File.exists? "build.yml"
+if File.exist? "build.yml"
   $app_config = YAML::load_file("build.yml")
 
   $app_config["sdk"] = File.expand_path(File.dirname(__FILE__) + "/../")

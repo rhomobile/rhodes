@@ -13,11 +13,10 @@ module RhoPackages
     def initialize(config_yml_file)
       @config = YAML::load_file(config_yml_file)
 
-      @platfrom_suffix = case RUBY_PLATFORM
-      when /(win|w)32$/
-        'win'
-      when /darwin/
-        'mac'
+      if OS.windows?
+        @platfrom_suffix = 'win'
+      elsif OS.mac?
+        @platfrom_suffix = 'mac'
       else
         fail
       end

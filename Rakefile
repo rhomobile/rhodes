@@ -54,30 +54,6 @@ require 'uri'
 require 'rake'
 require 'logger'
 
-# It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
-# NB: server build scripts depend on proper rake -T functioning.
-=begin
-#Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
-module Rake
-  class Task
-    attr_accessor :comment
-  end
-end
-=end
-
-# Restore process error mode on Windows.
-# Error mode controls wether system error message boxes will be shown to user.
-# Java disables message boxes and we enable them back.
-#if RUBY_PLATFORM =~ /(win|w)32$/
-#  require 'win32/process'
-#  class WindowsError
-#    include Windows::Error
-#  end
-#  WindowsError.new.SetErrorMode(0)
-#end
-
-#------------------------------------------------------------------------
-
 $app_basedir = pwd
 $is_webkit_engine = false
 $startdir = File.dirname(__FILE__)
@@ -86,6 +62,8 @@ $push_type = -1
 
 chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
+require File.join(pwd, 'lib/build/compat.rb')
+require File.join(pwd, 'lib/build/os.rb')
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
@@ -163,23 +141,6 @@ load File.join(pwd, 'platform/uwp/build/uwp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 load File.join(pwd, 'platform/sailfish/build/sailfish.rake')
 
-module OS
-  def OS.windows?
-    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-  end
-
-  def OS.mac?
-   (/darwin/ =~ RUBY_PLATFORM) != nil
-  end
-
-  def OS.unix?
-    !OS.windows?
-  end
-
-  def OS.linux?
-    OS.unix? and not OS.mac?
-  end  
-end
 
 #------------------------------------------------------------------------
 
@@ -205,9 +166,9 @@ namespace "framework" do
 
     rhoruby = ""
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       rhoruby = 'res\\build-tools\\RhoRuby'
-    elsif RUBY_PLATFORM =~ /darwin/
+    elsif OS.mac?
       rhoruby = 'res/build-tools/RubyMac'
     else
       rhoruby = 'res/build-tools/rubylinux'
@@ -470,7 +431,7 @@ namespace :dev do
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
       updater.add_directory(File.join($app_basedir, '/app'))
-      updater.add_directory(File.join($app_basedir, '/nodejs')) if File.exists? File.join($app_basedir, '/nodejs')
+      updater.add_directory(File.join($app_basedir, '/nodejs')) if File.exist? File.join($app_basedir, '/nodejs')
       updater.run
     end
 
@@ -560,7 +521,7 @@ namespace "clean" do
       return
     end
 
-    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
   end
 
   task :generated => "config:common" do
@@ -569,8 +530,8 @@ namespace "clean" do
       return
     end
 
-    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-    rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+    rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/RhoBundle") if File.exist? File.join($app_path, "bin/RhoBundle")
 
     extpaths = $app_config["extpaths"]
 
@@ -580,7 +541,7 @@ namespace "clean" do
       extpath = nil
       extpaths.each do |p|
         ep = File.join(p, extname)
-        if File.exists?( ep ) && is_ext_supported(ep)
+        if File.exist?( ep ) && is_ext_supported(ep)
           extpath = ep
           break
         end
@@ -952,7 +913,7 @@ def http_get(url, proxy, save_to)
     return false, "Server error: #{header_resp.inspect}"
   end
 
-  if File.exists?(f_name)
+  if File.exist?(f_name)
     if File.stat(f_name).size == header_resp.content_length
       if block_given?
         yield(header_resp.content_length, header_resp.content_length, "File #{f_name} from #{url} is already in the cache")
@@ -1497,7 +1458,7 @@ def deploy_build(platform)
 
   dest = File.join($cloud_build_bin, detected_platform)
 
-  if !File.exists?(dest)
+  if !File.exist?(dest)
     FileUtils.mkpath(dest)
   else
     FileUtils.rm_rf(Dir.glob(File.join(dest,'*')), secure: true)
@@ -1517,7 +1478,7 @@ def deploy_build(platform)
   unless remaining.empty?
     misc = File.join(dest, 'misc')
 
-    if !File.exists?(misc)
+    if !File.exist?(misc)
       FileUtils.mkpath(misc)
     end
 
@@ -1709,7 +1670,7 @@ def do_platform_build(platform_name, platform_list, is_lexicographic_ver, build_
 end
 
 def list_missing_files(files_array)
-  failed = files_array.select{|file| !File.exists?(file)}
+  failed = files_array.select{|file| !File.exist?(file)}
 
   failed
 end
@@ -1847,7 +1808,7 @@ def get_ssl_cert_bundle_store(rhodes_home, proxy)
   crt_file = File.join(rhodes_home, "crt.pem")
 
   #lets get that file once a month
-  if !(File.exists?(crt_file)) || ((Time.now - File.mtime(crt_file)).to_i > 30 * 24 * 60 * 60)
+  if !(File.exist?(crt_file)) || ((Time.now - File.mtime(crt_file)).to_i > 30 * 24 * 60 * 60)
     puts "getting cert bundle"
     url = URI.parse("https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt")
 
@@ -1905,7 +1866,7 @@ namespace "config" do
 
     conf_file = File.join($rhodes_home,buildyml)
     $shared_conf = {}
-    if File.exists?(conf_file)
+    if File.exist?(conf_file)
       $logger.info "Shared config is available at #{File.join($rhodes_home,buildyml)}"
       $shared_conf = Jake.config(File.open(File.join($rhodes_home,buildyml)))
     end
@@ -1933,7 +1894,7 @@ namespace "config" do
 
       if $app_path.nil?
         b_y = File.join(Dir.pwd(),'build.yml')
-        if File.exists?(b_y)
+        if File.exist?(b_y)
           $app_path = Dir.pwd()
         end
       end
@@ -1944,11 +1905,11 @@ namespace "config" do
     if (!$app_path.nil?)
       app_yml = File.join($app_path, "build.yml")
 
-      if File.exists?(app_yml)
+      if File.exist?(app_yml)
         # read application config
         $app_config = Jake.config(File.open(app_yml)) if $app_config_disable_reread != true
 
-        if File.exists?(File.join($app_path, "app_rakefile"))
+        if File.exist?(File.join($app_path, "app_rakefile"))
           load File.join($app_path, "app_rakefile")
           $app_rakefile_exist = true
           Rake::Task["app:config"].invoke
@@ -1967,7 +1928,7 @@ namespace "config" do
     # set of certificates from somewhere for windows
     # so lets solve it less hacky, get mozilla's bundle of certs converted by cURL team
     # and use it for accessing via rest client
-    if (/cygwin|mswin|mingw|bccwin/ =~ RUBY_PLATFORM) != nil
+    if (OS.windows?) != nil
       Rhohub.cert_store = get_ssl_cert_bundle_store($rhodes_home, $proxy)
     end
 
@@ -1979,19 +1940,19 @@ namespace "config" do
     $app_extensions_list = {}
     $app_extension_cfg = {}
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       $all_files_mask = "*.*"
       $rubypath = "res/build-tools/RhoRuby.exe"
     else
       $all_files_mask = "*"
-      if RUBY_PLATFORM =~ /darwin/
+      if OS.mac?
         $rubypath = "res/build-tools/RubyMac"
       else
         $rubypath = "res/build-tools/rubylinux"
       end
     end
 
-    if $app_path.nil? || !(File.exists?($app_path))
+    if $app_path.nil? || !(File.exist?($app_path))
       puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
       exit 1
     end
@@ -2291,7 +2252,7 @@ namespace "config" do
     $logger.debug '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
     $logger.debug '%%%_%%% $rubynodejs_application = '+$rubynodejs_application.to_s
 
-    if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
+    if !$js_application && !$nodejs_application && !Dir.exist?(File.join($app_path, "app"))
       BuildOutput.error([
                           "Add javascript_application:true to build.yml, since application does not contain app folder.",
                           "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
@@ -2640,7 +2601,7 @@ def init_extensions(dest, mode = "")
     extpath = nil
     extpaths.each do |p|
       ep = File.join(p, extname)
-      if File.exists?( ep )
+      if File.exist?( ep )
 
          if !is_ext_supported(ep)
           raise "Extension #{extname} is not supported for platform: #{$current_platform}"
@@ -3036,7 +2997,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
 
   return if src_dir == dst_dir
 
-  mkdir_p dst_dir, :verbose => Rake.application.options.trace if not File.exists? dst_dir
+  mkdir_p dst_dir, :verbose => Rake.application.options.trace if not File.exist? dst_dir
 
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -3084,7 +3045,7 @@ def common_bundle_start( startdir, dest)
 
   #rm_rf $srcdir
   mkdir_p $srcdir
-  mkdir_p dest if not File.exists? dest
+  mkdir_p dest if not File.exist? dest
   mkdir_p File.join($srcdir,'apps')
 
   start = pwd
@@ -3109,19 +3070,19 @@ def common_bundle_start( startdir, dest)
 
   chdir startdir
 
-  if File.exists? app + '/app'
+  if File.exist? app + '/app'
     cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
   end
 
   file_map = Jake.build_file_map(File.join($srcdir,'apps/public'), $file_map_name, true)
 
-  if File.exists? app + '/public'
+  if File.exist? app + '/public'
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app
   end
 
   file_map = Jake.build_file_map(File.join($srcdir,'apps/nodejs'), $file_map_name, true)
 
-  if File.exists? app + '/nodejs'
+  if File.exist? app + '/nodejs'
     public_folder_cp_r app + '/nodejs', File.join($srcdir,'apps/nodejs'), 0, file_map, app
   end
 
@@ -3131,10 +3092,10 @@ def common_bundle_start( startdir, dest)
     if $app_config[$config["platform"]] &&
         $app_config[$config["platform"]]["rhoelements"] &&
         $app_config[$config["platform"]]["rhoelements"]["config"] &&
-        (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+        (File.exist? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
 
       $config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
-    elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
+    elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exist? File.join(app, $app_config["rhoelements"]["config"]))
       $config_xml = File.join(app, $app_config["rhoelements"]["config"])
     end
     if $current_platform == "wm"
@@ -3153,18 +3114,18 @@ def common_bundle_start( startdir, dest)
     rm_rf $srcdir + "/apps/app/spec_runner.rb"
   end
 
-  copy_assets($assetfolder, file_map) if ($assetfolder and File.exists? $assetfolder)
+  copy_assets($assetfolder, file_map) if ($assetfolder and File.exist? $assetfolder)
 
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
 
   [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
-    next unless Dir.exists? folder
+    next unless Dir.exist? folder
     chdir folder
 
     Dir.glob("**/*.#{replace_platform}.*").each do |file|
       oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
-      rm oldfile if File.exists? oldfile
+      rm oldfile if File.exist? oldfile
       mv file,oldfile
     end
 
@@ -3187,7 +3148,7 @@ end #end of common_bundle_start
 def create_manifest
   require File.dirname(__FILE__) + '/lib/framework/rhoappmanifest'
 
-  if Dir.exists? File.join($srcdir, 'apps/app')
+  if Dir.exist? File.join($srcdir, 'apps/app')
     fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
     content = fappManifest.read();
   else
@@ -3367,12 +3328,12 @@ namespace "build" do
     # TODO: temporary fix I hope. This code is copied from line 207 of this file
     task :rhostudio => ["config:wm"] do
 
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         $all_files_mask = "*.*"
         $rubypath = "res/build-tools/RhoRuby.exe"
       else
         $all_files_mask = "*"
-        if RUBY_PLATFORM =~ /darwin/
+        if OS.mac?
           $rubypath = "res/build-tools/RubyMac"
         else
           $rubypath = "res/build-tools/rubylinux"
@@ -3659,7 +3620,7 @@ namespace "build" do
 
       new_zip_file = File.join($srcdir, 'apps', 'upgrade_bundle.zip')
 
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
 
         require 'rubygems'
         require 'zip'
@@ -3948,7 +3909,7 @@ task :switch_app => [ 'config:load' ] do
 =begin
   $logger.info "Preparing rhobuild.yml"
   rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
-  if File.exists? rhobuildyml
+  if File.exist? rhobuildyml
     config = YAML::load_file(rhobuildyml)
   else
     $logger.warn "Cant find rhobuild.yml"
@@ -4003,7 +3964,7 @@ namespace "build" do
     src_dir = bin_dir + "/rhoconnect-client-"+ver #"/src"
     shared_dir = src_dir + "/platform/shared"
     rm_rf bin_dir
-    rm    zip_name if File.exists? zip_name
+    rm    zip_name if File.exist? zip_name
     mkdir_p bin_dir
     mkdir_p src_dir
 
@@ -4112,7 +4073,7 @@ namespace "run" do
         extpath = nil
         extpaths.each do |p|
           ep = File.join(p, extname)
-          if File.exists? ep
+          if File.exist? ep
             extpath = ep
             break
           end
@@ -4290,7 +4251,7 @@ namespace "run" do
 
       path = ''
       cmd = ''
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
 
         path = File.join( $startdir, "platform/win32/RhoSimulator" )
         unless File.directory?( path )
@@ -4310,7 +4271,7 @@ namespace "run" do
         args << "-remote-debugging-port=9090"
 
         cmd = File.join(newDir, 'RhoSimulator.exe')
-      elsif RUBY_PLATFORM =~ /darwin/
+      elsif OS.mac?
 
         path = File.join( $startdir, "platform/osx/bin/RhoSimulator" )
         unless File.directory?( path )
@@ -4330,7 +4291,7 @@ namespace "run" do
         args << "2>/dev/null"
       end
 
-      if !File.exists?(path)
+      if !File.exist?(path)
         puts "Cannot find RhoSimulator: '#{path}' does not exists"
         puts "Check sdk path in build.yml - it should point to latest rhodes (run 'set-rhodes-sdk' in application folder) OR"
 
@@ -4345,7 +4306,7 @@ namespace "run" do
 
       puts 'start rhosimulator'
       xwait = false # waiting on Mac OS X is controlled other way. Examine this task.
-      xwait = wait if RUBY_PLATFORM =~ /(win|w)32$/
+      xwait = wait if OS.windows?
       Jake.run2 cmd, args, {:nowait => !xwait}
     end
 
@@ -4362,7 +4323,7 @@ namespace "wm_gem" do
   namespace "build" do
    task :printing_service do
       printing_service_target = File.join(File.dirname(__FILE__), 'libs', 'printing-service')
-      rm_r printing_service_target if File.exists?(printing_service_target)
+      rm_r printing_service_target if File.exist?(printing_service_target)
       mkdir_p printing_service_target
       Rake::Task['printing:build:all'].invoke(printing_service_target)
    end
@@ -4434,11 +4395,11 @@ namespace "build" do
   end
 
   task :rhosimulator do
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       Rake::Task["build:win32:rhosimulator"].invoke
-    elsif RUBY_PLATFORM =~ /darwin/
+    elsif OS.mac?
       Rake::Task["build:osx:rhosimulator"].invoke
-    elsif RUBY_PLATFORM =~ /linux/
+    elsif OS.linux?
       Rake::Task["build:linux:rhosimulator"].invoke
     else
       puts "Sorry, at this time RhoSimulator can be built for Windows, Mac OS X or Linux only"
@@ -4461,9 +4422,9 @@ def downloadRhosim( targetPath )
     commit = `git rev-parse HEAD`.strip
     branch = `git rev-parse --abbrev-ref HEAD`.strip
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/win32-RhoSimulator/RhoSimulator.zip"
-    elsif RUBY_PLATFORM =~ /darwin/
+    elsif OS.mac?
       url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"    
     else
       return
@@ -4580,7 +4541,7 @@ namespace :dev do
       ($app_config["extpaths"] - [$app_path]).each do |path|
         puts "Search path #{path}"
         xmls = Dir.glob(File.join(path,'**','*.xml'))
-        exts = xmls.reject{|f| !File.exists?(File.join(File.split(f)[0],'..','ext.yml'))}
+        exts = xmls.reject{|f| !File.exist?(File.join(File.split(f)[0],'..','ext.yml'))}
         exts.each do |ext|
           puts "Processing #{ext}"
           result = Jake.run2('"'+File.join($startdir,'bin','rhogen')+'"',['api',"\"#{ext}\""],{:hide_output=>true})

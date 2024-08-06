@@ -5,6 +5,9 @@ require 'uuid'
 require 'yaml'
 require 'rexml/document'
 require 'fileutils'
+
+require File.join(File.dirname(__FILE__), '/../../lib/build/compat.rb')
+require File.join(File.dirname(__FILE__), '/../../lib/build/os.rb')
 require File.join(File.dirname(__FILE__), '/../../lib/build/ExtendedString.rb')
 
 require File.join(File.dirname(__FILE__), '/../../lib/build/jake.rb')
@@ -839,7 +842,7 @@ module Rhogen
 	def get_xcode_version
   		info_path = '/Applications/XCode.app/Contents/version.plist'
   		version = '0.0'
-  		if File.exists? info_path
+  		if File.exist? info_path
     		hash = load_plist(info_path)
     		version = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
   		else
@@ -857,7 +860,7 @@ module Rhogen
       @options[:force] = true
       directory.source = 'root'
       directory.destination = 'project/iphone'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -866,7 +869,7 @@ module Rhogen
       #@options[:force] = true
       directory.source = 'Classes'
       directory.destination = 'project/iphone/Classes'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -875,7 +878,7 @@ module Rhogen
       #@options[:force] = true
       directory.source = 'Resources'
       directory.destination = 'project/iphone/Resources'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -883,7 +886,7 @@ module Rhogen
     directory :assets do |directory|
       directory.source = 'Media.xcassets'
       directory.destination = 'project/iphone/Media.xcassets'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -892,7 +895,7 @@ module Rhogen
     #  #@options[:force] = true
     #  directory.source = 'Settings.bundle'
     #  directory.destination = 'project/iphone/Settings.bundle'
-    #  if File.exists?(directory.destination)
+    #  if File.exist?(directory.destination)
     #    directory.destination = 'project/iphone/toremoved'
     #  end
     #end
@@ -910,7 +913,7 @@ module Rhogen
       end
       puts "$$$ template.source = "+template.source.to_s
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
-      if File.exists?(template.destination)
+      if File.exist?(template.destination)
         #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination
         template.destination = 'project/iphone/toremovef'
       else
@@ -998,7 +1001,7 @@ module Rhogen
       @options[:force] = true
       directory.source = 'root'
       directory.destination = 'project/iphone'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         #directory.options[:skip] = 'project/iphone/toremoved'
         directory.destination = 'project/iphone/toremoved'
       end
@@ -1008,7 +1011,7 @@ module Rhogen
       #@options[:force] = true
       directory.source = 'Classes'
       directory.destination = 'project/iphone/Classes'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -1017,7 +1020,7 @@ module Rhogen
       #@options[:force] = true
       directory.source = 'Resources'
       directory.destination = 'project/iphone/Resources'
-      if File.exists?(directory.destination)
+      if File.exist?(directory.destination)
         directory.destination = 'project/iphone/toremoved'
       end
     end
@@ -1026,7 +1029,7 @@ module Rhogen
     #  #@options[:force] = true
     #  directory.source = 'Settings.bundle'
     #  directory.destination = 'project/iphone/Settings.bundle'
-    #  if File.exists?(directory.destination)
+    #  if File.exist?(directory.destination)
     #    directory.destination = 'project/iphone/toremoved'
     #  end
     #end
@@ -1040,7 +1043,7 @@ module Rhogen
         template.source = 'Bremen7_prebuild.xcodeproj/project.pbxproj'
       end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
-      if File.exists?(template.destination)
+      if File.exist?(template.destination)
         template.destination = 'project/iphone/toremovef'
       end
     end

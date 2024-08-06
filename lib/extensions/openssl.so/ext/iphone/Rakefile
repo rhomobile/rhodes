@@ -28,7 +28,7 @@ namespace "build" do
         result_dir = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos")
         result_lib = result_dir + '/libopenssl.so.a'
         target_lib = $targetdir + '/libopenssl.so.a'
-        #if !File.exists?(result_lib)
+        #if !File.exist?(result_lib)
 
             extension_name = "openssl.so"
             extension_lib_name = "openssl.so"

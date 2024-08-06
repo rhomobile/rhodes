@@ -144,7 +144,7 @@ class Aapt2Helper
 
         #make random dir for each target resource dir
         target = File.join( flatsdir, SecureRandom.uuid )
-        raise "Resource target #{target} should not exist at that point" if File.exists?(target)
+        raise "Resource target #{target} should not exist at that point" if File.exist?(target)
         mkdir_p target
 
         Dir[File.join(dir,'**','*')]

@@ -45,7 +45,7 @@ task :default => :all
 
 desc "Build all ruby sources"
 task :all, :continue do |t,args|
-  mkdir_p "obj" unless File.exists? "obj"
+  mkdir_p "obj" unless File.exist? "obj"
   File.open("files.txt").each_line do |file|
     file.chomp!
     s_file = "#{src_dir}/#{file}.c"

@@ -72,7 +72,7 @@ class IPhoneBuild
 
         podfile_path = File.join(currentdir, "Podfile")
 
-        if (File.exists?(podfile_path)) && (!File.exists?(project_workspace_path))
+        if (File.exist?(podfile_path)) && (!File.exist?(project_workspace_path))
             #we shoudl setup project for cocoapods
             puts "We found Podfile, but workspace are not exists - we should run 'pod install' to generte workspace"
 
@@ -82,7 +82,7 @@ class IPhoneBuild
         end
 
 
-        if File.exists?(project_workspace_path)
+        if File.exist?(project_workspace_path)
             args = ['build', '-workspace', ext_name + ".xcworkspace", '-scheme', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
             additional_string = " BUILT_PRODUCTS_DIR="+ build_path+" CONFIGURATION_BUILD_DIR="+build_path
             options = {:string_for_add_to_command_line => additional_string}

@@ -106,17 +106,17 @@ namespace "config" do
 			Jake.modify_file_if_content_changed( File.join($startdir, 'platform','shared','qt','rhodes','RhoSimulatorVersion.h'), fversion )  
 
 			$app_icon_path = $app_path + "/icon/icon.ico"
-			$app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
+			$app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exist? $app_icon_path
 			cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
 
 			$qt_icon_path = $app_path + "/icon/icon.png"
-			$qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
+			$qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exist? $qt_icon_path
 			target_icon_path = $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 			if !FileUtils.compare_file($qt_icon_path, target_icon_path)
 				cp $qt_icon_path, target_icon_path
 			end
 			qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/" + $buildcfg + "/qrc_simulator.cpp"
-			rm qrcfile if File.exists? qrcfile
+			rm qrcfile if File.exist? qrcfile
 		end
 
 	end
@@ -175,7 +175,7 @@ namespace "build" do
 				exit 1
 			end
 		end
-		if File.exists? $vcvarsall
+		if File.exist? $vcvarsall
 			ENV["RHO_VSCMNTOOLS"] = "\"" + $vcvarsall + "\" x86"
 	    else
 	    	raise "Can't locate vcvarsall.bat"
@@ -231,7 +231,7 @@ namespace "build" do
 
       rhoruby_dir = File.join($startdir, 'platform', 'shared', 'rhoruby', 'api')
       rhodeslib_h = File.join($startdir, 'platform', 'shared', 'qt', 'rhodes', 'rhorubyVersion', 'rhodeslib.h')
-      mkdir_p File.join(target_path, 'rhoruby') if not File.exists?  File.join(target_path, 'rhoruby')
+      mkdir_p File.join(target_path, 'rhoruby') if not File.exist?  File.join(target_path, 'rhoruby')
       cp_r rhoruby_dir, File.join(target_path, 'rhoruby')
       cp_r rhodeslib_h, File.join(target_path, 'rhoruby')
 
@@ -254,7 +254,7 @@ namespace "build" do
 
       Rake::Task['build:win32:rhobundle'].invoke
 
-      mkdir_p target_path if not File.exists? target_path
+      mkdir_p target_path if not File.exist? target_path
       cp_r File.join($bindir, "RhoBundle"), target_path
     end
 
@@ -275,7 +275,7 @@ namespace "build" do
 		
 		vcdlls = Dir.glob(File.join(File.dirname(mcvcpdlls.last()), "..", "**" ,"*.dll"))
 		vcdlls.each do |dllpath|
-			cp dllpath, $target_path if !File.exists?(File.join($target_path, File.basename(dllpath)))
+			cp dllpath, $target_path if !File.exist?(File.join($target_path, File.basename(dllpath)))
 		end
 		puts "Joining msvc140 libs"
 
@@ -322,7 +322,7 @@ namespace "build" do
           end
           
           project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
+          next unless (File.exist?( File.join(extpath, "build.bat") ) || project_path)
 
           if ext != 'openssl.so'
             if ext_config.has_key?('libraries')
@@ -373,7 +373,7 @@ namespace "build" do
 
     def generate_extensions_pri(extensions_lib, pre_targetdeps)
       ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
-      mkdir_p ext_dir if not File.exists? ext_dir
+      mkdir_p ext_dir if not File.exist? ext_dir
       File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
         fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
 LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
@@ -387,7 +387,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     end
 
     task :upgrade_package => ["build:win32:rhobundle"] do        
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $targetdir if not File.exist? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
@@ -407,10 +407,10 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       win32rhopath = File.join($prebuild_win32 ? $tmpdir : File.join($vcbindir, "rhodes", 'rho'))
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
-      old_appname = File.read(namepath) if File.exists?(namepath)
+      old_appname = File.read(namepath) if File.exist?(namepath)
 
       confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
-      confpath_content = File.read(confpath) if File.exists?(confpath)
+      confpath_content = File.read(confpath) if File.exist?(confpath)
 
       if $prebuild_win32
         $target_path = $tmpdir
@@ -572,7 +572,7 @@ namespace "device" do
 		license_file = File.join($app_path, license_filename)
 		license_present = '#'
 		license_line = ''
-		if File.exists? license_file
+		if File.exist? license_file
 		  cp license_file, $tmpdir
 		  license_present = ''
 		  license_line = 'File "' + license_filename + '"'
@@ -582,7 +582,7 @@ namespace "device" do
 		readme_file = File.join($app_path, readme_filename)
 		readme_present = '#'
 		readme_line = '#'
-		if File.exists? readme_file
+		if File.exist? readme_file
 		  cp readme_file, $tmpdir
 		  readme_present = ''
 		  readme_line = 'File "' + readme_filename + '"'
@@ -729,8 +729,8 @@ namespace "clean" do
 		rm_rf File.join($startdir, 'platform','win32','bin')
 		rm_rf File.join($startdir, 'platform','wm','bin')
 
-		rm_rf File.join($app_path, "bin","tmp") if File.exists? File.join($app_path, "bin", "tmp")
-		rm_rf File.join($app_path, "bin","RhoBundle") if File.exists? File.join($app_path, "bin", "RhoBundle")
+		rm_rf File.join($app_path, "bin","tmp") if File.exist? File.join($app_path, "bin", "tmp")
+		rm_rf File.join($app_path, "bin","RhoBundle") if File.exist? File.join($app_path, "bin", "RhoBundle")
 	end
 
 end
@@ -740,7 +740,7 @@ namespace "run" do
 
 	def copyBundleToExecutableDir()
 		app_rhodir = File.join($startdir, $vcbindir, "rhodes", 'rho')
-		rm_rf app_rhodir if File.exists?(app_rhodir)
+		rm_rf app_rhodir if File.exist?(app_rhodir)
 		bundleDir = File.join($bindir, 'RhoBundle')
 		FileUtils.cp_r bundleDir, app_rhodir
 	end	
@@ -810,7 +810,7 @@ namespace "run" do
 		  $buildcfg = "Release" unless $buildcfg
 
 		  db_path = File.join($vcbindir, "rhodes", 'rho', 'db')
-		  rm_rf db_path if File.exists?(db_path)
+		  rm_rf db_path if File.exist?(db_path)
 		end
 		#run:win32:spec
 		task :spec => [:delete_db] do
@@ -822,9 +822,9 @@ namespace "run" do
 			    win32logpath = File.join(win32rhopath, "RhoLog.txt")
 			    win32logpospath = File.join(win32rhopath, "RhoLog.txt_pos")
 			    win32configpath = File.join(win32rhopath,"apps", "rhoconfig.txt.changes")
-			    rm_rf win32logpath if File.exists?(win32logpath)
-			    rm_rf win32logpospath if File.exists?(win32logpospath)
-			    rm_rf win32configpath if File.exists?(win32configpath)
+			    rm_rf win32logpath if File.exist?(win32logpath)
+			    rm_rf win32logpospath if File.exist?(win32logpospath)
+			    rm_rf win32configpath if File.exist?(win32configpath)
 
 			    Jake.before_run_spec
 			    start = Time.now
@@ -835,7 +835,7 @@ namespace "run" do
 			    targetDirectory = win32rhopath
 			    targetFileFullName = File.join(targetDirectory, targetFile)
 			    start = Time.now
-			    if File.exists? targetFileFullName
+			    if File.exist? targetFileFullName
 			      Jake.run3("#{File.join($qtdir, 'bin', 'windeployqt')} #{targetFileFullName}")
 			    end
 			    counter = 0

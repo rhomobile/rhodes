@@ -1,6 +1,6 @@
 require 'yaml'
 
-unless File.exists? "build.yml"
+unless File.exist? "build.yml"
   puts "Cannot find build.yml"
   exit 1
 end
@@ -24,7 +24,7 @@ else
   rakefilepath = "#{ENV["RHO_HOME"]}/Rakefile"
 end
 
-unless File.exists? rakefilepath
+unless File.exist? rakefilepath
   puts "\nCannot find your Rhodes gem or source path: #{rakefilepath}"
   puts "\nIf you have the sdk on your path or have installed the gem this"
   puts "can be resolved by running 'set-rhodes-sdk'"

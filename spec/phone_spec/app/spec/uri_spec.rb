@@ -2,7 +2,7 @@ describe "URI" do
 
     before(:all) do
         @@file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'local_file.txt')
-        unless File.exists?(@@file_name)
+        unless File.exist?(@@file_name)
             write_data  = "this is rhodes test"
             f = File.new(@@file_name, "w")
             f.write(write_data)
@@ -12,7 +12,7 @@ describe "URI" do
 
     after(:all) do
 unless System.get_property('platform') == 'WINDOWS'
-        File.delete(@@file_name) if File.exists?(@@file_name)
+        File.delete(@@file_name) if File.exist?(@@file_name)
 end        
     end
 

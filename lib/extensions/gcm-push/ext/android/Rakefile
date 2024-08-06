@@ -100,7 +100,7 @@ task OBJ_AARCH64 => OBJDIR_AARCH64
 def find_source(objfile)
   base = File.basename(objfile, '.o')
   src = SRC.find { |s| File.basename(s) == base }
-  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exists?(src)
+  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exist?(src)
   src
 end
 

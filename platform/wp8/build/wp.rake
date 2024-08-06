@@ -110,7 +110,7 @@ def addRhobundleFilesToCacheFile()
 
   chdir $startdir
 
-  mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}"
+  mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}" if not File.exist? $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}"
   cp xml_path, $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}"
 end
 
@@ -224,7 +224,7 @@ namespace "build" do
             break
           else
             extpath = File.join(p, ext, 'ext')
-            next unless File.exists? File.join(extpath, "build.bat")
+            next unless File.exist? File.join(extpath, "build.bat")
 
             Jake.run3('build.bat', extpath)
             break
@@ -238,7 +238,7 @@ namespace "build" do
     desc "Build WP8 rhobundle"
     task :rhobundle_noext => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
       #move public folder to root
-      #confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+      #confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exist?($srcdir + "/apps/rhoconfig.txt")
       #confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
       #File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) } if confpath_content && confpath_content.length()>0
 
@@ -247,7 +247,7 @@ namespace "build" do
     end
 
     task :upgrade_package => [:rhobundle_noext, :extensions] do        
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $targetdir if not File.exist? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
@@ -262,7 +262,7 @@ namespace "build" do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["wp8path"] +"/rhodes"
-      cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"
+      cp $app_path + "/icon/icon.png", out_dir if File.exist? $app_path + "/icon/icon.ico"
 
       chdir $config["build"]["wp8path"]
 
@@ -294,8 +294,8 @@ namespace "build" do
 
       cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
 
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $bindir if not File.exist? $bindir
+      mkdir_p $targetdir if not File.exist? $targetdir
       mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
     end
@@ -441,8 +441,8 @@ namespace "clean" do
       rm_rf $vcbindir
       rm_rf $targetdir
       
-      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exist? File.join($app_path, "bin/RhoBundle")
       
     end
     task :all => ["clean:wp8:rhodes", "clean:common"]
@@ -522,12 +522,12 @@ namespace "run" do
 
     if $productid != nil
 
-      #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+      #File.delete($app_path + "/started") if File.exist?($app_path + "/started")
       #Jake.run_rho_log_server($app_path)
       #puts "RhoLogServer is starting"
 
       #while (1)
-      #  if File.exists?($app_path + "/started")
+      #  if File.exist?($app_path + "/started")
       #    break
       #  end
       #end
@@ -591,12 +591,12 @@ namespace "run" do
 
       if $productid != nil
         #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-        #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+        #File.delete($app_path + "/started") if File.exist?($app_path + "/started")
         #Jake.run_rho_log_server($app_path)
 
         #puts "RhoLogServer is starting"
         #while (1)
-        #  if File.exists?($app_path + "/started")
+        #  if File.exist?($app_path + "/started")
         #    break
         #  end
         #end

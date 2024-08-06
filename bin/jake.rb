@@ -72,7 +72,7 @@ class Jake
     
   def self.get_absolute_ex(path, currentdir)
     ret_path = File.expand_path(path, currentdir)
-    return ret_path  if File.exists?(ret_path)
+    return ret_path  if File.exist?(ret_path)
 
     path = currentdir + "/" + path
   
@@ -102,7 +102,7 @@ class Jake
             x.gsub!(/%.*?%/, conf.fetch_r($1).to_s)
           end
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
   	      end
   	      s
@@ -116,7 +116,7 @@ class Jake
           newhash[k.to_s] = config_parse(x)
         else
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
           end
           newhash[k.to_s] = s
@@ -184,7 +184,7 @@ class Jake
       f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
       f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
     end
-    if File.exists?(File.join($app_path, 'server.rb'))
+    if File.exist?(File.join($app_path, 'server.rb'))
       $local_server = server
       require File.join($app_path, 'server.rb')
     end
@@ -279,7 +279,7 @@ class Jake
 
     hideerrors = options[:hideerrors]
     if hideerrors
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         nul = "nul"
       else
         nul = "/dev/null"
@@ -327,13 +327,7 @@ class Jake
   
   def self.unjar(src,targetdir)
     jpath = $config["env"]["paths"]["java"]   
-    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
+    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"  
 
       p = Pathname.new(src)
     src = p.realpath
@@ -352,13 +346,8 @@ class Jake
   
   def self.jarfilelist(target)
     jpath = $config["env"]["paths"]["java"]   
-    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
+    cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"  
+
     target.gsub!(/"/,"")
 
     args = []
@@ -374,8 +363,7 @@ class Jake
   def self.jar(target,manifest,files,isfolder=false)
     jpath = $config["env"]["paths"]["java"]   
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-    #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
-	
+
     target.gsub!(/"/,"")
     
     args = []
@@ -494,7 +482,7 @@ class Jake
   def self.modify_file_if_content_changed(file_name, f)
     f.rewind
     content = f.read()
-    old_content = File.exists?(file_name) ? File.read(file_name) : ""
+    old_content = File.exist?(file_name) ? File.read(file_name) : ""
 
     if old_content != content  
         puts "Modify #{file_name}"      
@@ -528,12 +516,12 @@ class Jake
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
 
-      File.delete(zip_file_path) if File.exists?(zip_file_path)
+      File.delete(zip_file_path) if File.exist?(zip_file_path)
 
       currentdir = Dir.pwd()
       Dir.chdir folder_path
       
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         begin
       
           require 'rubygems'
@@ -578,7 +566,7 @@ class Jake
   
   def self.run_rho_log_server(app_path)
 
-	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exist?($srcdir + "/apps/rhoconfig.txt")
 	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
 	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
   

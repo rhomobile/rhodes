@@ -17,9 +17,9 @@ end
     app_root = Rho::RhoApplication::get_base_app_path
     public_root = File.join(app_root, 'public')  
 
-    File.exists?(File.join(public_root, 'folder_to_remove', 'switch.png')).should == true   
+    File.exist?(File.join(public_root, 'folder_to_remove', 'switch.png')).should == true   
 
-    File.exists?(File.join(public_root, 'file_for_replace.txt')).should == true   
+    File.exist?(File.join(public_root, 'file_for_replace.txt')).should == true   
 
     content = ''
     fileName = File.join(public_root, 'file_for_replace.txt')
@@ -33,11 +33,11 @@ end
     content.should == 'original'    
   
       
-    File.exists?(File.join(public_root, 'file_to_remove.png')).should == true   
+    File.exist?(File.join(public_root, 'file_to_remove.png')).should == true   
     
-    File.exists?(File.join(public_root, 'folder_to_remove.png')).should == true   
+    File.exist?(File.join(public_root, 'folder_to_remove.png')).should == true   
       
-    File.exists?(File.join(public_root, 'added', 'added_image.png')).should == false   
+    File.exist?(File.join(public_root, 'added', 'added_image.png')).should == false   
 
 
     # do partial bundle update
@@ -59,9 +59,9 @@ end
 
     # check updated content
 
-    File.exists?(File.join(public_root, 'folder_to_remove', 'switch.png')).should == false   
+    File.exist?(File.join(public_root, 'folder_to_remove', 'switch.png')).should == false   
         
-    File.exists?(File.join(public_root, 'file_for_replace.txt')).should == true   
+    File.exist?(File.join(public_root, 'file_for_replace.txt')).should == true   
         
     content = ''
     fileName = File.join(public_root, 'file_for_replace.txt')
@@ -73,11 +73,11 @@ end
     #end
     content.should == 'replaced'    
             
-    File.exists?(File.join(public_root, 'file_to_remove.png')).should == false   
+    File.exist?(File.join(public_root, 'file_to_remove.png')).should == false   
             
-    File.exists?(File.join(public_root, 'folder_to_remove.png')).should == true   
+    File.exist?(File.join(public_root, 'folder_to_remove.png')).should == true   
             
-    File.exists?(File.join(public_root, 'added', 'added_image.png')).should == true   
+    File.exist?(File.join(public_root, 'added', 'added_image.png')).should == true   
 
 
   end

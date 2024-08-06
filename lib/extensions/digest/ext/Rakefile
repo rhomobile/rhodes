@@ -21,7 +21,7 @@ def build_extension(name, arch)
   end
 
   objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+  mkdir_p $tempdir unless File.exist? $tempdir
 
   Dir.glob("*.c").each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
