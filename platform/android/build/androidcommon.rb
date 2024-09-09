@@ -479,7 +479,7 @@ def cc_clean(name)
   end
 end
 
-def java_compile(outpath, classpath, srclist)
+def java_compile(outpath, classpath, srclist, java_version)
     javac = $config["env"]["paths"]["java"] + "/javac#{HostPlatform.exe_ext}"
 
     args = []
@@ -487,9 +487,9 @@ def java_compile(outpath, classpath, srclist)
     args << "-d"
     args << "\"" + outpath + "\""
     args << "-source"
-    args << "1.6"
+    args << "1.#{java_version}"
     args << "-target"
-    args << "1.6"
+    args << "1.#{java_version}"
     args << "-nowarn"
     args << "-encoding"
     args << "latin1"
@@ -502,7 +502,7 @@ def java_compile(outpath, classpath, srclist)
     end
 end
 
-def java_build(jarpath, buildpath, classpath, srclists)
+def java_build(jarpath, buildpath, classpath, srclists, java_version)
     deps = []
 
     fullsrclist = nil
@@ -542,7 +542,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
     buildpath = File.join(buildpath,'.java')
     mkdir_p buildpath unless File.directory? buildpath
 
-    java_compile(buildpath, classpath, fullsrclist)
+    java_compile(buildpath, classpath, fullsrclist, java_version)
 
     args = []
 

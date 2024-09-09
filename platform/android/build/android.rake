@@ -970,6 +970,11 @@ namespace "config" do
           AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
         }
       end
+
+      $java_version = 7
+      if ($app_config["android"] && $app_config["android"]["java_version"])
+        $java_version = $app_config["android"]["java_version"]
+      end
     end
     
     unless $debug
@@ -2585,8 +2590,9 @@ namespace "build" do
         javafilelists << extlist
       end
 
-      jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')
-      java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
+      jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')      
+
+      java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists, $java_version)
 
       $android_jars = [jar]
       print_timestamp('build:android:rhodes FINISH')
@@ -2634,7 +2640,7 @@ namespace "build" do
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
 
-        java_build(extjar, buildpath, ext_classpath, [srclist.path])
+        java_build(extjar, buildpath, ext_classpath, [srclist.path], $java_version)
 
         $android_jars << extjar
 
