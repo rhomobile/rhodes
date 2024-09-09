@@ -152,7 +152,7 @@ jobs:
       Android_14_auto_common_spec:
         ANDROID_VERSION: 14
         ANDROID_TARGET_SDK: 34
-        NDK_VERSION: 26.0.10792818
+        NDK_VERSION: 26.3.11579264
         RHO_ANDROID_MIN_SDK: 34
         ANDROID_ABIS: "aarch64,x86"
         RHO_APP: "auto_common_spec"
