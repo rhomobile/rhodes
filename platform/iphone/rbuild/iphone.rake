@@ -651,12 +651,22 @@ LOADINGIMAGES = [
 'Default-896h@3x.png',
 'Default-Portrait.png',
 'Default-Portrait@2x.png',
+'Default-Portrait-1004h.png',
+'Default-Portrait-1004h@2x.png',
+'Default-Portrait-1112h@2x.png',
+'Default-Portrait-1194h@2x.png',
+'Default-Portrait-1366h@2x.png',
 'Default-Landscape.png',
 'Default-Landscape@2x.png',
 'Default-Landscape-736h@3x.png',
 'Default-Landscape-812h@3x.png',
 'Default-Landscape-896h@2x.png',
-'Default-Landscape-896h@3x.png'
+'Default-Landscape-896h@3x.png',
+'Default-Landscape-1024h.png',
+'Default-Landscape-1024h@2x.png',
+'Default-Landscape-1112h@2x.png',
+'Default-Landscape-1194h@2x.png',
+'Default-Landscape-1366h@2x.png'
 ]
 
 def remove_lines_from_xcode_project(array_with_substrings)
