@@ -46,6 +46,7 @@
 
 + (UIImage*)getLoadingImage;
 + (BOOL)hasLoadingImage;
++ (BOOL)hasLoadingScreenStoryboard;
 
 +(BOOL)isReplaceContentWhenSnapshot;
 

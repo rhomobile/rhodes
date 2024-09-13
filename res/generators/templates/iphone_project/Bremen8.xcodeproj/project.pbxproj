@@ -67,6 +67,7 @@
 		FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7893183C3A8200BC7028 /* libRhodes.a */; };
 		FAF3BF3218E26D3B00860FCA /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3018E26D3B00860FCA /* app_build_configs.c */; };
 		FAF3BF3318E26D3B00860FCA /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3118E26D3B00860FCA /* extensions.c */; };
+		FAFAEA392C91E32E009DC17B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +155,7 @@
 		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
 		FAF3BF3118E26D3B00860FCA /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = Rhodes/extensions.c; sourceTree = "<group>"; };
+		FAFAEA382C91E32E009DC17B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +222,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */,
 				FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */,
 				A81EA26920228C0600E2F8AD /* Media.xcassets */,
 				<PLACEHOLDER FOR RESOURCES 03>
@@ -420,6 +423,7 @@
 				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
 				FA75B4972BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy in Resources */,
 				FA20C1AA182AFD760036D304 /* forward_btn.png in Resources */,
+				FAFAEA392C91E32E009DC17B /* LaunchScreen.storyboard in Resources */,
 				FA20C1B4182AFD870036D304 /* esri@2x.png in Resources */,
 				FA20C1AB182AFD760036D304 /* gears.png in Resources */,
 				FAD18F261E3AF8100064808C /* forward_btn@3x.png in Resources */,
@@ -503,6 +507,17 @@
 			targetProxy = FAED78CC183C3CDF00BC7028 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FAFAEA382C91E32E009DC17B /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {

@@ -84,6 +84,9 @@ iphone:
   #You must define "arm64" architecture for ARCHS_simulator on M CPU based computers !
   ARCHS_simulator : ["x86_64"]
   ARCHS_device : ["arm64"]
+  ## Use launch screen storyboard instead of launch screen images (old style launch images)
+  ## recommended to enable, default - enabled
+  #enable_launch_screen_storyboard: false
   ## Note: Provisioning
   ## There are two provisioning type for modern XCode: Automatic and Manual
   ## development_team must be configured for any type provisioning
