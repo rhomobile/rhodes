@@ -710,7 +710,7 @@ static Rhodes *instance = NULL;
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
-    if ([SplashViewController hasLoadingImage]) {
+    if ([SplashViewController hasLoadingImage] || [SplashViewController hasLoadingScreenStoryboard]) {
         splashViewController = [[SplashViewController alloc] initWithParentView:window];
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
@@ -718,7 +718,7 @@ static Rhodes *instance = NULL;
         NSString *data = [NSString stringWithContentsOfFile:htmPath encoding:NSUTF8StringEncoding error:&err];
         [mainView loadHTMLString:data];
     }
-	return [SplashViewController hasLoadingImage];
+	return [SplashViewController hasLoadingImage] || [SplashViewController hasLoadingScreenStoryboard];
 }
 
 // execute rho_splash_screen_start(); - we can do it only after Rhodes initialization

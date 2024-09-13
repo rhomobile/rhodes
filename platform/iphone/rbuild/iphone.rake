@@ -111,6 +111,10 @@ def set_app_plist_options(fname, appname, bundle_identifier, version, url_scheme
       hash['CFBundleShortVersionString'] = version
     end
 
+    if $enable_launch_screen_storyboard
+        hash['UILaunchStoryboardName'] = "LaunchScreen"
+    end
+
     if block_given?
       yield hash
     end
@@ -755,6 +759,40 @@ def set_default_images(make_bak, plist_hash)
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
   end
+
+  #set laucnh screen images
+  puts "set launch screen images"
+  ipathbkg = $app_path + "/project/iphone/Media.xcassets/LaunchScreenBackground.imageset"
+  ipathlogo = $app_path + "/project/iphone/Media.xcassets/LaunchScreenLogo.imageset"
+  begin
+
+    name_bkg = "LaunchScreenBkg.png"
+    name_logo = "LaunchScreenLogo.png"
+
+    imag_bkg = File.join(ipathbkg, name_bkg)
+    imag_logo = File.join(ipathlogo, name_logo)
+
+    resourcesiamge_bkg = File.join($app_path, 'resources', 'ios', name_bkg)
+    resourcesiamge_logo = File.join($app_path, 'resources', 'ios', name_logo)
+
+    if File.exist? resourcesiamge_bkg
+        rm_f imag_bkg
+        cp resourcesiamge_bkg, imag_bkg
+    end
+
+    if File.exist? resourcesiamge_logo
+        rm_f imag_logo
+        cp resourcesiamge_logo, imag_logo
+    end
+
+    if $enable_launch_screen_storyboard
+        remove_lines_from_xcode_project(["ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;"])
+    end
+
+  rescue => e
+    puts "WARNING!!! Can not change launch screen images: #{e.to_s}"
+  end
+
 
 end
 
@@ -1456,6 +1494,7 @@ namespace "config" do
       $sdk = $config["env"]["iphone"]["sdk"]
       $emulatortarget = 'iphone'
       $enable_bitcode = true
+      $enable_launch_screen_storyboard = true
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
@@ -1476,6 +1515,18 @@ namespace "config" do
           else
               if (en_bitcode == "false") || (en_bitcode == "0") || (en_bitcode == 0)
                   $enable_bitcode = false
+              end
+          end
+      end
+      enable_launch_screen_storyboard = $app_config["iphone"]["enable_launch_screen_storyboard"]
+      $enable_launch_screen_storyboard = true
+      if enable_launch_screen_storyboard != nil
+          $enable_launch_screen_storyboard = true
+          if (enable_launch_screen_storyboard.class == TrueClass) || (enable_launch_screen_storyboard.class == FalseClass)
+              $enable_launch_screen_storyboard = enable_launch_screen_storyboard
+          else
+              if (enable_launch_screen_storyboard == "false") || (enable_launch_screen_storyboard == "0") || (enable_launch_screen_storyboard == 0)
+                  $enable_launch_screen_storyboard = false
               end
           end
       end

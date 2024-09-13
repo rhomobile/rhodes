@@ -31,6 +31,7 @@
 #include "common/RhoConf.h"
 
 static UIImage* splash_image = nil;
+static UIViewController* launch_screen_view_controller = nil;
 
 CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
@@ -186,13 +187,47 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
     CGRect frame = [[UIScreen mainScreen] bounds];
     
     
-    
-    
-    splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
-	
-	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	splashView.autoresizesSubviews = YES;
-	self.view = splashView;
+    if ([SplashViewController hasLoadingImage]) {
+        splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
+        splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        splashView.autoresizesSubviews = YES;
+        self.view = splashView;
+        
+        //UIView *view = [[UIView alloc] initWithFrame:frame];
+        //view.backgroundColor = [UIColor yellowColor];
+
+        //self.view = view;
+    }
+    else {
+        UIView *view = [[UIView alloc] initWithFrame:frame];
+        view.backgroundColor = [UIColor blackColor];
+        
+        @try {
+            UIStoryboard *sb = [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:nil];
+            launch_screen_view_controller = [[sb instantiateInitialViewController] retain];
+            
+            UIView* vi = launch_screen_view_controller.view;
+            CGRect rrr = vi.frame;
+            
+            //view = vc.view;
+            
+            ((UIWindow*)parentView).rootViewController = launch_screen_view_controller;
+            [((UIWindow*)parentView) bringSubviewToFront:launch_screen_view_controller.view];
+            //self.view = view;
+            
+            //((UIWindow*)parentView).rootViewController = self;
+            //[self presentViewController:launch_screen_view_controller animated:NO completion:nil];
+            
+            
+            return self;
+        }
+        @catch (NSException* e) {
+            
+        }
+        self.view = view;
+
+
+    }
     
     //[parentView addSubview:splashView];
     ((UIWindow*)parentView).rootViewController = self;
@@ -211,10 +246,40 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
         splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         splashView.autoresizesSubviews = YES;
         self.view = splashView;
+        
+        //UIView *view = [[UIView alloc] initWithFrame:frame];
+        //view.backgroundColor = [UIColor yellowColor];
+
+        //self.view = view;
+        
     }
     else {
-        self.view = [[UIView alloc] initWithFrame:frame];
-        self.view.backgroundColor = [UIColor blackColor];
+        UIView *view = [[UIView alloc] initWithFrame:frame];
+        view.backgroundColor = [UIColor blackColor];
+        
+        @try {
+            UIStoryboard *sb = [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:nil];
+            launch_screen_view_controller = [[sb instantiateInitialViewController] retain];
+            
+            UIView* vi = launch_screen_view_controller.view;
+            CGRect rrr = vi.frame;
+
+            //view = vc.view;
+            
+            ((UIWindow*)parentView).rootViewController = launch_screen_view_controller;
+            [((UIWindow*)parentView) bringSubviewToFront:launch_screen_view_controller.view];
+            //self.view = view;
+
+            //((UIWindow*)parentView).rootViewController = self;
+            //[self presentViewController:launch_screen_view_controller animated:NO completion:nil];
+
+            
+            return self;
+        }
+        @catch (NSException* e) {
+            
+        }
+        self.view = view;
     }
     
     return self;
@@ -223,11 +288,23 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
 
 - (void)hideSplash {
     rho_splash_screen_hide();
-    [splashView removeFromSuperview];
+    if (splashView != nil) {
+        [splashView removeFromSuperview];
+    }
+    if (launch_screen_view_controller != nil) {
+        //[launch_screen_view_controller dismissViewControllerAnimated:NO completion:nil];
+        //[launch_screen_view_controller.view removeFromSuperview];
+        launch_screen_view_controller = nil;
+    }
 }
 
 - (void)bringToFront {
-    [parentView bringSubviewToFront:splashView];
+    if (splashView != nil) {
+        [parentView bringSubviewToFront:splashView];
+    }
+    if (launch_screen_view_controller != nil) {
+        [parentView bringSubviewToFront:launch_screen_view_controller.view];
+    }
 }
 
 - (void)viewDidUnload {
@@ -420,6 +497,31 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
     return (splash_image != nil);
    
 }
+
++ (BOOL)hasLoadingScreenStoryboard {
+    @try {
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:nil];
+        launch_screen_view_controller = [sb instantiateInitialViewController];
+        if (launch_screen_view_controller != nil) {
+            return YES;
+        }
+    }
+    @catch (NSException *e) {
+        
+    }
+    return NO;
+    
+    /*
+     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+    if (objects != nil) {
+        if ([objects count] > 0) {
+            return YES;
+        }
+    }
+    return NO;
+     */
+}
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
