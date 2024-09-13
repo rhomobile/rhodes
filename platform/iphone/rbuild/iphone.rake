@@ -1494,7 +1494,7 @@ namespace "config" do
       $sdk = $config["env"]["iphone"]["sdk"]
       $emulatortarget = 'iphone'
       $enable_bitcode = true
-      $enable_launch_screen_storyboard = true
+      $enable_launch_screen_storyboard = false
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
@@ -1519,7 +1519,7 @@ namespace "config" do
           end
       end
       enable_launch_screen_storyboard = $app_config["iphone"]["enable_launch_screen_storyboard"]
-      $enable_launch_screen_storyboard = true
+      $enable_launch_screen_storyboard = false
       if enable_launch_screen_storyboard != nil
           $enable_launch_screen_storyboard = true
           if (enable_launch_screen_storyboard.class == TrueClass) || (enable_launch_screen_storyboard.class == FalseClass)
