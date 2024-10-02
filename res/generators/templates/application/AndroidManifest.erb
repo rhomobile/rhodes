@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?> 
+<?xml version='1.0' encoding='UTF-8'?>
 <manifest xmlns:android='http://schemas.android.com/apk/res/android'
           package='<%= @appPackageName %>'
           android:versionName='<%= @versionName %>'
@@ -11,12 +11,12 @@
       android:maxSdkVersion='<%= @maxSdkVer %>'
     <% end %>
   />
-  
+
   <!-- Permission declarations -->
   <% @permissions.each do |name, protectionLevel| %>
   <permission android:name='<%=name%>' android:protectionLevel='<%=protectionLevel%>'/>
   <% end %>
-  
+
   <!-- Uses permissions -->
   <% @usesPermissions.each do |name| %>
   <uses-permission android:name='<%=name%>'/>
@@ -25,7 +25,10 @@
 
   <%# <!-- Installing the package -->
   <uses-permission android:name='android.permission.REQUEST_INSTALL_PACKAGES'/> %>
-  
+
+  <uses-permission android:name='android.permission.FOREGROUND_SERVICE'/>
+  <uses-permission android:name='android.permission.FOREGROUND_SERVICE_SPECIAL_USE'/>
+
   <permission android:name="<%= @appPackageName %>.permission.RECEIVE_BROADCAST" android:protectionLevel="signature"/>
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
@@ -69,7 +72,9 @@
     <activity android:name='com.rhomobile.rhodes.datetime.DateTimePickerScreen' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
-    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false' />
+    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false' android:foregroundServiceType='specialUse' >
+      <property android:name='android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE' android:value='Required to run API and components of RhoMobile platform.'/>
+    </service>
 
     <% if  @androidVerMaj >= 7 %>
       <provider
@@ -79,7 +84,7 @@
         android:grantUriPermissions='true'>
         <meta-data
           android:name='android.support.FILE_PROVIDER_PATHS'
-          android:resource='@xml/provider_paths' />        
+          android:resource='@xml/provider_paths' />
       </provider>
     <% else %>
       <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
