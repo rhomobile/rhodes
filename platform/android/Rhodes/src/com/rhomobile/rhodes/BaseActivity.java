@@ -224,12 +224,14 @@ public class BaseActivity extends Activity implements ServiceConnection {
             
             if(RhodesService.getInstance() == null) {
                 Logger.D(TAG, "onCreate() startForegroundService PRE");
+                /*
                 if (sdkVersion >= 28) {
                     serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
                 }
                 else {
+                */
                     serviceName = startService(intent);
-                }
+                //}
                 Logger.D(TAG, "onCreate() startForegroundService POST");
                 //ComponentName serviceName = startService(intent);
                 if (serviceName == null)
@@ -319,13 +321,15 @@ public class BaseActivity extends Activity implements ServiceConnection {
             int sdkVersion = Build.VERSION.SDK_INT;
             
             if(RhodesService.getInstance() == null) {
+                /*
                 Logger.D(TAG, "onCreate() startForegroundService PRE");
                 if (sdkVersion >= 28) {
                     serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
                 }
                 else {
+                */
                     serviceName = startService(intent);
-                }
+                //}
                 Logger.D(TAG, "onCreate() startForegroundService POST");
                 //ComponentName serviceName = startService(intent);
                 if (serviceName == null)

@@ -367,15 +367,6 @@ public class RhodesService extends Service {
 		Logger.D(TAG, "innerStartForeground() START");
 		if (Build.VERSION.SDK_INT >= 26) {
             String CHANNEL_ID = "Rhodes_Service_Channel";
-            //NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-            //        "Rhomobile Platform Service",
-            //        NotificationManager.IMPORTANCE_DEFAULT);
-
-            //((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-
-            //Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-            //        .setContentTitle("")
-            //        .setContentText("").build();
 
 			Logger.D(TAG, "innerStartForeground() prepare builder PRE");
 			Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilderForService(this, CHANNEL_ID, "Rhomobile Platform Service");
@@ -416,9 +407,12 @@ public class RhodesService extends Service {
 		Logger.D(TAG, "onCreate");
 		super.onCreate();
 		// use new mechanism for foregorund service only for 9.0 and later
+		
+		/*
 		if (Build.VERSION.SDK_INT >= 28) {
 			innerStartForeground();
 		}
+			*/
 
 		sInstance = this;
 
@@ -540,10 +534,13 @@ public class RhodesService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
+
 		// use new mechanism for foregorund service only for 9.0 and later
+		/*
 		if (Build.VERSION.SDK_INT >= 28 && intent.getStringArrayListExtra("BEACONS") == null){
 			innerStartForeground();
 		}
+		*/
 		try {
 			handleCommand(intent, startId);
 		}
@@ -619,62 +616,6 @@ public class RhodesService extends Service {
         } else {
             RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         }
-	}
-
-	public void startServiceForeground(int id, Notification notification) {
-		if (mStartForeground != null) {
-			try {
-				mStartForeground.invoke(this, new Object[] {Integer.valueOf(id), notification});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke startForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke startForeground", e);
-			}
-			return;
-		}
-
-		if (mSetForeground != null) {
-			try {
-				mSetForeground.invoke(this, new Object[] {Boolean.valueOf(true)});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke setForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke setForeground", e);
-			}
-		}
-		mNM.notify(id, notification);
-	}
-
-	public void stopServiceForeground(int id) {
-		if (mStopForeground != null) {
-			try {
-				mStopForeground.invoke(this, new Object[] {Integer.valueOf(id)});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke stopForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke stopForeground", e);
-			}
-			return;
-		}
-
-		mNM.cancel(id);
-		if (mSetForeground != null) {
-			try {
-				mSetForeground.invoke(this, new Object[] {Boolean.valueOf(false)});
-			}
-			catch (InvocationTargetException e) {
-				Log.e(TAG, "Unable to invoke setForeground", e);
-			}
-			catch (IllegalAccessException e) {
-				Log.e(TAG, "Unable to invoke setForeground", e);
-			}
-		}
 	}
 
 	public void setMainView(MainView v) throws NullPointerException {
@@ -1196,216 +1137,6 @@ public class RhodesService extends Service {
 		}
 	}
 
-	/*private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
-		Context context = RhodesActivity.getContext();
-
-		RemoteViews expandedView = new RemoteViews(context.getPackageName(),
-				R.layout.status_bar_ongoing_event_progress_bar);
-
-		StringBuilder newUrl = new StringBuilder();
-		if (url.length() < 17)
-			newUrl.append(url);
-		else {
-			newUrl.append(url.substring(0, 7));
-			newUrl.append("...");
-			newUrl.append(url.substring(url.length() - 7, url.length()));
-		}
-		expandedView.setTextViewText(R.id.title, newUrl.toString());
-
-		StringBuffer downloadingText = new StringBuffer();
-		if (totalBytes > 0) {
-			long progress = currentBytes*100/totalBytes;
-			downloadingText.append(progress);
-			downloadingText.append('%');
-		}
-		expandedView.setTextViewText(R.id.progress_text, downloadingText.toString());
-		expandedView.setProgressBar(R.id.progress_bar,
-				totalBytes < 0 ? 100 : totalBytes,
-				currentBytes,
-				totalBytes < 0);
-
-		Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(context,String.valueOf(DOWNLOAD_PACKAGE_ID),url);
-
-		builder.setSmallIcon(android.R.drawable.stat_sys_download);
-		builder.setDefaults(Notification.FLAG_ONGOING_EVENT);
-		//min API = 24
-		//builder.setCustomContentView(expandedView);
-		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
-		builder.setContentIntent(PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE));
-		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
-		builder.setDeleteIntent(PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE));
-
-		mNM.notify(DOWNLOAD_PACKAGE_ID, builder.build() );
-	}
-
-	private File downloadPackage(String url) throws IOException {
-		File packageFile = new File(url);
-		if (packageFile.exists()) {
-			return packageFile;
-		}else{
-			final Context ctx = RhodesActivity.getContext();
-
-			final Thread thisThread = Thread.currentThread();
-
-			final Runnable cancelAction = new Runnable() {
-				public void run() {
-					thisThread.interrupt();
-				}
-			};
-
-			BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
-				@Override
-				public void onReceive(Context context, Intent intent) {
-					String action = intent.getAction();
-					if (action.equals(ACTION_ASK_CANCEL_DOWNLOAD)) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-						builder.setMessage("Cancel download?");
-						AlertDialog dialog = builder.create();
-						dialog.setButton(AlertDialog.BUTTON_POSITIVE, ctx.getText(android.R.string.yes),
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) {
-										cancelAction.run();
-									}
-						});
-						dialog.setButton(AlertDialog.BUTTON_NEGATIVE, ctx.getText(android.R.string.no),
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) {
-										// Nothing
-									}
-								});
-						dialog.show();
-					}
-					else if (action.equals(ACTION_CANCEL_DOWNLOAD)) {
-						cancelAction.run();
-					}
-				}
-			};
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(ACTION_ASK_CANCEL_DOWNLOAD);
-			filter.addAction(ACTION_CANCEL_DOWNLOAD);
-			ctx.registerReceiver(downloadReceiver, filter);
-
-			File tmpFile = null;
-			InputStream is = null;
-			OutputStream os = null;
-			try {
-				updateDownloadNotification(url, -1, 0);
-
-
-				// List<File> folders = new ArrayList<File>();
-				// folders.add(Environment.getDownloadCacheDirectory());
-				// folders.add(Environment.getDataDirectory());
-				// folders.add(ctx.getCacheDir());
-				// folders.add(ctx.getFilesDir());
-				// try {
-				// 	folders.add(new File(ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), 0).dataDir));
-				// } catch (NameNotFoundException e1) {
-				// 	// Ignore
-				// }
-				// folders.add(Environment.getExternalStorageDirectory());
-
-				// for (File folder : folders) {
-				// 	File tmpRootFolder = new File(folder, "rhodownload");
-				// 	File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
-				// 	if (tmpFolder.exists())
-				// 		deleteFilesInFolder(tmpFolder.getAbsolutePath());
-				// 	else
-				// 		tmpFolder.mkdirs();
-
-				// 	File of = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
-				// 	Logger.D(TAG, "Check path " + of.getAbsolutePath() + "...");
-				// 	try {
-				// 		os = new FileOutputStream(of);
-				// 	}
-				// 	catch (FileNotFoundException e) {
-				// 		Logger.D(TAG, "Can't open file " + of.getAbsolutePath() + ", check next path");
-				// 		continue;
-				// 	}
-				// 	Logger.D(TAG, "File " + of.getAbsolutePath() + " succesfully opened for write, start download app");
-
-				// 	tmpFile = of;
-				// 	break;
-				// }
-
-
-				tmpFile = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UUID.randomUUID().toString() + ".apk" );
-				os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_PRIVATE);
-
-				Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
-
-				URL u = new URL(url);
-				URLConnection conn = u.openConnection();
-				int totalBytes = -1;
-				if (conn instanceof HttpURLConnection) {
-					HttpURLConnection httpConn = (HttpURLConnection)conn;
-					totalBytes = httpConn.getContentLength();
-				}
-				is = conn.getInputStream();
-
-				int downloaded = 0;
-				updateDownloadNotification(url, totalBytes, downloaded);
-
-				long prevProgress = 0;
-				byte[] buf = new byte[65536];
-				for (;;) {
-					if (thisThread.isInterrupted()) {
-						tmpFile.delete();
-						Logger.D(TAG, "Download of " + url + " was canceled");
-						return null;
-					}
-					int nread = is.read(buf);
-					if (nread == 0)
-						break;
-
-					//Logger.D(TAG, "Downloading " + url + ": got " + nread + " bytes...");
-					os.write(buf, 0, nread);
-
-					downloaded += nread;
-					if (totalBytes > 0) {
-						// Update progress view only if current progress is greater than
-						// previous by more than 10%. Otherwise, if update it very frequently,
-						// user will no have chance to click on notification view and cancel if need
-						long progress = downloaded*10/totalBytes;
-						if (progress > prevProgress) {
-							updateDownloadNotification(url, totalBytes, downloaded);
-							prevProgress = progress;
-						}
-					}
-				}
-
-				Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
-				Log.d(TAG, "File stored to " + tmpFile.getAbsolutePath());
-
-
-				Logger.D(TAG, "File exist :"+ tmpFile.exists());
-				Log.d(TAG, "File exist :"+ tmpFile.exists());
-
-				return tmpFile;
-			}
-			catch (IOException e) {
-
-				Logger.D(TAG, e.toString());
-				e.printStackTrace();
-
-				if (tmpFile != null)
-					tmpFile.delete();
-				throw e;
-			}
-			finally {
-				try {
-					if (is != null)
-						is.close();
-				} catch (IOException e) {}
-				try {
-					if (os != null)
-						os.close();
-				} catch (IOException e) {}
-
-				mNM.cancel(DOWNLOAD_PACKAGE_ID);
-				ctx.unregisterReceiver(downloadReceiver);
-			}
-		}
-	} */
 
 	private void downloadPackage(String url) throws IOException{
 		final String packageName = (UUID.randomUUID().toString() + ".apk");
