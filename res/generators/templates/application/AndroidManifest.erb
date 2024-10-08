@@ -79,7 +79,7 @@
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false' <% if  @targetSdkVer >= 34 %> android:foregroundServiceType="systemExempted" <% end %>/>
 
 
-    <% if  @androidVerMaj >= 7 %>
+    <% if  @androidVerMaj >= 7 && (@usesPermissions&["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"]).length > 0 %>
       <provider
         android:name='com.rhomobile.rhodes.RhoFileProvider'
         android:authorities='<%=@appPackageName%>.provider'
