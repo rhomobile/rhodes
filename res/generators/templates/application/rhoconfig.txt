@@ -182,3 +182,6 @@ use_kinetic_scroll_on_windows = 1
 
 # (NOT RECOMMENDED) if you want to use the old encryption system, set the value to 1
 #using_an_old_encryption_system = 0
+
+# Use the new service startup system (startForegroundService)
+#using_start_foreground_service = 1

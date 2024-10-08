@@ -121,33 +121,33 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
         return getNotificationBuilderEx(ctx, channelID, channelName, IMPORTANCE_UNSPECIFIED, false);
     }
 
-    @Override
-	public ComponentName startForegroundService(Activity activity, Intent service) {
-        Logger.D( TAG, "startForegroundService() START" );
-        java.lang.reflect.Method methodStartForegroundService = null;
-        ComponentName resultOfInvoke = null;
-        try {
-            methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
-        } catch( Exception e ) {
-            Logger.E( TAG, "Error: Activity class do not has startForegroundService() method !" );
-            Logger.E( TAG, e.toString() );
-        }
-        if (methodStartForegroundService!= null) {
-            try {
-                Logger.D( TAG, "invoke startForegroundService()" );
-                resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
-            } catch( Exception e ) {
-                Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
-                Logger.E( TAG, e.toString() );
-            }
-        }
-        else {
-            Logger.D( TAG, "use old startService()" );
-            resultOfInvoke = activity.startService(service);
-        }
-        Logger.D( TAG, "startForegroundService() FINISH" );
-        return resultOfInvoke;
-	}
+    // @Override
+	// public ComponentName startForegroundService(Activity activity, Intent service) {
+    //     Logger.D( TAG, "startForegroundService() START" );
+    //     java.lang.reflect.Method methodStartForegroundService = null;
+    //     ComponentName resultOfInvoke = null;
+    //     try {
+    //         methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
+    //     } catch( Exception e ) {
+    //         Logger.E( TAG, "Error: Activity class do not has startForegroundService() method !" );
+    //         Logger.E( TAG, e.toString() );
+    //     }
+    //     if (methodStartForegroundService!= null) {
+    //         try {
+    //             Logger.D( TAG, "invoke startForegroundService()" );
+    //             resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
+    //         } catch( Exception e ) {
+    //             Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
+    //             Logger.E( TAG, e.toString() );
+    //         }
+    //     }
+    //     else {
+    //         Logger.D( TAG, "use old startService()" );
+    //         resultOfInvoke = activity.startService(service);
+    //     }
+    //     Logger.D( TAG, "startForegroundService() FINISH" );
+    //     return resultOfInvoke;
+	// }
 
 
 }
