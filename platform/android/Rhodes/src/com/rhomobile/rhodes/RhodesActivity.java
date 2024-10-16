@@ -34,6 +34,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.content.SharedPreferences;
+import com.rhomobile.rhodes.RhodesActivity.GestureListener;
 //import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
@@ -1033,6 +1035,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 					mPermissionsDialog = null;
 				}
 	            KioskManager.setKioskMode(true);
+
+                Log.d("TAG", RhodesService.kioskModeEnableFilteringEventsOnStart() ? "true" : "false");
+
+                if ( RhodesService.kioskModeEnableFilteringEventsOnStart() ){
+                    KioskManager.SetAdvencedKioskSettings(mContext, true);
+                } else {
+                    KioskManager.ClearAdvencedKioskSettings(mContext);
+                }
+
 				if (mIsUseOverlay) {
 					PerformOnUiThread.exec(new Runnable() {
 			             @Override
@@ -1054,6 +1065,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void stopKioskMode() {
 		if (KioskManager.getKioskModeStatus()) {
 	        KioskManager.setKioskMode(false);
+            KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
 
 	        Context mContext = getApplicationContext();
 	        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();

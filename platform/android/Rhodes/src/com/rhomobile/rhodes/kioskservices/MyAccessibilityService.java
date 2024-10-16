@@ -30,6 +30,9 @@ public class MyAccessibilityService extends AccessibilityService {
     private static final int NOTIFICATION_ID = 1234;
     private boolean filter = true;
     private CharSequence powerPackageName;
+
+    private boolean kioskEnabledWithStart = false;
+
     public static boolean isPowerProcessing = false;
     private static List<String> ignorePackets = null;
     private static boolean isEnabled = false;
@@ -90,6 +93,11 @@ public class MyAccessibilityService extends AccessibilityService {
 
 
         //Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
+
+        Log.d(TAG, "Accessibility service connected");
+        kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
+        Log.d(TAG, "kioskEnabledWithStart: " + ( kioskEnabledWithStart ? "true" : "false" ));
+
     }
 
     public static boolean getStatus(){
@@ -120,7 +128,9 @@ public class MyAccessibilityService extends AccessibilityService {
                     event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
                 {
 
-                    if( KioskManager.getKioskModeStatus() &&
+                    kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
+
+                    if( ( kioskEnabledWithStart || KioskManager.getKioskModeStatus() ) &&
                         event.getPackageName() != null &&
                         !event.getPackageName().equals(getPackageName()) &&
                         isIgnorPackages(event.getPackageName()))

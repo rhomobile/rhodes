@@ -178,7 +178,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'rubynodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging", "local_https_server_with_client_checking"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'rubynodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging", "local_https_server_with_client_checking", "kiosk_mode_enable_filtering_events_on_start"]
 
 $winxpe_build = false
 
@@ -2785,7 +2785,7 @@ def init_extensions(dest, mode = "")
             end
 
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())                
+              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
                 $logger.debug "add #{f} to extjsmodulefiles_opt.."
                 extjsmodulefiles_opt << f
               else
@@ -3918,7 +3918,7 @@ task :switch_app => [ 'config:load' ] do
   File.open(  rhobuildyml, 'w' ) do |out|
     YAML.dump( config, out )
   end
-=end    
+=end
 
 end
 
@@ -4425,7 +4425,7 @@ def downloadRhosim( targetPath )
     if OS.windows?
       url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/win32-RhoSimulator/RhoSimulator.zip"
     elsif OS.mac?
-      url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"    
+      url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"
     else
       return
     end
@@ -4470,7 +4470,7 @@ def downloadRhosim( targetPath )
           zip_file.extract(f, fpath)
         end
       end
-      
+
   rescue Exception => e
     $logger.error "Can't download RhoSimulator: #{e.inspect}"
 

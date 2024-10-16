@@ -211,6 +211,16 @@ public class RhodesService extends Service {
 	{
 		return ExitPasswordValue;
 	}
+
+	public static boolean kioskModeEnableFilteringEventsOnStart(){
+		String value = getBuildConfig("kiosk_mode_enable_filtering_events_on_start");
+		if ( value != null ){
+			if (value.equals("1")){
+				return true;
+			}
+		}
+		return false;
+	}
 	class PowerWakeLock {
 	    private PowerManager.WakeLock wakeLockObject = null;
 	    private boolean wakeLockEnabled = false;
