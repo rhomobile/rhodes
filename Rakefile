@@ -172,6 +172,10 @@ namespace "framework" do
       rhoruby = 'res/build-tools/RubyMac'
     else
       rhoruby = 'res/build-tools/rubylinux'
+      arch = `uname -m`.strip
+        if arch == 'aarch64' then
+          rhoruby = 'res/build-tools/rubylinux_arm64'
+        end
     end
 
     puts `#{rhoruby}  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
@@ -1949,6 +1953,10 @@ namespace "config" do
         $rubypath = "res/build-tools/RubyMac"
       else
         $rubypath = "res/build-tools/rubylinux"
+        arch = `uname -m`.strip
+        if arch == 'aarch64' then
+          $rubypath = "res/build-tools/rubylinux_arm64"
+        end
       end
     end
 
@@ -3337,6 +3345,10 @@ namespace "build" do
           $rubypath = "res/build-tools/RubyMac"
         else
           $rubypath = "res/build-tools/rubylinux"
+          arch = `uname -m`.strip
+          if arch == 'aarch64' then
+            $rubypath = "res/build-tools/rubylinux_arm64"
+          end
         end
       end
 

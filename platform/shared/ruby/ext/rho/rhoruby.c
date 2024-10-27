@@ -178,7 +178,7 @@ char *tzname[2];
 
 void RhoModifyRubyLoadPath( const char* );
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID) || ( defined(OS_LINUX) && !defined(OS_SAILFISH) )
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || ( !defined(OS_LINUX) && !defined(OS_SAILFISH) )
 
 void Init_trans_utf_16_32();
 void Init_trans_single_byte();

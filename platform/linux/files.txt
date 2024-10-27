@@ -97,3 +97,9 @@ ruby/vm_trace
 ruby/ext/strscan/strscan
 ruby/main
 ruby/rhoinit
+ruby/ext/io/nonblock/nonblock
+ruby/ext/date/date_core
+ruby/ext/date/date_strftime
+ruby/ext/date/date_parse
+ruby/ext/date/date_strptime
+ruby/ext/io/wait/wait
