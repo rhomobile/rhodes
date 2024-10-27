@@ -27,16 +27,22 @@
 # Builds rubylinux executable
 
 cc = "gcc"
-cflags = "-ffunction-sections -fdata-sections -Os -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
-#cflags = "-ffunction-sections -fdata-sections -O0 -g -ggdb -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
+#cflags = "-ffunction-sections -fdata-sections -Os -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
+cflags = "-ffunction-sections -fdata-sections -O0 -g -ggdb -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
 xcflags = "-D_FORTIFY_SOURCE=2 -fstack-protector -fno-strict-overflow -fvisibility=hidden -DRUBY_EXPORT -fPIE"
 lnk_flags = "-L. -rdynamic -Wl,-export-dynamic"
 incl = "-I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared/ruby/generated -I../shared -I../shared/ruby/rhoruby -I../shared/sqlite"
-compile = "#{cc} #{cflags} #{xcflags} #{incl} -DRUBYLINUX -DRHO_RUBY_COMPILER -DRUBY_EXPORT -c "
+compile = "#{cc} #{cflags} #{xcflags} #{incl} -DOS_LINUX -DRUBYLINUX -DRHO_RUBY_COMPILER -DRUBY_EXPORT -c "
 link = "#{cc} #{lnk_flags}"
 strip = "strip -s -R .comment -R .gnu.version --strip-unneeded"
-target = "target/compiler/rubylinux"
-out = "-lpthread -lrt -ldl -lcrypt -lm -o #{target}"
+$target = "rubylinux"
+
+arch = `uname -m`.strip
+if arch == 'aarch64' then
+  $target = "rubylinux_arm64"
+end
+
+out = "-lpthread -lrt -ldl -lcrypt -lm -lgmp -o #{$target}"
 src_dir = "../shared"
 code = true
 objfiles = []
@@ -49,7 +55,7 @@ task :all, :continue do |t,args|
   File.open("files.txt").each_line do |file|
     file.chomp!
     s_file = "#{src_dir}/#{file}.c"
-	o_file = "obj/#{File.basename file}.o"
+    o_file = "obj/#{File.basename file}.o"
     objfiles << "#{o_file}"
 
     if not uptodate?("#{o_file}", ["#{s_file}"])
@@ -64,13 +70,13 @@ task :all, :continue do |t,args|
     abort("Aborting due to compile errors...") if not code and not args.continue
   end
   
-  if not uptodate?(target, objfiles)
+  if not uptodate?($target, objfiles)
     cmd = "#{link} #{objfiles.join(" ")} #{out}"
     puts cmd
     code = system cmd
     abort("Aborting due to link errors...") if not code
 
-    cp_r target, "../../res/build-tools"
+    cp_r $target, "../../res/build-tools"
   end
 end
 

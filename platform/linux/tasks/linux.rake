@@ -31,6 +31,11 @@ namespace "config" do
 	end
 
 	task :linux => ["config:set_current_platform_linux", "switch_app", "config:qt", "config:sys_recognize"] do
+		arch = `uname -m`.strip
+        $rubypath = "platform/linux/target/compiler/rubylinux"
+        if arch == 'aarch64' then
+            $rubypath = "platform/linux/target/compiler/rubylinux_arm64"
+        end
 		$rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyLixux
 		$bindir = $app_path + "/bin"
 		$srcdir =  $bindir + "/RhoBundle"
@@ -262,7 +267,7 @@ namespace "build" do
 					$qt_project_dir)
 			end
 			Jake.run3('make clean', $qt_project_dir)
-			Jake.run3('make all', $qt_project_dir)
+			Jake.run3("make -j#{`nproc`.to_i} all", $qt_project_dir)
 			puts "Copying to dir" + $target_path
 
 			if not File.directory?($target_path)
@@ -420,9 +425,29 @@ namespace "device" do
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
 				#$create_buildroot = true
-				$architecture = "noarch"
+                arch = `uname -m`.strip
+                $architecture = "noarch"
+                if arch == 'aarch64' then
+                    $architecture = "aarch64"
+                end
                 #$additional_args = "%global _nonzero_exit_pkgcheck_terminate_build 0"
-                $linter_exceptions = ["W: no-binary", "E: arch-independent-package-contains-binary-or-object", "E: dir-or-file-in-opt", "E: non-standard-dir-perm", "W: desktopfile-without-binary", "W: dir-or-file-in-opt", "E: non-standard-executable-perm", "E: explicit-lib-dependency", "W: no-documentation", "E: invalid-desktopfile", "W: script-without-shebang", "E: non-standard-group", "W: no-url-tag","E: world-writable", "E: wrong-script-end-of-line-encoding"]
+                $linter_exceptions = [
+                "E: no-binary", 
+                "W: no-binary", 
+                "E: arch-independent-package-contains-binary-or-object", 
+                "E: dir-or-file-in-opt", 
+                "E: non-standard-dir-perm", 
+                "W: desktopfile-without-binary", 
+                "W: dir-or-file-in-opt", 
+                "E: non-standard-executable-perm", 
+                "E: explicit-lib-dependency", 
+                "W: no-documentation", "E: invalid-desktopfile", 
+                "W: script-without-shebang", 
+                "E: non-standard-group", 
+                "W: no-url-tag",
+                "E: world-writable", 
+                "W: unused-direct-shlib-dependency",
+                "E: wrong-script-end-of-line-encoding"]
 				$deps = ["lib64qt5webenginecore5", "lib64qt5webenginewidgets5" , "lib64qt5webengine5" , "lib64qt5multimedia5", "lib64qt5gui5", "lib64gmp10"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
