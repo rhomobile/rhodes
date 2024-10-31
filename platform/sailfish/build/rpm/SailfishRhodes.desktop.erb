@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=<%= @organization %>.<%= @nameApp %>
+Name=<%= @desktopAppName %>
+Exec=/usr/bin/<%= @organization %>.<%= @nameApp %>
+
+[X-Application]
+Permissions=Sensors;SecureStorage;PushNotifications;DeviceInfo;Audio;Bluetooth;Camera;Internet;Location;MediaIndexing;Microphone;NFC;RemovableMedia;UserDirs;WebView
+OrganizationName=<%= @organization %>
+ApplicationName=<%= @nameApp %>
+ExecDBus=/usr/bin/<%= @organization %>.<%= @nameApp %>

@@ -33,6 +33,8 @@ require 'openssl'
 require 'base64'
 require 'stringio'
 
+require_relative 'compat'
+require_relative 'os'
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
@@ -199,7 +201,7 @@ class Jake
 
   def self.get_absolute_ex(path, currentdir)
     ret_path = File.expand_path(path, currentdir)
-    return ret_path  if File.exists?(ret_path)
+    return ret_path  if File.exist?(ret_path)
 
     path = currentdir + "/" + path
 
@@ -229,7 +231,7 @@ class Jake
             x.gsub!(/%.*?%/, conf.fetch_r($1).to_s)
           end
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
   	      end
   	      s
@@ -243,7 +245,7 @@ class Jake
           newhash[k.to_s] = config_parse(x)
         else
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
           end
           newhash[k.to_s] = s
@@ -531,7 +533,7 @@ class Jake
 
     hideerrors = options[:hideerrors]
     if hideerrors
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         nul = "nul"
       else
         nul = "/dev/null"
@@ -583,7 +585,7 @@ class Jake
     set_list = []
 	currentdir = ""
     env.each_pair do |k, v|
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         set_list << "set \"#{k}=#{v}\"&&"
       else
         set_list << "export #{k}=#{v}&&"
@@ -595,7 +597,7 @@ class Jake
     if !cd.nil?
       to_print = "PWD: #{cd}\n#{to_print}"
 
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         cd_ = cd.gsub('/', "\\")
         to_run = "cd /d \"#{cd_}\"&&#{to_run}"
       else
@@ -708,13 +710,7 @@ class Jake
     jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
 
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
-
-      p = Pathname.new(src)
+    p = Pathname.new(src)
     src = p.realpath
     currentdir = Dir.pwd()
     src = src.to_s.gsub(/"/,"")
@@ -733,11 +729,6 @@ class Jake
     jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
 
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
     target.gsub!(/"/,"")
 
     args = []
@@ -753,7 +744,6 @@ class Jake
   def self.jar(target,manifest,files,isfolder=false)
     jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-    #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
 
     target.gsub!(/"/,"")
 
@@ -873,7 +863,7 @@ class Jake
   def self.modify_file_if_content_changed(file_name, f)
     f.rewind
     content = f.read()
-    old_content = File.exists?(file_name) ? File.read(file_name) : ""
+    old_content = File.exist?(file_name) ? File.read(file_name) : ""
 
     if old_content != content
         log Logger::DEBUG, "!!!MODIFY #{file_name}"
@@ -1036,7 +1026,7 @@ class Jake
           yield(unzipped_bytes, total_bytes, "Unpacking files: #{(unzipped_bytes * 100) / total_bytes}%")
         end
         file_dir_name = File.join(dest_dir,File.dirname(entry.name))
-        FileUtils::mkdir_p file_dir_name unless Dir.exists?(file_dir_name)
+        FileUtils::mkdir_p file_dir_name unless Dir.exist?(file_dir_name)
         entry.extract(File.join(dest_dir, entry.name))
 
       end
@@ -1069,7 +1059,7 @@ class Jake
     current_dir = Dir.pwd()
     begin
       Dir.chdir(folder_path)
-      File.delete(zip_file_path) if File.exists?(zip_file_path)
+      File.delete(zip_file_path) if File.exist?(zip_file_path)
 
       items_to_zip = []
 
@@ -1100,7 +1090,7 @@ class Jake
 
 
   def self.modify_rhoconfig_for_debug
-    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exist?($srcdir + "/apps/rhoconfig.txt")
     log(Logger::INFO,"confpath_content=" + confpath_content.to_s)
 
     confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
@@ -1186,7 +1176,7 @@ class Jake
   def self.run_rho_log_server(app_path)
     require 'webrick'
 
-    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exist?($srcdir + "/apps/rhoconfig.txt")
     confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
     confpath_content += "\r\n" + "LogToSocket=1" if !confpath_content.include?("LogToSocket=")
     File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
@@ -1226,7 +1216,7 @@ class Jake
     args = nil
     proc_list = []
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       cmd = 'WMIC'
       args = ['path', 'win32_process', 'get', 'Processid,Parentprocessid,Commandline']
     else
@@ -1238,7 +1228,7 @@ class Jake
 
     output.each_line do |line|
       #puts "[[#{line}]]"
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         match_data = /^(.*)\s+(\d+)\s+(\d+)\s*$/.match line
         proc_list << {:pid=>match_data[3], :ppid=>match_data[2], :cmd=>match_data[1]} if match_data
       else
@@ -1313,8 +1303,8 @@ class Jake
     else
       dst_path = dst
     end
-    unless File.exists? dst_path and FileUtils.identical? src, dst_path
-      FileUtils.rm dst_path if File.exists? dst_path
+    unless File.exist? dst_path and FileUtils.identical? src, dst_path
+      FileUtils.rm dst_path if File.exist? dst_path
       FileUtils.cp src, dst
     end
   end

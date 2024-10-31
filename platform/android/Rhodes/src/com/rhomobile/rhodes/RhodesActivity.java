@@ -34,6 +34,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.content.SharedPreferences;
+import com.rhomobile.rhodes.RhodesActivity.GestureListener;
 //import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
@@ -99,6 +101,9 @@ import android.widget.Toast;
 import androidx.core.content.PermissionChecker;
 import androidx.core.app.ActivityCompat;
 import android.app.Activity;
+import android.content.DialogInterface;
+import com.rhomobile.rhodes.webview.RhoInputListener;
+import com.rhomobile.rhodes.webview.RhoInputListener.IRhoInputListener;
 
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback, IKioskMode {
@@ -536,7 +541,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         	intent.setAction("android.intent.action.VIEW");
         	intent.setData(Uri.parse(url));
         }
-        handleStartParams(intent);
+        handleStartParams(intent, false);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         lastIntent = intent.getAction();
@@ -831,7 +836,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
-        handleStartParams(getIntent());
+        handleStartParams(getIntent(), true);
 
         if(mIsServiceAllreadyExist)
         {
@@ -843,7 +848,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }
 	}
 
-    private void handleStartParams(Intent intent)
+    private void handleStartParams(Intent intent, boolean writeStartParam)
     {
         StringBuilder startParams = new StringBuilder();
         boolean firstParam = true;
@@ -887,6 +892,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }
         String paramString = startParams.toString();
         Logger.I(TAG, "New start parameters: " + paramString);
+        if (writeStartParam){
+            RhodesApplication.setStartParametersApp(paramString);
+        }
         if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
@@ -1039,7 +1047,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             KioskManager.setKioskMode(true);
         }else{
             if(PermissionManager.checkPermissions(mContext, mActivity)){
-                Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
                 if(permissionWindowShow) permissionWindowShow = false;
                 if (mPermissionsDialog != null) {
                     try {
@@ -1051,6 +1059,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                     mPermissionsDialog = null;
                 }
                 KioskManager.setKioskMode(true);
+
+                Log.d("TAG", RhodesService.kioskModeEnableFilteringEventsOnStart() ? "true" : "false");
+
+                if ( RhodesService.kioskModeEnableFilteringEventsOnStart() ){
+                    KioskManager.SetAdvencedKioskSettings(mContext, true);
+                } else {
+                    KioskManager.ClearAdvencedKioskSettings(mContext);
+                }
+
                 if (mIsUseOverlay) {
                     PerformOnUiThread.exec(new Runnable() {
                         @Override
@@ -1072,6 +1089,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void stopKioskMode() {
 		if (KioskManager.getKioskModeStatus()) {
             KioskManager.setKioskMode(false);
+            KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
             if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
                 kisokModeDeviceOwner.setKioskMode(false);
             }else{
@@ -1134,14 +1152,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     private void showAlertPermission() {
         mActivity= (Activity) this;
 
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Permission check")
-            .setCancelable(false);
-
-        LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
-        adb.setView(view);
-
-		if (mPermissionsDialog != null) {
+        if (mPermissionsDialog != null) {
 			try {
 				mPermissionsDialog.dismiss();
 			}
@@ -1150,6 +1161,31 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			}
 			mPermissionsDialog = null;
 		}
+
+        if(isKioskMode())
+        {
+            permissionWindowShow = false;
+            return;
+        }
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Permission check")
+            .setCancelable(false);
+
+        LinearLayout view = (LinearLayout) getLayoutInflater().inflate(R.layout.perrmission_alert_dialog, null);
+        adb.setView(view);
+
+        Button restartApp = view.findViewById(R.id.restartBtn);
+        restartApp.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                IRhoInputListener listener = RhoInputListener.getListener();
+                if(listener != null){
+                    mPermissionsDialog.cancel();
+                    listener.onRestartBrowser();
+                }
+            }
+        });
 
         mPermissionsDialog = adb.create();
 
@@ -1218,6 +1254,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Button cpBtn = view.findViewById(R.id.callPhoneBtn);
         ImageView cpImg = view.findViewById(R.id.callPhoneStatus);
+
+        LinearLayout callPhoneLayout = view.findViewById(R.id.callPhoneLinearLayout);
+        if( RhoConf.isExist("call_phone_permission_ignor") &&
+            RhoConf.getBool("call_phone_permission_ignor")){
+                callPhoneLayout.setVisibility(View.GONE);
+        }else{
+            callPhoneLayout.setVisibility(View.VISIBLE);
+        }
 
         cpBtn.setVisibility(
             (!PermissionManager.checkCallPhonePermission(this)?View.VISIBLE:View.GONE)

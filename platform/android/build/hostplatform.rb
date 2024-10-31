@@ -1,16 +1,16 @@
 module HostPlatform
 	def windows?
-		RUBY_PLATFORM =~ /(win|w)32$/
+		OS.windows?
 	end
 	module_function :windows?
 
 	def linux?
-		RUBY_PLATFORM =~ /linux/
+		OS.linux?
 	end
 	module_function :linux?
 
 	def mac?
-		RUBY_PLATFORM =~ /darwin/
+		OS.mac?
 	end
 	module_function :mac?
 

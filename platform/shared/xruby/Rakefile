@@ -11,7 +11,7 @@ XRUBY = "#{NAME}-#{VER}.jar"
 
 require 'pathname'
 
-if RUBY_PLATFORM =~ /(win|w)32$/
+if OS.windows?
   SEP = ";"
 else
   SEP = ":"

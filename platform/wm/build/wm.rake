@@ -54,7 +54,7 @@ def GetFileVersion(vfilename)
 end
 
 def get_ruby_path()
-  if RUBY_PLATFORM =~ /(win|w)32$/
+  if OS.windows?
     File.join($startdir,'res/build-tools/RhoRuby.exe')
   else
     File.join($startdir,'res/build-tools/RubyMac')
@@ -198,7 +198,7 @@ module WM
 end
 
 def get_7z_path()
-  if RUBY_PLATFORM =~ /(win|w)32$/
+  if OS.windows?
     File.join($startdir,'res/build-tools/7za')
   else
     '7za'
@@ -261,7 +261,7 @@ def additional_dlls_paths_common(files_path_keys)
     is_prebuilt     = ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
     is_project_path = ext_config['project_paths'] && ext_config['project_paths'][$current_platform] != nil
 
-    next unless File.exists?(File.join(commin_ext_path, 'ext', 'build.bat')) || is_prebuilt || is_project_path
+    next unless File.exist?(File.join(commin_ext_path, 'ext', 'build.bat')) || is_prebuilt || is_project_path
 
     $additional_dlls_paths_tmp << File.expand_path(files_path, commin_ext_path)
   end
@@ -318,11 +318,11 @@ def sign(cabfile, signature)
 
   #TODO: need better solution, maybe just let know users on wiki to add bin dir of MS SDKs to PATH variable
   #Assuming that MS SDKs intalled to default path on c: or d: disk
-  if Dir.exists?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+  if Dir.exist?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
     ENV['PATH'] = ENV['PATH'] + "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
   end
   
-  if Dir.exists?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+  if Dir.exist?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
     ENV['PATH'] = ENV['PATH'] + "D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
   end
 
@@ -464,7 +464,7 @@ end
 def build_rholaunch
   chdir File.join( $config["build"]["wmpath"], "RhoLaunch")
 
-  cp $app_path + "/icon/icon.ico", "./RhoLaunch.ico" if File.exists? $app_path + "/icon/icon.ico"
+  cp $app_path + "/icon/icon.ico", "./RhoLaunch.ico" if File.exist? $app_path + "/icon/icon.ico"
 
   args = ['/M4', "RhoLaunch.sln", "\"Release|#{$sdk}\""]
   puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
@@ -491,7 +491,7 @@ def stuff_around_appname
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
-    if File.exists? wm_icon then
+    if File.exist? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -500,7 +500,7 @@ def stuff_around_appname
 
   if $run_on_startup
     shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
-    if File.exists? wm_icon then
+    if File.exist? wm_icon then
       shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
     end
     shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
@@ -516,7 +516,7 @@ def build_cab
   com_dlls_filename = File.join(File.dirname(__FILE__), 'comdlls.txt');
   
   puts 'remove file with registry keys'
-  rm reg_keys_filename if File.exists? reg_keys_filename
+  rm reg_keys_filename if File.exist? reg_keys_filename
 
   if $regkeys && $regkeys.size > 0
     puts 'add registry keys to file'
@@ -722,7 +722,7 @@ namespace "build" do
           project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           target_lib_name = Jake.getBuildProp('target_lib_name', ext_config) if ext_config
           
-          next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
+          next unless (File.exist?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
 
 
           chdir commin_ext_path 
@@ -805,7 +805,7 @@ namespace "build" do
                     nlib.each do |lib|
                       lib_file = File.join(commin_ext_path, lib)
 
-                      cp(lib_file, File.join(ENV['TARGET_EXT_DIR'], ext)) if File.exists? lib_file
+                      cp(lib_file, File.join(ENV['TARGET_EXT_DIR'], ext)) if File.exist? lib_file
                     end
                   end
               end    
@@ -845,7 +845,7 @@ namespace "build" do
                 ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
               end
 
-              if File.exists? File.join(extpath, 'build.bat')
+              if File.exist? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
               elsif is_prebuilt
@@ -881,7 +881,7 @@ namespace "build" do
 
       chdir $config["build"]["wmpath"]
 
-      cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
+      cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exist? $app_path + "/icon/icon.ico"
 
       WM.edit_rhodes_rc
 
@@ -909,7 +909,7 @@ namespace "build" do
       
       Rake::Task["build:wm:rhobundle"].execute
 
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $targetdir if not File.exist? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
@@ -927,7 +927,7 @@ namespace "build" do
         src_folder = File.join(src_folder, 'apps')
       
         tmp_folder = $bindir + '_tmp_partial'
-        rm_rf tmp_folder if File.exists? tmp_folder
+        rm_rf tmp_folder if File.exist? tmp_folder
         mkdir_p tmp_folder
 
         dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
@@ -941,7 +941,7 @@ namespace "build" do
         mkdir_p dst_tmp_folder
 
         add_files = []
-        if File.exists? add_list_full_name
+        if File.exist? add_list_full_name
            File.open(add_list_full_name, "r") do |f|
               while line = f.gets
                  fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
@@ -952,7 +952,7 @@ namespace "build" do
         end
                 
         remove_files = []
-        if File.exists? remove_list_full_name
+        if File.exist? remove_list_full_name
            File.open(remove_list_full_name, "r") do |f|
               while line = f.gets
                  fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
@@ -976,7 +976,7 @@ namespace "build" do
               
         Jake.build_file_map( dst_tmp_folder, "upgrade_package_add_files.txt" )               
 
-        if File.exists? remove_list_full_name
+        if File.exist? remove_list_full_name
            File.open(File.join(dst_tmp_folder, 'upgrade_package_remove_files.txt'), "w") do |f|
               remove_files.each do |j|
                  f.puts "#{j}"
@@ -985,7 +985,7 @@ namespace "build" do
            end
         end
 
-        mkdir_p $targetdir if not File.exists? $targetdir
+        mkdir_p $targetdir if not File.exist? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
         Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
         rm_rf tmp_folder
@@ -1072,7 +1072,7 @@ namespace "device" do
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
       if $use_shared_runtime
-        if File.exists? wm_icon
+        if File.exist? wm_icon
           mkdir_p icon_dest
           cp wm_icon, icon_dest
         end
@@ -1138,8 +1138,8 @@ namespace "clean" do
       rm_rf $vcbindir + "/#{$sdk}"
       rm_rf $targetdir
       
-      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exist? File.join($app_path, "bin/RhoBundle")
       
     end
     task :all => ["clean:wince:rhodes", "clean:common"]
@@ -1150,8 +1150,8 @@ namespace "clean" do
       rm_rf $vcbindir + "/#{$sdk}"
       rm_rf $targetdir
       
-      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exist? File.join($app_path, "bin/RhoBundle")
       
     end
     task :all => ["clean:wm:rhodes", "clean:common"]
@@ -1198,11 +1198,11 @@ namespace "run" do
       puts "\nStarting application on the WM6 emulator\n\n"
       log_file = gelLogPath
 
-      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+      File.delete($app_path + "/started")  if File.exist?($app_path + "/started")
       Jake.run_rho_log_server($app_path)
       puts "Start Log Server. Wating while Log Server is started..."
       while true do
-        if File.exists?($app_path + "/started")
+        if File.exist?($app_path + "/started")
           break
         end
         sleep(1)
@@ -1296,13 +1296,13 @@ namespace "run" do
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
 
-        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+        File.delete($app_path + "/started")  if File.exist?($app_path + "/started")
 
         if Jake.getBool(ENV["no_remote_log"]) == false
           Jake.run_rho_log_server($app_path)
           puts "RhoLogServer is starting"
           while true do
-            if File.exists?($app_path + "/started")
+            if File.exist?($app_path + "/started")
               break
             end
             sleep(1)
@@ -1355,13 +1355,13 @@ namespace "run" do
             log_file = gelLogPath
 
             #remove log file
-            rm_rf log_file if File.exists?(log_file)
+            rm_rf log_file if File.exist?(log_file)
 
-            File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+            File.delete($app_path + "/started")  if File.exist?($app_path + "/started")
             Jake.run_rho_log_server($app_path)
             puts "RhoLogServer is starting"
             while true do
-              if File.exists?($app_path + "/started")
+              if File.exist?($app_path + "/started")
                 break
               end
               sleep(1)
@@ -1462,7 +1462,7 @@ namespace "run" do
 
       cab_path = args.package_path
 
-      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exists?(cab_path)
+      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exist?(cab_path)
 
       # kill all running detool
       kill_detool
@@ -1484,7 +1484,7 @@ namespace "run" do
 
       cab_path = args.package_path
 
-      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exists?(cab_path)
+      fail "Wrong cab file path #{cab_path.inspect}" if cab_path.nil? || cab_path.empty? || !File.exist?(cab_path)
 
       # kill all running detool
       kill_detool

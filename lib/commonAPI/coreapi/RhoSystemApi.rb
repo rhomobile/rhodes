@@ -28,4 +28,10 @@ class System
        return false if res == 'false'
        res
    end
+
+   def self.clear_start_params
+    if Rho::System.platform == 'ANDROID'
+        Rho::Intent.cleanStartParameters
+    end
+   end
 end

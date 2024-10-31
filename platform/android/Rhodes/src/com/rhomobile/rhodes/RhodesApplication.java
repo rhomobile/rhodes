@@ -248,7 +248,7 @@ public class RhodesApplication extends Application{
         filter.addAction(Intent.ACTION_USER_PRESENT);
 
         mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, filter);
+        registerReceiver(mReceiver, filter, appInfo.packageName + ".permission.RECEIVE_BROADCAST", null);
 
         Logger.I(TAG, "Initialized");
     }
@@ -259,6 +259,7 @@ public class RhodesApplication extends Application{
     private native static void startRhodesApp();
     private native static void stopRhodesApp();
     private native static boolean canStartApp(String strCmdLine, String strSeparators);
+    private native static void setStartParameters(String startParam);
     
     public static void create()
     {
@@ -281,6 +282,10 @@ public class RhodesApplication extends Application{
 	public static boolean canStart(String strCmdLine)
 	{
 	    return canStartApp(strCmdLine, "&#");
+	}
+    public static void setStartParametersApp(String startParam)
+	{
+	    setStartParameters(startParam);
 	}
 	
     public static void stop() {

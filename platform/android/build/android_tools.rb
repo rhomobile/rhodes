@@ -31,6 +31,7 @@
 
 require 'pp'
 require 'open3'
+require 'find'
 
 module AndroidTools
 
@@ -419,6 +420,19 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
 end
 module_function :prepare_avd
 
+def run_gmsaas_emulator(gmsaas_recipe_uuid)
+  system("\"#{$adb}\" start-server")
+  gmsaas_android_instance = `gmsaas instances start #{gmsaas_recipe_uuid} android`
+  system("gmsaas instances adbconnect #{gmsaas_android_instance}")
+  return gmsaas_android_instance
+end
+module_function :run_gmsaas_emulator
+
+def stop_gmsaas_emulator(gmsaas_instance_uuid)
+  system("gmsaas instances stop #{gmsaas_instance_uuid}")
+end
+module_function :stop_gmsaas_emulator
+
 def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
@@ -622,7 +636,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
   log_pids += log_shell_pids
 
   log_pids.each do |pid|
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       system "taskkill /PID #{pid}"
     else
       system "kill -TERM #{pid}"
@@ -641,7 +655,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
   end
 
   log_pids1.each do |pid|
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       system "taskkill /F /PID #{pid}"
     else
       system "kill -KILL #{pid}"
@@ -652,7 +666,7 @@ end
 module_function :kill_adb_logcat
 
 def kill_adb_and_emulator
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+  if OS.windows?
     # Windows
     `taskkill /F /IM adb.exe`
   else
@@ -748,7 +762,7 @@ module_function :logclear
 
 def read_manifest_package(path)
   manifestpath = File.join path, 'AndroidManifest.xml'
-  if File.exists? manifestpath
+  if File.exist? manifestpath
     puts "library manifest: #{manifestpath}"
 
     manifestdoc = REXML::Document.new(File.new(manifestpath))
@@ -844,6 +858,11 @@ module_function :read_manifest_package
       keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
     end
 
+    unless File.file? keystore
+      @@logger.info "Android debug keystore not found in expected location. Creating new one. Please answer few questions below:"
+      AndroidTools.generateKeystore( keystore, 'androiddebugkey', 'android', 'android' )
+    end
+
     raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
 
     signApk( inputApk, outputApk, keystore, 'android', 'android', 'androiddebugkey' )
@@ -885,6 +904,11 @@ module_function :read_manifest_package
     #Try to find debug keystore in another location
     if ENV['USERPROFILE']
       keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    end
+
+    unless File.file? keystore
+      @@logger.info "Android debug keystore not found in expected location. Creating new one. Please answer few questions below:"
+      AndroidTools.generateKeystore( keystore, 'androiddebugkey', 'android', 'android' )
     end
 
     raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
@@ -978,9 +1002,17 @@ module_function :read_manifest_package
     puts "Building APK file..."
     
     #just put dex file to a copy of already prepared intermediate APK
-    cp res_name, apk_name    
-    params = [ '-uf', apk_name, '-C', File.dirname(dex_name), File.basename(dex_name) ]
-    Jake.run( @@jarbin, params)
+    cp res_name, apk_name
+    dex_files = []
+
+    Find.find(File.dirname(dex_name)) do |path|
+      dex_files << path if path.end_with?('.dex')
+    end
+
+    dex_files.each do |dex_file|
+      params = [ '-uf', apk_name, '-C', File.dirname(dex_file), File.basename(dex_file)]
+      Jake.run( @@jarbin, params)
+    end
 
     unless $?.success?
         raise 'Error building APK file'
@@ -1022,7 +1054,7 @@ def start_emulator(cmd)
 end
 
 def stop_emulator
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+  if OS.windows?
     # Windows
     Jake.run3_dont_fail('taskkill /F /IM emulator-arm.exe')
     Jake.run3_dont_fail('taskkill /F /IM emulator.exe')
@@ -1034,11 +1066,7 @@ def stop_emulator
 end
 
 def isWindows?
-  if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
-      return true
-  else
-      return false
-  end
+  OS.windows?
 end
 
 def PathToWindowsWay(path)

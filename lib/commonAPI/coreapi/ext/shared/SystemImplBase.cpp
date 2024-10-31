@@ -170,6 +170,19 @@ void CSystemImplBase::setLocalServerPort( int value, CMethodResult& oResult)
     //Local port can be set only in confuguration file
 }
 
+
+void CSystemImplBase::getRubyLocalServerURL(CMethodResult& oResult)
+{
+    oResult.set( RHODESAPP().getRubyHomeURL() );
+}
+
+void CSystemImplBase::setRubyLocalServerURL( const rho::String& value, CMethodResult& oResult)
+{
+    //Local port can be set only in confuguration file
+}
+
+
+
 void CSystemImplBase::getNodejsServerPort(CMethodResult& oResult)
 {
     oResult.set( atoi(RHODESAPP().getNodeJSListeningPort()) );

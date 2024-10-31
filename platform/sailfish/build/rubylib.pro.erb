@@ -9,9 +9,9 @@ CONFIG += staticlib warn_on
 CONFIG += <%= @buildMode %>
 
 
-INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include\
-<%= @rhoRoot %>/platform/shared/ruby\
-<%= @rhoRoot %>/platform/shared/ruby/generated\
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include \
+<%= @rhoRoot %>/platform/shared/ruby \
+<%= @rhoRoot %>/platform/shared/ruby/generated \
 <%= @rhoRoot %>/platform/shared
 
 DESTDIR = $$PWD/bin
@@ -19,18 +19,18 @@ OBJECTS_DIR = $$PWD/bin/tmp
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
 HEADERS += <%= @rhoRoot %>/platform/shared/ruby/sailfish/ruby/config.h
 SOURCES += \
-<%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
-<%= @rhoRoot %>/platform/shared/ruby/newline.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/erf.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c \
+<%= @rhoRoot %>/platform/shared/ruby/newline.c \
+<%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c \
 <%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
 QMAKE_CFLAGS += -fvisibility=hidden
 QMAKE_CXXFLAGS += -fvisibility=hidden
@@ -43,20 +43,20 @@ QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wn
   
 
 
-HEADERS += <%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhoruby.h\
-<%= @rhoRoot %>/platform/shared/ruby/ext/calendar/event.h\
-<%= @rhoRoot %>/platform/shared/ruby/dln.h\
-<%= @rhoRoot %>/platform/shared/ruby/eval_intern.h\
-<%= @rhoRoot %>/platform/shared/ruby/gc.h\
-<%= @rhoRoot %>/platform/shared/ruby/id.h\
-<%= @rhoRoot %>/platform/shared/ruby/node.h\
-<%= @rhoRoot %>/platform/shared/ruby/regenc.h\
-<%= @rhoRoot %>/platform/shared/ruby/regint.h\
-<%= @rhoRoot %>/platform/shared/ruby/regparse.h\
-<%= @rhoRoot %>/platform/shared/ruby/revision.h\
-<%= @rhoRoot %>/platform/shared/ruby/transcode_data.h\
-<%= @rhoRoot %>/platform/shared/ruby/version.h\
-<%= @rhoRoot %>/platform/shared/ruby/vm_core.h\
+HEADERS += <%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhoruby.h \
+<%= @rhoRoot %>/platform/shared/ruby/ext/calendar/event.h \
+<%= @rhoRoot %>/platform/shared/ruby/dln.h \
+<%= @rhoRoot %>/platform/shared/ruby/eval_intern.h \
+<%= @rhoRoot %>/platform/shared/ruby/gc.h \
+<%= @rhoRoot %>/platform/shared/ruby/id.h \
+<%= @rhoRoot %>/platform/shared/ruby/node.h \
+<%= @rhoRoot %>/platform/shared/ruby/regenc.h \
+<%= @rhoRoot %>/platform/shared/ruby/regint.h \
+<%= @rhoRoot %>/platform/shared/ruby/regparse.h \
+<%= @rhoRoot %>/platform/shared/ruby/revision.h \
+<%= @rhoRoot %>/platform/shared/ruby/transcode_data.h \
+<%= @rhoRoot %>/platform/shared/ruby/version.h \
+<%= @rhoRoot %>/platform/shared/ruby/vm_core.h \
 <%= @rhoRoot %>/platform/shared/ruby/vm_opts.h
 
 SOURCES += \

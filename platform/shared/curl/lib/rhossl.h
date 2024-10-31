@@ -48,6 +48,21 @@ void Curl_rhossl_session_free(void *ptr);
 int Curl_rhossl_init(void);
 void Curl_rhossl_cleanup(void);
 
+#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) || defined(ANDROID)
+
+ssize_t Curl_rhossl_send(struct connectdata *conn, 
+                         int sockindex,
+                         const void *mem,
+                         size_t len,
+                         CURLcode *err);
+ssize_t Curl_rhossl_recv(struct connectdata *conn, 
+                         int sockindex,
+                         char *buf,
+                         size_t size,
+                         CURLcode *err);
+
+#else
+
 ssize_t Curl_rhossl_send(struct connectdata *conn,
                          int sockindex,
                          const void *mem,
@@ -57,6 +72,8 @@ ssize_t Curl_rhossl_recv(struct connectdata *conn,
                          char *buf,
                          size_t size,
                          bool *wouldblock);
+
+#endif
 
 size_t Curl_rhossl_version(char *buffer, size_t size);
 

@@ -203,9 +203,13 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
     strUrl += strCallback;
     
     boolean force_https = false;
+    boolean force_custom_protocol = false;
 #ifdef OS_MACOSX
     if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
         force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        force_custom_protocol = rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0;
     }
 #endif
     
@@ -222,13 +226,19 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
 #else
         String addr_number;
         String addr_local;
-        if (force_https) {
-            addr_number = "https";
-            addr_local = "https";
+        if (force_custom_protocol) {
+            addr_number = "rhoctp";
+            addr_local = "rhoctp";
         }
         else {
-            addr_number = "http";
-            addr_local = "http";
+            if (force_https) {
+                addr_number = "https";
+                addr_local = "https";
+            }
+            else {
+                addr_number = "http";
+                addr_local = "http";
+            }
         }
         addr_number = addr_number + "://127.0.0.1:";
         addr_local = addr_local + "://localhost:";
@@ -574,6 +584,10 @@ void CRhodesApp::run()
 
     if (RHOCONF().isExist("ios_direct_local_requests")) {
         shouldRunDirectQueue = RHOCONF().getBool("ios_direct_local_requests");
+    }
+    if (RHOCONF().isExist("ios_direct_local_requests_with_custom_protocol")) {
+        shouldRunDirectQueue = shouldRunDirectQueue || RHOCONF().getBool("ios_direct_local_requests_with_custom_protocol");
+        
     }
     if (RHOCONF().isExist("ios_use_old_legacy_socket")) {
         shouldUseCocoaServer = !RHOCONF().getBool("ios_use_old_legacy_socket");
@@ -1832,9 +1846,13 @@ void CRhodesApp::initAppUrls()
 #endif
 
     boolean force_https = false;
+    boolean force_custom_protocol = false;
 #ifdef OS_MACOSX
     if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
         force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+    if (rho_conf_is_property_exists("ios_direct_local_requests_with_custom_protocol")!=0) {
+        force_custom_protocol = rho_conf_getBool("ios_direct_local_requests_with_custom_protocol")!=0;
     }
 #endif
 
@@ -1843,12 +1861,18 @@ void CRhodesApp::initAppUrls()
        force_https = value && strcmp(value, "1") == 0;
 #endif
 
-    if (force_https) {
-        m_strHomeUrl = "https://127.0.0.1:";
+    if (force_custom_protocol) {
+        m_strHomeUrl = "rhoctp://127.0.0.1:";
     }
     else {
-        m_strHomeUrl = "http";
-        m_strHomeUrl = m_strHomeUrl + "://127.0.0.1:";
+        
+        if (force_https) {
+            m_strHomeUrl = "https://127.0.0.1:";
+        }
+        else {
+            m_strHomeUrl = "http";
+            m_strHomeUrl = m_strHomeUrl + "://127.0.0.1:";
+        }
     }
     
     m_strRubyServerHomeURL = m_strHomeUrl+getFreeListeningPort();

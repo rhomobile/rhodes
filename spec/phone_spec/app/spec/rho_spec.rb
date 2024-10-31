@@ -34,16 +34,16 @@ if System.get_property('platform') != 'WP8' && System.get_property('platform') !
     it "should test zip/unzip file" do
 
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
-		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+		Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
 
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'ziptest.txt')
         file_name_zip = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'ziptest.zip')
         
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
 
-        File.delete(file_name_zip) if File.exists?(file_name_zip)
-        File.exists?(file_name_zip).should ==  false
+        File.delete(file_name_zip) if File.exist?(file_name_zip)
+        File.exist?(file_name_zip).should ==  false
 
         write_data  = "this is zip rhodes test"
         f = File.new(file_name, "wb")
@@ -51,33 +51,33 @@ if System.get_property('platform') != 'WP8' && System.get_property('platform') !
         f.close
 
         System.zip_file(file_name_zip, file_name)
-        File.exists?(file_name_zip).should == true
+        File.exist?(file_name_zip).should == true
         
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
 
         System.unzip_file(file_name_zip)
-        File.exists?(file_name).should == true
+        File.exist?(file_name).should == true
     end    
     
     it "should test zip/unzip folder" do
 
 		dir_name1 = Rho::RhoApplication::get_app_path('DataTemp')
-		Dir.mkdir(dir_name1) unless Dir.exists?(dir_name1)
+		Dir.mkdir(dir_name1) unless Dir.exist?(dir_name1)
 		dir_name = File.join(dir_name1, 'ZipFolder')
-		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+		Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
 
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp/ZipFolder'), 'ziptest.txt')
         file_name1 = File.join(Rho::RhoApplication::get_app_path('DataTemp/ZipFolder'), 'ziptest1.txt')
         file_name_zip = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'zipfolder.zip')
         
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
-        File.delete(file_name1) if File.exists?(file_name1)
-        File.exists?(file_name1).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
+        File.delete(file_name1) if File.exist?(file_name1)
+        File.exist?(file_name1).should ==  false
 
-        File.delete(file_name_zip) if File.exists?(file_name_zip)
-        File.exists?(file_name_zip).should ==  false
+        File.delete(file_name_zip) if File.exist?(file_name_zip)
+        File.exist?(file_name_zip).should ==  false
 
         write_data  = "this is zip rhodes test"
         f = File.new(file_name, "wb")
@@ -93,19 +93,19 @@ if System.get_property('platform') != 'WP8' && System.get_property('platform') !
         files += Dir.glob(File.join(dir_name, "*") )
         puts "files: #{files}"
         System.zip_files(file_name_zip, dir_name1, files)
-        File.exists?(file_name_zip).should == true
+        File.exist?(file_name_zip).should == true
         
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
-        File.delete(file_name1) if File.exists?(file_name1)
-        File.exists?(file_name1).should ==  false
-        Dir.delete(dir_name) if Dir.exists?(dir_name)
-        Dir.exists?(dir_name).should ==  false
+        File.delete(file_name) if File.exist?(file_name)
+        File.exist?(file_name).should ==  false
+        File.delete(file_name1) if File.exist?(file_name1)
+        File.exist?(file_name1).should ==  false
+        Dir.delete(dir_name) if Dir.exist?(dir_name)
+        Dir.exist?(dir_name).should ==  false
 
         System.unzip_file(file_name_zip)
-        Dir.exists?(dir_name).should == true
-        File.exists?(file_name).should == true
-        File.exists?(file_name1).should == true
+        Dir.exist?(dir_name).should == true
+        File.exist?(file_name).should == true
+        File.exist?(file_name1).should == true
     end    
     
 end

@@ -101,7 +101,7 @@ describe 'RhofilelistLoader' do
   end
 
   before :each do
-    if File.exists?(temporary_directory)
+    if File.exist?(temporary_directory)
       FileUtils.rm_rf(temporary_directory)
     end
     Dir.mkdir(temporary_directory)

@@ -104,7 +104,9 @@ sync_poll_interval=0
 # Default value is FALSE
 
 #ios_https_local_server = 0
-#ATTENTION !!! this option works only with ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+#ATTENTION !!! this option works only with:
+# 1) ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+# 2) ios_net_curl = 0 AND ios_use_old_legacy_socket = 0 AND ios_direct_local_requests_with_custom_protocol = 0 !!! When use default Cocoa Server with this property Cocoa Server will be HTTPS secured.
 #default value is FALSE
 # If TRUE local server URL is https://127.0.0.1 instead of http://127.0.0.1
 # It help solve some security issues like work geolocation HTTP5 API in WebView, because this API works only if secure connection.
@@ -115,6 +117,15 @@ sync_poll_interval=0
 # If TRUE WKWebView new iOS high performance(Javascript performance up to 10 times faster than default UIWebView) WebView used instead of default UIWebView.
 # Now UIWebView was deprecated by Apple and you can not submit application with UIWebView to AppStore !
 # If you want to use UIWebView(set ios_use_WKWebView = 0) - you must add "ios_uiwebview" capability to your build.yml !
+
+
+#ios_direct_local_requests_with_custom_protocol = 1
+# default value is FALSE
+# set this to 1 (true) if you want to use direct URLProtocol mechanism (faster and more security) for WebView net requests instead of socket based server.
+
+#ios_request_notification_permission_on_start = 1
+# default value is FALSE
+# with this option = 1 application will ask repmission for send notifications on start instead of fisrt use of Rho:Nofication API
 
 # show status bar on windows mobile. default 1
 #wm_show_statusbar = 1
@@ -168,3 +179,6 @@ use_kinetic_scroll_on_windows = 1
 
 #disable_external_access = 1
 # disable external access to rhodes http server
+
+# (NOT RECOMMENDED) if you want to use the old encryption system, set the value to 1
+#using_an_old_encryption_system = 0

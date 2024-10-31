@@ -155,6 +155,10 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
             <METHOD name="stopListening" hasCallback="none" productException="">
                 <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
+            <METHOD name="cleanStartParameters" hasCallback="none" productException="">
+                <PLATFORM>Android</PLATFORM>
+                <DESC>Stop listening for custom intents.</DESC>
+            </METHOD>
         </METHODS>
         <REMARKS>
             <REMARK title="Registering Intent Receiver">

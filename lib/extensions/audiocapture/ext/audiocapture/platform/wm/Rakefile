@@ -5,7 +5,7 @@ USE_STLPORT = true
 
 def build_extension(name, arch)
   objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+  mkdir_p $tempdir unless File.exist? $tempdir
 
   mkdir_p $targetdir unless File.exist? $targetdir
 

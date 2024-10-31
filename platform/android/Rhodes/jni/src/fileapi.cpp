@@ -1943,6 +1943,10 @@ RHO_GLOBAL int flock(int fd, int operation)
     RHO_NOT_IMPLEMENTED;
 }
 
+RHO_GLOBAL int tau_ioctl(int fd, unsigned long request, void* p) {
+    return real_ioctl(fd, request, p);
+}
+
 RHO_GLOBAL int ioctl(int fd, int command, ...)
 {
      RHO_LOG("ioctl: fd %d, command: %d", fd, command);

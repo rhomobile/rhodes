@@ -40,6 +40,7 @@ class QtProjectGenerator
   attr_accessor :rhoRoot
   attr_accessor :extRoot
   attr_accessor :nameApp
+  attr_accessor :organization
   attr_accessor :desktopAppName
   attr_accessor :enableQWebEngine
   attr_accessor :versionApp
@@ -82,18 +83,105 @@ class BuildScriptGenerator < ScriptGenerator
   attr_accessor :buildMode
   attr_accessor :qmlMode
   attr_accessor :makePath
-  attr_accessor :rpmPath
+  attr_accessor :makeFile
+  attr_accessor :sfdkExe
   attr_accessor :rpmvalPath
   attr_accessor :deployPath
   attr_accessor :nThreads
+
+
+  def build()
+    Dir.chdir(projectPath) do
+      qmakeCommand = "\"#{qmakePath}\" #{proPath} -spec linux-g++ \"CONFIG+=release\""
+      if system(qmakeCommand) != true
+        puts qmakeCommand
+        raise "Error: qmake command failed: #{qmakeCommand}"
+      end
+      
+      makeCommand = "\"#{makePath}\" -f #{makeFile} qmake_all"
+      if system(makeCommand) != true
+        raise "Error: make command failed: #{makeCommand}"
+      end
+
+      if system("\"#{makePath}\"") != true
+        raise "Error: make command failed: \"#{makePath}\""
+      end
+
+    end
+  end
+
+  def clear()
+    FileUtils.rm_rf(File.join($app_path, "bin"))
+    FileUtils.rm_rf(File.join($app_path, "project"))
+
+    cleanTarget = "\"#{sfdkExe}\" engine exec sdk-manage target refresh #{$origin_target}"
+    if system(cleanTarget) != true
+      puts "Error: clean command failed: #{cleanTarget}"
+    end
+  end
+
+  def rpm()
+    #build()
+
+    Dir.chdir(projectPath) do
+      sfdkPackage = "\"#{sfdkExe}\" package"
+      if system(sfdkPackage) != true
+        raise "Error: build rpm command failed: #{sfdkPackage}"
+      end
+    end
+
+    #arm
+    #«C:\AuroraOS\bin\sfdk.exe» package
+    #«C:\AuroraOS\bin\sfdk.exe» tools exec AuroraOS-4.0.2.209-base-armv7hl.default.default rpm-validator --profile regular C:\Users\User\build-ru.orgtemplate.rhotemplate-AuroraOS_4_0_2_209_base_armv7hl_default_in_Aurora_Build_Engine-Release\RPMS\ru.orgtemplate.rhotemplate-0.1-1.armv7hl.rpm
+    
+    #i486
+    #«C:\AuroraOS\bin\sfdk.exe» -c "device=Aurora OS эмулятор 4.0.2.209-base" package
+    #«C:\AuroraOS\bin\sfdk.exe» -c "device=Aurora OS эмулятор 4.0.2.209-base" tools exec AuroraOS-4.0.2.209-base-i486.default rpm-validator --profile regular C:\Users\User\build-ru.orgtemplate.rhotemplate-AuroraOS_4_0_2_209_base_i486_in_Aurora_Build_Engine-Release\RPMS\ru.orgtemplate.rhotemplate-0.1-1.i486.rpm
+  end
+
+  def validateRpm(rpmPath)
+    Dir.chdir(projectPath) do
+      sfdkValidate = "\"#{sfdkExe}\" tools exec #{$current_target} rpm-validator --profile regular \"#{rpmPath}\""
+      if system(sfdkValidate) != true
+        raise "Error: validate command failed: #{sfdkValidate}"
+      end
+    end
+  end
+
+  def signRpm(rpmPath)
+    Dir.chdir(projectPath) do
+      sfdkSign = "\"#{sfdkExe}\" engine exec -tt sb2 -t #{$origin_target} rpmsign-external sign -k \"#{$key}\" -c \"#{$certificate}\" \"#{rpmPath}\""
+      if system(sfdkSign) != true
+        raise "Error: sign command failed: #{sfdkSign}"
+      end
+
+      checkSign = "\"#{sfdkExe}\"  engine exec -tt sb2 -t #{$origin_target} rpmsign-external verify \"#{rpmPath}\""
+      if system(checkSign) != true
+        raise "Error: sign verify command failed: #{checkSign}"
+      end
+    end
+  end
+
+  def deployToEmulator()
+    #ENV["PWD"] = "C:\\Users\\User\\build-ru.auroraos.test_app-AuroraOS_4_0_2_249_base_i486_in_Aurora_Build_Engine-Release"#$target_path
+    if $dev_name.nil?
+      puts "Device name is nil"
+      exit 1
+    end
+
+    Dir.chdir(projectPath) do
+      deploy_command = "\"#{sfdkExe}\" -c \"device=#{$dev_name}\" deploy --sdk --all"
+      puts ENV["PWD"]
+      puts deploy_command
+      system(deploy_command)
+    end
+  end
+
+
 end
 
 def isWindows?
-  if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
-      return true
-  else
-      return false
-  end
+  OS.windows?
 end
 
 def PathToWindowsWay(path)
@@ -114,9 +202,20 @@ def clrfTOlf(path)
   File.open(path, "w") { |f| f.write(text) }
 end
 
+def getAuroraEnginePath()
+  return File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora Build Engine")
+end
+
+def getTargetPath(target)
+  sdkDir = File.join(getAuroraEnginePath(), target)
+  return sdkDir.gsub("\\", "/")
+end
+
 namespace "config" do
   task :set_sailfish_platform do
     $current_platform = "sailfish"
+    puts `#{"chcp 65001"}`
+    
   end
 
   task :early_init do
@@ -125,6 +224,10 @@ namespace "config" do
   end
 
   task :sailfish => [:set_sailfish_platform, "switch_app"] do
+    $homeDir = Dir.home.gsub(":", "").gsub("\\", "/")
+    $homeDir[0] = $homeDir[0].downcase
+    $homeDir = '/' + $homeDir
+
     print_timestamp('config:sailfish START')
     Rake::Task["config:common"].invoke()
 
@@ -133,6 +236,8 @@ namespace "config" do
     end
     $sailfishdir = $config["env"]["paths"]["sailfish"]
 
+    $certificate = File.join($startdir, "platform", "sailfish", "keys", "regular_cert.pem")
+    $key = File.join($startdir, "platform", "sailfish", "keys", "regular_key.pem")
 
     if !$app_config.nil? && !$app_config["sailfish"].nil?
       $connf_build = "Release"
@@ -143,6 +248,14 @@ namespace "config" do
       $target_arch = "arm"
       if !$app_config["sailfish"]["target"].nil?
         $target_arch = $app_config["sailfish"]["target"]
+      end
+
+      if !$app_config["sailfish"]["certificate"].nil?
+        $certificate = $app_config["sailfish"]["certificate"]
+      end
+
+      if !$app_config["sailfish"]["key"].nil?
+        $key = $app_config["sailfish"]["key"]
       end
 
       puts "Target arch: " + $target_arch
@@ -157,7 +270,7 @@ namespace "config" do
 
     if !$app_config["name"].nil?    
       $appname = $app_config["name"]
-      $final_name_app = "harbour-" + "#{$appname.downcase}"
+      $final_name_app = "" + "#{$appname.downcase}"
     else
       raise "Name application is not found in build.yaml!"
     end
@@ -178,8 +291,11 @@ namespace "config" do
       $current_build_sdk_dir = ""
       doc.xpath("//target").each do |t|
         target = t.attr("name")
-        if target.include? $target_arch
+        origin = t.attr("origin")
+        puts target
+        if target.include? $target_arch and Dir.exist?(getTargetPath(target))
           $current_target = target
+          $origin_target = origin
           break
         end
       end
@@ -187,44 +303,16 @@ namespace "config" do
       $current_target = $app_config["sailfish"]["target_sdk"]
     end
 
-    if isWindows?
-      if Dir.exist?(File.join($sailfishdir, "settings", "AuroraOS-SDK"))
-        $auroraSDK = true
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishSDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishOS-SDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
-      else
-        puts "Can't recognize build SDK!"
-        exit 1
-      end
-      $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
+    if Dir.exist?(getAuroraEnginePath())
+      $current_build_sdk_dir = getTargetPath($current_target)
     else
-      if Dir.exist?(File.join(File.expand_path('~'), ".config", "AuroraOS-SDK"))
-        $auroraSDK = true
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishSDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
-      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishOS-SDK"))
-        $auroraSDK = false
-        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
-      else
-        puts "Can't recognize build SDK!"
-        exit 1
-      end
+      puts "Can't recognize build SDK!"
+      exit 1
     end
+      
+    $sysName = "Aurora"
 
-    if $auroraSDK
-      $sysName = "Aurora OS"
-    else
-      $sysName = "Sailfish OS"
-    end
-
-    if !File.exists?($current_build_sdk_dir)
+    if !File.exist?($current_build_sdk_dir)
       puts "No such target (" + $current_target + ") exists"
       exit 1
     end
@@ -259,12 +347,6 @@ namespace "config" do
       
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["device_name"].nil?
         $dev_name = $app_config["sailfish"]["device"]["device_name"]
-      elsif $dev_type == "real"
-        raise "Please set device name for real device in device section!\n" +        
-        "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
-        "For list device use: sailfish:device:list\n"
-      elsif $dev_type == "vbox"
-          $dev_name = "#{$sysName} Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -319,11 +401,8 @@ namespace "config" do
       $build_threads = 1
     end
 
-    $enableQWebEngine = ""
-    if !$app_config["sailfish"]["enable_web_engine"].nil?
-      if (($app_config["sailfish"]["enable_web_engine"] == true) || ($app_config["sailfish"]["enable_web_engine"] == "true"))
-        $enableQWebEngine = "ENABLE_Q_WEB_ENGINE"
-      end
+    if !$app_config["sailfish"]["organization"].nil?
+      $organization = $app_config["sailfish"]["organization"]
     end
 
     $enableDBUS = ""
@@ -335,8 +414,38 @@ namespace "config" do
       $ymlSpdscanner = "- qt5-qtconnectivity-qtsdpscanner"
     end
 
-
+    $buildEnv = BuildScriptGenerator.new
     
+    $buildEnv.isNixSystem = !isWindows?
+    $buildEnv.merAddress = "127.0.0.1"
+    $buildEnv.merPort = 2222
+    $buildEnv.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
+    $buildEnv.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
+    $buildEnv.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
+    $buildEnv.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
+    $buildEnv.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
+    $buildEnv.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
+    $buildEnv.merTgtName = QuotedStrNixWay($current_target)
+    $buildEnv.merUserName = "mersdk"
+    $buildEnv.merDevName = QuotedStrNixWay($dev_name)
+
+    cmd_suffix = isWindows? ? '.cmd' : ''
+    $buildEnv.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
+    $buildEnv.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
+    $buildEnv.makeFile = PathToWindowsWay(File.join($project_path, $final_name_app, "Makefile"))
+    $buildEnv.buildMode = $connf_build.downcase
+    $buildEnv.qmlMode = "qml_#{$connf_build.downcase}" 
+    $buildEnv.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
+    $buildEnv.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
+    $buildEnv.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
+    $buildEnv.nThreads = $build_threads
+    $buildEnv.sfdkExe = QuotedStrNixWay(File.join($sailfishdir, "bin", "sfdk.exe"))
+    
+    ENV["Path"] =  $current_build_sdk_dir + ";" + ENV["Path"]
+    ENV["QTDIR"] = File.join($buildEnv.merShTgtName, $buildEnv.merTgtName, "usr", "share", "qt5")
+    ENV["SFDK_OPTIONS"] = "-c target=#{$origin_target}"
+    ENV["SFDK_NO_SESSION"] = "1"
+
 
     Rake::Task["build:sailfish:startvm"].invoke()
   end
@@ -374,8 +483,8 @@ end
 namespace "run" do
   task :sailfish => ["config:sailfish"] do
 
-      require 'net/ssh'
-      require 'net/scp'
+    require 'net/ssh'
+    require 'net/scp'
 
     session_ssh = nil
     puts $ssh_key
@@ -464,12 +573,12 @@ namespace "device" do
 
       puts "Enter password from device, to generate the ssh key: "
       $pwd_host = STDIN.noecho(&:gets).chomp
-      $user_name = "nemo"
+      $user_name = "defaultuser"
 
       mkdir_p File.join(ssh_dir, $dev_name)
 
       yes = true
-      if(File.exists? File.join(ssh_dir, $dev_name, "nemo"))
+      if(File.exist? File.join(ssh_dir, $dev_name, "defaultuser"))
         puts "Key for this device exists, do you want to replace it? (yes/no)"      
         yes = STDIN.gets == "yes\n"
       end
@@ -527,26 +636,8 @@ namespace "device" do
 end
 
 namespace "clean" do
-  task :sailfish => "clean:sailfish:files"
-  namespace "sailfish" do
-    task :files => "config:sailfish" do
-      clean_path = File.join($app_path, "project", "qt", "clean.cmd")
-      system(clean_path)
-      if File.exists?($project_path)
-        Dir.glob(File.join($project_path, "*.*")) { |f| rm f, :force => true }
-        Dir.entries(File.join($project_path)).each do |d|
-          rm_rf File.join($project_path, d)
-        end
-      end
-      rm_rf $srcdir if File.exists?($srcdir)
-      #rm_rf $targetdir
-      #rm_rf $app_builddir
-      #rm_rf $tmpdir
-    end
-    task :build => "config:sailfish" do
-      clean_path = File.join($app_path, "project", "qt", "clean.cmd")
-      system(clean_path)
-    end
+  task :sailfish => ["project:sailfish:qt"] do
+    $buildEnv.clear()
   end
 end
 
@@ -681,8 +772,7 @@ namespace "build"  do
     end
 
     task :deploy => ['config:sailfish'] do
-      deploy_path = File.join($app_path, "project", "qt", "deploy.cmd")
-      system(deploy_path)
+      $buildEnv.deployToEmulator()
     end
 
     task :deploy_bundle => ['config:sailfish'] do
@@ -729,17 +819,12 @@ namespace "build"  do
       end
     end
 
-    
-
     task :rhodes => ["project:sailfish:qt"] do
       print_timestamp('build:sailfish:rhodes START')
-      build_path = File.join($app_path, "project", "qt", "build.cmd")
-      rpm_path = File.join($app_path, "project", "qt", "rpm.cmd")
 
-      if system(build_path) != true
-        raise "Error: build failed"
-      end
-      system(rpm_path)
+      $buildEnv.build()
+      $buildEnv.rpm()
+      #exit 0
 
       $target_rpm = ""
       Dir[File.join($project_path, $final_name_app, "RPMS/**/*")].each do |file_name|
@@ -749,11 +834,10 @@ namespace "build"  do
         end
       end
 
-      rpmval_path = File.join($project_path, "rpmvalidation.cmd")
-      system("\"#{rpmval_path}\" \"#{$target_rpm}\"")
+      $buildEnv.signRpm($target_rpm)
+      $buildEnv.validateRpm($target_rpm)
+
       cp_r $target_rpm, $target_path
-
-
     end
 
     task :extensions => ['project:sailfish:qt'] do
@@ -780,7 +864,7 @@ namespace "build"  do
 
         generator = QtProjectGenerator.new
         generator.rhoRoot = $rhodes_path_build_engine   
-        generator.extRoot = ext_path.gsub(File.expand_path('~'), "/home/mersdk/share")   
+        generator.extRoot = ext_path.gsub(File.expand_path('~'), $homeDir)   
         generator.desktopAppName = $appname
         generator.nameApp = $final_name_app 
         generator.buildMode = $connf_build
@@ -808,7 +892,7 @@ namespace 'project' do
   namespace 'sailfish' do
     task :qt => ['config:sailfish'] do
       $rhodes_path = File.absolute_path '.'
-      $rhodes_path_build_engine = $rhodes_path.gsub(File.expand_path('~'), "/home/mersdk/share")
+      $rhodes_path_build_engine = $rhodes_path.gsub(File.expand_path('~'), $homeDir)
       
       curl_erb_path = $rhodes_path + "/platform/sailfish/build/curl.pro.erb"
       rubylib_erb_path = $rhodes_path + "/platform/sailfish/build/rubylib.pro.erb"
@@ -818,17 +902,10 @@ namespace 'project' do
       sqlite3_erb_path = $rhodes_path + "/platform/sailfish/build/sqlite3.pro.erb"
       syncengine_erb_path = $rhodes_path + "/platform/sailfish/build/syncengine.pro.erb"
       rhodes_erb_path = $rhodes_path + "/platform/sailfish/build/rhodes.pro.erb"
-      app_erb_path = $rhodes_path + "/platform/sailfish/build/harbour-SailfishRhodes.pro.erb"
+      app_erb_path = $rhodes_path + "/platform/sailfish/build/SailfishRhodes.pro.erb"
 
-      desktop_erb_path = $rhodes_path + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.desktop.erb"
-      yaml_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.yaml.erb"
-      priv_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.erb"
-
-      build_erb_path = $rhodes_path + "/platform/sailfish/build/rho_build.cmd.erb"
-      clean_erb_path = $rhodes_path + "/platform/sailfish/build/rho_clean.cmd.erb"
-      rpm_erb_path = $rhodes_path + "/platform/sailfish/build/rho_rpm.cmd.erb"
-      rpmval_erb_path = $rhodes_path + "/platform/sailfish/build/rho_rpmvalidation.cmd.erb"
-      deploy_erb_path = $rhodes_path + "/platform/sailfish/build/rho_deploy.cmd.erb"
+      desktop_erb_path = $rhodes_path + "/platform/sailfish/build/rpm/SailfishRhodes.desktop.erb"
+      spec_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/SailfishRhodes.spec.erb"
 
       mkdir_p $project_path
       mkdir_p File.join($project_path, "curl")
@@ -841,19 +918,18 @@ namespace 'project' do
       mkdir_p File.join($project_path, "rhodes")
       mkdir_p File.join($project_path, $final_name_app)
       mkdir_p File.join($project_path, $final_name_app, "rpm")
-      mkdir_p File.join($project_path, $final_name_app, "privileges")
 
-      #if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
+      #if !File.exist?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
         File.rename(
-          File.join($project_path, $final_name_app, "qml", "harbour-sailfishrhodes.qml"), 
-          File.join($project_path, $final_name_app, "qml", "#{$final_name_app}.qml"))
+          File.join($project_path, $final_name_app, "qml", "sailfishrhodes.qml"), 
+          File.join($project_path, $final_name_app, "qml", "#{$organization}.#{$final_name_app}.qml"))
       #end
 
-      if !File.exists?(File.join($project_path, $final_name_app, "icons")) 
+      if !File.exist?(File.join($project_path, $final_name_app, "icons")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/icons"), File.join($project_path, $final_name_app)
         Dir[File.join($project_path, $final_name_app, "icons/**/*")].each do |file_name|
-          File.rename(file_name, File.join(File.dirname(file_name), "#{$final_name_app}.png")) if File.file? file_name
+          File.rename(file_name, File.join(File.dirname(file_name), "#{$organization}.#{$final_name_app}.png")) if File.file? file_name
         end
       end
 
@@ -861,6 +937,7 @@ namespace 'project' do
       generator.rhoRoot = $rhodes_path_build_engine
       generator.desktopAppName = $appname
       generator.nameApp = $final_name_app
+      generator.organization = $organization
       generator.enableQWebEngine = $enableQWebEngine
       generator.versionApp = $version_app     
       generator.buildMode = $connf_build
@@ -887,96 +964,23 @@ namespace 'project' do
       end
 
 
-      File.open(File.join($project_path, $final_name_app, "#{$final_name_app}.desktop"), 'w' ) { |f| f.write generator.render_profile( desktop_erb_path ) }
-      File.open(File.join($project_path, $final_name_app, "rpm", "#{$final_name_app}.yaml"), 'w' ) { |f| f.write generator.render_profile( yaml_erb_path ) }
-      File.open(File.join($project_path, $final_name_app, "privileges", "#{$final_name_app}"), 'w' ) { |f| f.write generator.render_profile( priv_erb_path ) }
+      File.open(File.join($project_path, $final_name_app, "#{$organization}.#{$final_name_app}.desktop"), 'w' ) { |f| f.write generator.render_profile( desktop_erb_path ) }
+      File.open(File.join($project_path, $final_name_app, "rpm", "#{$final_name_app}.spec"), 'w' ) { |f| f.write generator.render_profile( spec_erb_path ) }
+      #File.open(File.join($project_path, $final_name_app, "privileges", "#{$final_name_app}"), 'w' ) { |f| f.write generator.render_profile( priv_erb_path ) }
       
       rho_name_project = File.join($project_path, "rhodes", "rhodes.pro")
-      if !File.exists?(rho_name_project)
+      if !File.exist?(rho_name_project)
         File.open(rho_name_project, 'w' ) { |f| f.write generator.render_profile( rhodes_erb_path ) }
       end
       
       app_name_project = File.join($project_path, $final_name_app, "#{$final_name_app}.pro")
-      if !File.exists?(app_name_project)
+      if !File.exist?(app_name_project)
         File.open(app_name_project, 'w' ) { |f| f.write generator.render_profile( app_erb_path ) }
       end
       
-      build_script_generator = BuildScriptGenerator.new
-      
-      #if isWindows?
-      #  build_script_generator.scriptHeader = "ECHO OFF"
-      #  build_script_generator.platformExport = "set"
-      #else
-      #  build_script_generator.scriptHeader = "#!/bin/sh"
-      #  build_script_generator.platformExport = "export"
-      #end
 
-      build_script_generator.isNixSystem = !isWindows?
-      build_script_generator.merAddress = "127.0.0.1"
-      build_script_generator.merPort = 2222
-      build_script_generator.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
-      build_script_generator.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
-      build_script_generator.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
-      build_script_generator.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
-      build_script_generator.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
-      build_script_generator.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
-      build_script_generator.merTgtName = QuotedStrNixWay($current_target)
-      build_script_generator.merUserName = "mersdk"
-      build_script_generator.merDevName = QuotedStrNixWay($dev_name)
-
-      #TODO: windows paths way - temporary
-      cmd_suffix = isWindows? ? '.cmd' : ''
-      build_script_generator.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
-      build_script_generator.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
-      build_script_generator.buildMode = $connf_build.downcase
-      build_script_generator.qmlMode = "qml_#{$connf_build.downcase}" 
-      build_script_generator.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
-      build_script_generator.rpmPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpm" + cmd_suffix))
-      build_script_generator.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
-      build_script_generator.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
-      build_script_generator.nThreads = $build_threads
-
-      File.open(File.join($project_path, "build.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( build_erb_path ) }
-      File.open(File.join($project_path, "clean.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( clean_erb_path ) }
-      File.open(File.join($project_path, "rpm.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( rpm_erb_path ) }
-      File.open(File.join($project_path, "rpmvalidation.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( rpmval_erb_path ) }
-      File.open(File.join($project_path, "deploy.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( deploy_erb_path ) }
-
-      if !isWindows?
-        FileUtils.chmod('+x', File.join($project_path, "build.cmd"))
-        FileUtils.chmod('+x', File.join($project_path, "clean.cmd"))
-        FileUtils.chmod('+x', File.join($project_path, "rpm.cmd"))
-        FileUtils.chmod('+x', File.join($project_path, "rpmvalidation.cmd"))
-        FileUtils.chmod('+x', File.join($project_path, "deploy.cmd"))
-        clrfTOlf(File.join($project_path, "build.cmd"))
-        clrfTOlf(File.join($project_path, "clean.cmd"))
-        clrfTOlf(File.join($project_path, "rpm.cmd"))
-        clrfTOlf(File.join($project_path, "rpmvalidation.cmd"))
-        clrfTOlf(File.join($project_path, "deploy.cmd"))
-      end
     end
   end
 end
-#http://doc.qt.io/qt-5/qmake-variable-reference.html#qmakespec
-#MER_SSH_HOST, 127.0.0.1
-#MER_SSH_PORT, 2222
-#MER_SSH_PRIVATE_KEY, C:/SailfishOS/vmshare/ssh/private_keys/engine/mersdk
-#MER_SSH_PROJECT_PATH, C:/Users/n0men/Desktop/tau/testapp/project/qt/curl
-#MER_SSH_SDK_TOOLS, C:\SailfishOS\settings\SailfishOS-SDK\mer-sdk-tools\Sailfish OS Build Engine\SailfishOS-2.1.3.7-armv7hl
-#MER_SSH_SHARED_HOME, C:/Users/n0men
-#MER_SSH_SHARED_SRC, C:/Users/n0men/
-#MER_SSH_SHARED_TARGET, C:/SailfishOS/mersdk/targets
-#MER_SSH_TARGET_NAME, SailfishOS-2.1.3.7-armv7hl
-#MER_SSH_USERNAME, mersdk
 
-#MER_SSH_USERNAME, mersdk
-#MER_SSH_TARGET_NAME, SailfishOS-2.1.3.7-i486
-#MER_SSH_SHARED_TARGET, C:/SailfishOS/mersdk/targets
-#MER_SSH_SHARED_SRC, C:/Users/n0men/
-#MER_SSH_SHARED_HOME, C:/Users/n0men
-#MER_SSH_SDK_TOOLS, C:\SailfishOS\settings\SailfishOS-SDK\mer-sdk-tools\Sailfish OS Build Engine\SailfishOS-2.1.3.7-i486
-#MER_SSH_PROJECT_PATH, C:/Users/n0men/Desktop/tau/kitchensinkRuby/project/qt/harbour-kitchensinkRuby
-#MER_SSH_PRIVATE_KEY, C:/SailfishOS/vmshare/ssh/private_keys/engine/mersdk
-#MER_SSH_PORT, 2222
-#MER_SSH_DEVICE_NAME, INOI R7 (ARM)
 

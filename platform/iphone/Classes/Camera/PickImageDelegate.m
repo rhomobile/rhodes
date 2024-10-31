@@ -24,6 +24,7 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 #include <sys/sysctl.h>
+#include <stdlib.h>
 
 #import "Rhodes.h"
 #import "PickImageDelegate.h"
@@ -175,10 +176,20 @@
         [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
     }
 
-    NSString *now = [[[NSDate date] descriptionWithLocale:nil]
+    /*
+     NSString *now = [[[NSDate date] descriptionWithLocale:nil]
              stringByReplacingOccurrencesOfString: @":" withString: @"."];
     now = [now stringByReplacingOccurrencesOfString: @" " withString: @"_"];
     now = [now stringByReplacingOccurrencesOfString: @"+" withString: @"_"];
+    */
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDate* now_date = [NSDate date];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd-HH-mm-ss"]; // set template after setting locale
+    NSString *now = [dateFormatter stringFromDate:now_date];
+    int r = arc4random_uniform(1000000);
+    now = [now stringByAppendingString:[NSString stringWithFormat:@"_%@", [NSNumber numberWithInt:r]]];
+    
 
      
     CGImageRef cgImageToRelease = nil;

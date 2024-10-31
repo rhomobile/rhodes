@@ -37,6 +37,7 @@ require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
 require_relative 'dex_builder'
 require_relative 'build_tools_finder'
+require_relative 'ndkwrapper'
 
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -94,7 +95,7 @@ def set_app_icon_android
   #end
 
   res_path = File.join($app_path, 'resources', 'android', 'res')
-  if File.exists? res_path
+  if File.exist? res_path
     # NEW resource - just copy it to res folder -->>
     puts "add resources from application'sresource folder [#{res_path}] to [#{$tmpdir}]"
     cp_r res_path, $tmpdir
@@ -124,8 +125,8 @@ def set_app_icon_android
 
       iconapppath = iconappbase + size + '.png'
 
-      if File.exists?(iconapppath) or File.exists?(iconresname)
-        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+      if File.exist?(iconapppath) or File.exist?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exist? iconapppath
         rm_f iconresname
         mkdir_p drawable
         cp iconapppath, iconresname if File.exist? drawable
@@ -145,8 +146,8 @@ def set_app_icon_android
 
       iconapppath = iconappbase + size + '.png'
 
-      if File.exists?(iconapppath) or File.exists?(iconresname)
-        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+      if File.exist?(iconapppath) or File.exist?(iconresname)
+        iconapppath = iconappbase + '.png' unless File.exist? iconapppath
         rm_f iconresname
         mkdir_p drawable
         cp iconapppath, iconresname if File.exist? drawable
@@ -302,9 +303,9 @@ namespace 'project' do
       project_prop_buf = generator.render project_prop_erb_path
       File.open(project_prop_file_path, "w") { |f| f.write project_prop_buf }
 
-      cp_r File.join(project_template_path,'externalToolBuilders'), File.join(project_path,'.externalToolBuilders') unless File.exists? File.join(project_path,'.externalToolBuilders')
-      cp File.join(project_template_path,'gensources.xml'), project_path unless File.exists? File.join(project_path,'gensources.xml')
-      cp File.join(project_template_path,'eclipsebundle.xml'), project_path unless File.exists? File.join(project_path,'eclipsebundle.xml')
+      cp_r File.join(project_template_path,'externalToolBuilders'), File.join(project_path,'.externalToolBuilders') unless File.exist? File.join(project_path,'.externalToolBuilders')
+      cp File.join(project_template_path,'gensources.xml'), project_path unless File.exist? File.join(project_path,'gensources.xml')
+      cp File.join(project_template_path,'eclipsebundle.xml'), project_path unless File.exist? File.join(project_path,'eclipsebundle.xml')
 
       cp manifest_path, project_path
 
@@ -388,8 +389,8 @@ namespace 'project' do
       $ext_android_build_scripts.each do |ext, builddata|
         ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
         ext_native_files2 = File.join(builddata[0], 'ext_native.files')
-        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
-        if(File.exists? ext_native_final)
+        ext_native_final = (File.exist? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exist? ext_native_final)
           mkdir_p File.join(project_app_path, ext)        
           extensions_deps += "add_subdirectory(./#{ext})\n"
         end
@@ -451,8 +452,8 @@ namespace 'project' do
       $ext_android_build_scripts.each do |ext, builddata|
         ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
         ext_native_files2 = File.join(builddata[0], 'ext_native.files')
-        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
-        if(File.exists? ext_native_final)
+        ext_native_final = (File.exist? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exist? ext_native_final)
           cmake_path_ext = File.join( project_path, 'app', ext, 'CMakeLists.txt')
           generator.extdir = builddata[2]
           generator.extName = ext
@@ -497,6 +498,8 @@ def find_file(file_name, path_array)
       full_path = (elem.kind_of?(String)) ? elem : File.join(elem)
 
       files = Dir.glob(File.join(full_path, file_name))
+
+      puts 'Looking for ' + file_name + ' in ' + full_path + ' found ' + files.size.to_s + ' files' + 'exe ext is ' + $exe_ext
 
       unless files.empty?
         result = files.sort.last
@@ -656,13 +659,13 @@ namespace "config" do
 
     if !$skip_checking_Android_SDK
       $androidsdkpath = $config["env"]["paths"]["android"]
-      unless File.exists? $androidsdkpath
+      unless File.exist? $androidsdkpath
         puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
         exit 1
       end
 
       $androidndkpath = $config["env"]["paths"]["android-ndk"]
-      unless File.exists? $androidndkpath
+      unless File.exist? $androidndkpath
         puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
         exit 1
       end
@@ -770,9 +773,8 @@ namespace "config" do
     $logger.debug "Use Google addon API (1): #{$use_google_addon_api}"    
 
     $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
-    $uri_scheme = "http" if $uri_scheme.nil?
-
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
+    $uri_path_prefix = "/#{$app_package_name}"
 
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
@@ -809,7 +811,7 @@ namespace "config" do
     $app_push_java = File.join $rho_java_gen_dir,'Push.java'
     $app_startup_listeners_java = File.join $rho_java_gen_dir,'extmanager','RhodesStartupListeners.java'
 
-    if RUBY_PLATFORM =~ /(win|w)32$/
+    if OS.windows?
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
@@ -844,7 +846,7 @@ namespace "config" do
       $aapt2 = File.join(build_tools_path, "aapt2#{$exe_ext}")
 
       $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
-      $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
+      $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exist? $aapt
 
       AndroidTools::DexBuilder.instance.logger = $logger
       AndroidTools::DexBuilder.instance.sdk_path = $androidsdkpath
@@ -920,12 +922,7 @@ namespace "config" do
     $app_package_name.gsub!(/\.[\d]/, "._")
 
     puts "$vendor = #{$vendor}"
-    puts "$app_package_name = #{$app_package_name}"
-
-    if $uri_host.nil?
-      $uri_host = 'rhomobile.com'
-      $uri_path_prefix = "/#{$app_package_name}"
-    end
+    puts "$app_package_name = #{$app_package_name}"    
 
     $no_compression = ['html','htm','js','css']
     $no_compression = $app_config['android']['no_compression'] if $app_config['android'] and $app_config['android']['no_compression']
@@ -968,6 +965,11 @@ namespace "config" do
         core_build_cfg['maven_deps'].each { |d|
           AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
         }
+      end
+
+      $java_version = 7
+      if ($app_config["android"] && $app_config["android"]["java_version"])
+        $java_version = $app_config["android"]["java_version"]
       end
     end
     
@@ -1043,10 +1045,10 @@ namespace "config" do
 
     end
 
-    mkdir_p $bindir if not File.exists? $bindir
-    mkdir_p $rhobindir if not File.exists? $rhobindir
-    mkdir_p $targetdir if not File.exists? $targetdir
-    mkdir_p $srcdir if not File.exists? $srcdir
+    mkdir_p $bindir if not File.exist? $bindir
+    mkdir_p $rhobindir if not File.exist? $rhobindir
+    mkdir_p $targetdir if not File.exist? $targetdir
+    mkdir_p $srcdir if not File.exist? $srcdir
 
     init_aapt2_helper build_tools_path
 
@@ -1200,7 +1202,7 @@ namespace "config" do
           unless additional_sources.nil?
             ext_sources_list = File.join(extpath, additional_sources)
 
-            if File.exists? ext_sources_list
+            if File.exist? ext_sources_list
               $ext_android_additional_sources[extpath] = ext_sources_list
             else
               raise "Extension java source list is missed: #{ext_sources_list}"
@@ -1285,8 +1287,8 @@ namespace "config" do
 
         elsif exttype != 'prebuilt'
           build_script = File.join(extpath,'ext','build'+$bat_ext)
-          if File.exists? build_script
-            if RUBY_PLATFORM =~ /(win|w)32$/
+          if File.exist? build_script
+            if OS.windows?
               $ext_android_build_scripts[ext] = [File.join(extpath,'ext'),'build.bat']
             else
               $ext_android_build_scripts[ext] = [File.join(extpath,'ext'), File.join('.', 'build' + $bat_ext)]
@@ -1317,7 +1319,7 @@ namespace "config" do
       $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
       $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         $emulator = #"cmd /c " +
             File.join($androidsdkpath, "tools", "emulator.exe")
       else
@@ -1365,16 +1367,16 @@ namespace "build" do
 
         Rake::Task['build:android:rhobundle'].invoke
 
-        mkdir_p target_path if not File.exists? target_path
+        mkdir_p target_path if not File.exist? target_path
 
         source_RhoBundle = $appassets
 
-        rm_rf File.join(target_path, "apps") if File.exists? File.join(target_path, "apps")
-        rm_rf File.join(target_path, "db") if File.exists? File.join(target_path, "db")
-        rm_rf File.join(target_path, "lib") if File.exists? File.join(target_path, "lib")
-        rm_rf File.join(target_path, "hash") if File.exists? File.join(target_path, "hash")
-        rm_rf File.join(target_path, "name") if File.exists? File.join(target_path, "name")
-        rm_rf File.join(target_path, "rho.dat") if File.exists? File.join(target_path, "rho.dat")
+        rm_rf File.join(target_path, "apps") if File.exist? File.join(target_path, "apps")
+        rm_rf File.join(target_path, "db") if File.exist? File.join(target_path, "db")
+        rm_rf File.join(target_path, "lib") if File.exist? File.join(target_path, "lib")
+        rm_rf File.join(target_path, "hash") if File.exist? File.join(target_path, "hash")
+        rm_rf File.join(target_path, "name") if File.exist? File.join(target_path, "name")
+        rm_rf File.join(target_path, "rho.dat") if File.exist? File.join(target_path, "rho.dat")
 
         cp_r File.join(source_RhoBundle, "apps"), target_path
         cp_r File.join(source_RhoBundle, "db"), target_path
@@ -1391,7 +1393,7 @@ namespace "build" do
       $rhodes_as_lib = true
       Rake::Task["package:android"].invoke
       target_path = args[:target_path]
-      mkdir_p target_path if not File.exists? target_path
+      mkdir_p target_path if not File.exist? target_path
       cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
       print_timestamp('build:android:rhodeslib_lib FINISH')
     end
@@ -1511,7 +1513,7 @@ namespace "build" do
 
         $abis.each do |abi|
           puts "Build extension (#{abi}): #{ext}"
-          if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == 'rake')
+          if OS.windows? || (builddata[1] == 'rake')
 
             args = []
             if builddata[1] == 'rake'
@@ -1584,7 +1586,7 @@ namespace "build" do
             if File.basename(File.dirname(rel_path)) =~ /^values/
               target = File.join addspath, File.dirname(rel_path), "#{package}.#{File.basename(rel_path)}"
             end
-            mkdir_p File.dirname(target) unless File.exists?(File.dirname(target))
+            mkdir_p File.dirname(target) unless File.exist?(File.dirname(target))
             Jake.copyIfNeeded p, target
           end
         end
@@ -2115,7 +2117,9 @@ namespace "build" do
       generator.androidVerMaj = $major_version
       generator.androidVerMin = $minor_version
 
-      generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
+      if ( $uri_scheme != nil )
+        generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
+      end
 
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.rb')).each do |extscript|
         puts "Evaluating #{extscript}"
@@ -2156,7 +2160,7 @@ namespace "build" do
 
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', 'AndroidManifest.xml')).each do |ext_manifest|
 
-        if File.exists? ext_manifest
+        if File.exist? ext_manifest
           puts 'AndroidManifest.xml['+ext_manifest+'] from native extension found !'
 
           manifest_ext_doc = REXML::Document.new(File.new(ext_manifest))
@@ -2249,15 +2253,16 @@ namespace "build" do
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
+
+        ndkwrapper = NDKWrapper.new($androidndkpath)
+        llvm_stl = ndkwrapper.get_llvm_stl_path(arch)
         arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
-        
-        localabi = arch
-        localabi = "armeabi-v7a" if arch == "armeabi"
-        llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
-        if File.exists? llvm_stl
+
+        if File.exist? llvm_stl
           cp_r llvm_stl, File.join($applibs,arch)
         end
+
       end
       $ext_android_additional_lib.each do |lib|
         arch = File.basename(File.dirname(lib))
@@ -2276,7 +2281,7 @@ namespace "build" do
           end
           arch = abi_prefab_target_dirs[arch]
           file = File.basename(lib)
-          if Dir.exists? File.join($applibs,arch)
+          if Dir.exist? File.join($applibs,arch)
             cp_r lib, File.join($applibs,arch,file)
           end
         end
@@ -2293,7 +2298,7 @@ namespace "build" do
 
           arch = "armeabi" if arch == "armeabi-v7a"
           file = File.basename(lib)
-          if Dir.exists? File.join($applibs,arch)
+          if Dir.exist? File.join($applibs,arch)
             cp_r lib, File.join($applibs,arch,file)
           end
         end
@@ -2474,10 +2479,10 @@ namespace "build" do
         raise 'Error in AAPT2: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
         #how about some comments on this magic?
-        if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
+        if(File.exist?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
           cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
           rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
-        elsif (File.exists?(File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')))
+        elsif (File.exist?(File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')))
           cp_r File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java'), File.join($app_rjava_dir, 'R.java')
           rm_rf File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')
         end
@@ -2498,7 +2503,7 @@ namespace "build" do
         File.open(File.join(path_to_p, "R.java"), "w") { |f| f.write(buf) }
       end
 
-      mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
+      mkdir_p File.join($app_rjava_dir, "R") if not File.exist? File.join($app_rjava_dir, "R")
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
@@ -2531,7 +2536,7 @@ namespace "build" do
       #buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
       #File.open($app_android_r, "w") { |f| f.write(buf) }
 
-      #mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
+      #mkdir_p File.join($app_rjava_dir, "R") if not File.exist? File.join($app_rjava_dir, "R")
       #buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes.R;\n")
       #"{b}"uf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       #File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
@@ -2578,13 +2583,14 @@ namespace "build" do
       javafilelists = [srclist]
 
       extlist = File.join $app_builddir, "ext_build.files"
-      if File.exists? extlist
+      if File.exist? extlist
         puts "#{extlist} is found! THere are addditional java files"
         javafilelists << extlist
       end
 
-      jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')
-      java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
+      jar = File.join($app_builddir, 'librhodes', 'Rhodes.jar')      
+
+      java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists, $java_version)
 
       $android_jars = [jar]
       print_timestamp('build:android:rhodes FINISH')
@@ -2628,11 +2634,11 @@ namespace "build" do
 
         buildpath = File.join($tmpdir, ext)
 
-        mkdir_p buildpath unless File.exists? buildpath
+        mkdir_p buildpath unless File.exist? buildpath
 
         extjar = File.join $app_builddir, 'extensions', ext, ext + '.jar'
 
-        java_build(extjar, buildpath, ext_classpath, [srclist.path])
+        java_build(extjar, buildpath, ext_classpath, [srclist.path], $java_version)
 
         $android_jars << extjar
 
@@ -2660,7 +2666,7 @@ namespace "build" do
       #puts 'targetdir = '+$targetdir.to_s
       #puts 'bindir = '+$bindir.to_s
       android_targetdir = $targetdir #File.join($targetdir, 'android')
-      mkdir_p android_targetdir if not File.exists? android_targetdir
+      mkdir_p android_targetdir if not File.exist? android_targetdir
       zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
       #Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
 
@@ -2668,7 +2674,7 @@ namespace "build" do
       src_folder = File.join(src_folder, 'apps')
 
       tmp_folder = $appassets + '_tmp_partial'
-      rm_rf tmp_folder if File.exists? tmp_folder
+      rm_rf tmp_folder if File.exist? tmp_folder
       mkdir_p tmp_folder
 
       dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
@@ -2713,7 +2719,7 @@ namespace "build" do
       src_folder = File.join(src_folder, 'apps')
 
       tmp_folder = $appassets + '_tmp_partial'
-      rm_rf tmp_folder if File.exists? tmp_folder
+      rm_rf tmp_folder if File.exist? tmp_folder
       mkdir_p tmp_folder
 
       dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
@@ -2725,7 +2731,7 @@ namespace "build" do
       mkdir_p dst_tmp_folder
 
       add_files = []
-      if File.exists? add_list_full_name
+      if File.exist? add_list_full_name
         File.open(add_list_full_name, "r") do |f|
           while line = f.gets
             fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
@@ -2736,7 +2742,7 @@ namespace "build" do
       end
 
       remove_files = []
-      if File.exists? remove_list_full_name
+      if File.exist? remove_list_full_name
         File.open(remove_list_full_name, "r") do |f|
           while line = f.gets
             fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chomp
@@ -2760,7 +2766,7 @@ namespace "build" do
 
       Jake.build_file_map(dst_tmp_folder, "upgrade_package_add_files.txt")
 
-      #if File.exists? add_list_full_name
+      #if File.exist? add_list_full_name
       #   File.open(File.join(dst_tmp_folder, 'upgrade_package_add_files.txt'), "w") do |f|
       #      add_files.each do |j|
       #         f.puts "#{j}\tfile\t0\t0"
@@ -2768,7 +2774,7 @@ namespace "build" do
       #   end
       #end
 
-      if File.exists? remove_list_full_name
+      if File.exist? remove_list_full_name
         File.open(File.join(dst_tmp_folder, 'upgrade_package_remove_files.txt'), "w") do |f|
           remove_files.each do |j|
             f.puts "#{j}"
@@ -2777,7 +2783,7 @@ namespace "build" do
         end
       end
 
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $targetdir if not File.exist? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
       Jake.zip_upgrade_bundle(tmp_folder, zip_file_path)
       rm_rf tmp_folder
@@ -2861,9 +2867,9 @@ def prepare_aar_package
     end
   end
 
-  if(Dir.exists?(File.join($allclasses, 'com', $vendor , $appname.downcase)))  
+  if(Dir.exist?(File.join($allclasses, 'com', $vendor , $appname.downcase)))  
     FileUtils.remove_dir File.join($allclasses, 'com', $vendor , $appname.downcase)
-  elsif(Dir.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+  elsif(Dir.exist?(File.join($allclasses, $app_package_name.split('.'))))  
     FileUtils.remove_dir File.join($allclasses, $app_package_name.split('.'))
   end
 
@@ -2975,7 +2981,7 @@ namespace "package" do
     proguardUserRules = $app_config["android"]["proguardrules"] if $app_config["android"]
 
     proguardDir = File.join($startdir, "platform", "android", "proguard")
-    rm_rf File.join($tmpdir, "proguard") if File.exists? File.join($tmpdir, "proguard")
+    rm_rf File.join($tmpdir, "proguard") if File.exist? File.join($tmpdir, "proguard")
     cp_r proguardDir, $tmpdir
     proguardDir = File.join($tmpdir, "proguard")
     proguardTempJarDir = File.join(proguardDir, "TempJars")
@@ -2983,7 +2989,7 @@ namespace "package" do
     proguardPostBuild = File.join(proguardTempJarDir, "postguard")
     proguardRules = File.join(proguardDir, 'proguard-base-rules.pro')
     if useProguard
-      rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
+      rm_rf proguardTempJarDir if File.exist? proguardTempJarDir
       mkdir_p proguardTempJarDir
       mkdir_p proguardPreBuild
       mkdir_p proguardPostBuild
@@ -3029,7 +3035,7 @@ namespace "package" do
       jarsForDX << File.join(proguardPostBuild, "classes-processed.jar")
     end
 
-    unless AndroidTools::DexBuilder.instance.build( jarsForDX, "#{File.join($bindir,'classes.dex')}")
+    unless AndroidTools::DexBuilder.instance.build( jarsForDX, "#{File.join($bindir,'classes.dex')}", $min_sdk_level)
       raise "Error running DEX builder"
     end
 
@@ -3092,7 +3098,7 @@ namespace "package" do
     end
 
     Jake.run($jarbin, args, respath) if File.directory?(respath)
-    rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
+    rm_rf proguardTempJarDir if File.exist? proguardTempJarDir
 
     if $build_bundle
       create_bundle()
@@ -3157,7 +3163,7 @@ namespace "device" do
                                  'cmake', $debug ? 'debug' : 'release', 'obj', realabi, 'librhodes.so'
 
       target_path = File.join $app_builddir, 'librhodes', 'lib', realabi
-      if !File.exists?(target_path)
+      if !File.exist?(target_path)
         mkdir_p target_path
       end
       cp_r librhodes_path, target_path
@@ -3168,7 +3174,7 @@ namespace "device" do
     task :production => "package:android" do
       print_timestamp('device:android:production START')
 
-      if not File.exists? $keystore
+      if not File.exist? $keystore
         AndroidTools.generateKeystore( $keystore, $storealias, $storepass, $keypass )
       end
 
@@ -3207,10 +3213,12 @@ end
 #  end
 #end
 
-def run_as_spec(device_flag, uninstall_app)
+def run_as_spec(device_flag, uninstall_app, gmsaas_recipe_uuid = "")
   Rake::Task["device:android:debug"].invoke
 
-  if device_flag == '-e'
+  if gmsaas_recipe_uuid.to_s != ''
+    gmsaas_android_instance = AndroidTools.run_gmsaas_emulator(gmsaas_recipe_uuid)
+  elsif device_flag == '-e'
     Rake::Task["config:android:emulator"].invoke
   else
     Rake::Task["config:android:device"].invoke
@@ -3221,7 +3229,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   AndroidTools.logclear(device_flag)
   # Start emulator with options: hidden window display and wipe user data
-  AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e'
+  AndroidTools.run_emulator(:hidden => true, :wipe => true) if device_flag == '-e' && gmsaas_recipe_uuid.to_s == ''
 
   begin
     do_uninstall(device_flag)
@@ -3416,6 +3424,10 @@ def run_as_spec(device_flag, uninstall_app)
   #AndroidTools.kill_adb_logcat(device_flag, log_name)
   #end
 
+  if gmsaas_recipe_uuid.to_s != ''
+    AndroidTools.stop_gmsaas_emulator(gmsaas_android_instance)
+  end
+
   $stdout.flush
 
   exit 1 if is_timeout
@@ -3438,7 +3450,7 @@ namespace "run" do
       package_name = args.package_name.nil? ? $app_package_name : args.package_name
 
       throw "You must pass package name" if package_file.nil?
-      throw "No file to run" if !File.exists?(package_file)
+      throw "No file to run" if !File.exist?(package_file)
 
       AndroidTools.run_emulator(:hidden => ((ENV['TRAVIS'] != nil) && (ENV['TRAVIS'] != "")))
 
@@ -3453,7 +3465,7 @@ namespace "run" do
 
       package_path = File.expand_path(args.package_path)
 
-      throw "Package file does not exist: #{package_path}" if !File.exists?(package_path)
+      throw "Package file does not exist: #{package_path}" if !File.exist?(package_path)
 
       AndroidTools.load_app_and_run(args.device_id, package_path, $app_package_name)
     end
@@ -3488,6 +3500,12 @@ namespace "run" do
 
     desc "build, install and run on device"
     task :device, [:device_id] => ['run:android:device:build', 'run:android:device:run']
+
+    namespace "gmsaas" do
+      task :spec, [:arg1] do |t, args|
+        Jake.decorate_spec { run_as_spec('-e', args.uninstall_app, args[:arg1]) }
+      end
+    end
 
     namespace "device" do
 
@@ -3605,7 +3623,7 @@ namespace :stop do
     namespace :debug do
 
       def killRuby
-        if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+        if OS.windows?
           # Windows
           `taskkill /F /IM ruby.exe`
         else

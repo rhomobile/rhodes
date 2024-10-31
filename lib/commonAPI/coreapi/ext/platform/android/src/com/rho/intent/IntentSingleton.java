@@ -25,6 +25,7 @@ import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rhomobile.rhodes.RhodesApplication;
 
 public class IntentSingleton extends AbstractRhoListener implements IIntentSingleton, IIntentFactory, IRhoListener {
     private static final String TAG = IntentSingleton.class.getSimpleName();
@@ -441,6 +442,11 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             params.put(HK_RESPONSE_CODE, Integer.valueOf(resCode));
             result.set(params);
         }
+    }
+    @Override
+    public void cleanStartParameters(IMethodResult result){
+        RhodesApplication.setStartParametersApp("");
+    
     }
 
 

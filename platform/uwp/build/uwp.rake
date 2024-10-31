@@ -189,7 +189,7 @@ def signApplication()
   args << $sertificateFileName
   args << $targetAppxFileName
 
-  Jake.run("C:/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe", args) if File.exists?($targetAppxFileName)
+  Jake.run("C:/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe", args) if File.exist?($targetAppxFileName)
 end
 
 def addRhobundleFilesToCacheFileUWP()
@@ -259,7 +259,7 @@ namespace "build" do
             break
           else
             extpath = File.join(p, ext, 'ext')
-            next unless File.exists? File.join(extpath, "build.bat")
+            next unless File.exist? File.join(extpath, "build.bat")
             Jake.run3('build.bat', extpath)
             break
 
@@ -296,7 +296,7 @@ namespace "build" do
     end
 
     task :upgrade_package => [:rhobundle_noext, :extensions] do        
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $targetdir if not File.exist? $targetdir
       zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
       Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
@@ -310,7 +310,7 @@ namespace "build" do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["uwppath"] +"/rhodes"
-      cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"
+      cp $app_path + "/icon/icon.png", out_dir if File.exist? $app_path + "/icon/icon.ico"
 
       chdir $config["build"]["uwppath"]
 
@@ -354,8 +354,8 @@ namespace "build" do
       
       #cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
 
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
+      mkdir_p $bindir if not File.exist? $bindir
+      mkdir_p $targetdir if not File.exist? $targetdir
       cp $targetAppxFileName, File.join($targetdir, $appname + ".appx")
 
       dependenciesDir = ""
@@ -514,8 +514,8 @@ namespace "clean" do
       rm_rf $vcbindir
       rm_rf $targetdir
       
-      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      rm_rf File.join($app_path, "bin/tmp") if File.exist? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exist? File.join($app_path, "bin/RhoBundle")
       rm_rf File.join(File.join($uwppath, "rhodes"), "rho") if Dir.exist?(File.join(File.join($uwppath, "rhodes"), "rho"))
       
     end

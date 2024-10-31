@@ -3,6 +3,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/BaseActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/ConnectionChangeReceiver.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/LocalFileProvider.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoFileProvider.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/MemoryInfoCollector.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
@@ -144,3 +145,5 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/RhoDeviceAdminRecei
 platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/KisokModeDeviceOwner.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/ProvisioningModeActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/AdminPolicyComplianceActivity.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoInputConnectionWrapper.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoInputListener.java

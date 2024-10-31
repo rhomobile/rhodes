@@ -1,32 +1,25 @@
-TARGET = <%= @nameApp %>
+TARGET = <%= @organization %>.<%= @nameApp %>
 QT += webkit core widgets network quick
-CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
-CONFIG += <%= @buildMode %>
-CONFIG += force_debug_info
+CONFIG += auroraapp c++14 auroraapp_i18n ordered <%= @buildMode %> force_debug_info
 
 OTHER_FILES += $$PWD/data/*
 
-privileges.files = privileges/*
-privileges.path = /usr/share/mapplauncherd/privileges.d
-INSTALLS += privileges
-OTHER_FILES += privileges/*
-
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
+
 data.files = data
 data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
 
-DISTFILES += rpm/harbour-SailfishRhodes.changes.in \
-    rpm/harbour-SailfishRhodes.changes.run.in \
-    rpm/harbour-SailfishRhodes.spec \
-    rpm/harbour-SailfishRhodes.yaml \
-    harbour-SailfishRhodes.desktop \
-    translations/*.ts \
-	privileges/<%= @nameApp %>
+DISTFILES += rpm/SailfishRhodes.changes.in \
+    rpm/SailfishRhodes.changes.run.in \
+    rpm/SailfishRhodes.spec \
+    rpm/SailfishRhodes.yaml \
+    SailfishRhodes.desktop \
+    translations/*.ts
 
 
-SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
+AURORAAPP_ICONS = 86x86 108x108 128x128 172x172
 
 INCLUDEPATH += <%= @rhoRoot %>/platform/wm/rhodes
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include

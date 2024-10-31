@@ -3,7 +3,7 @@ require 'fileutils'
 
 def build_extension(name, arch, src_files)
   objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+  mkdir_p $tempdir unless File.exist? $tempdir
 
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )

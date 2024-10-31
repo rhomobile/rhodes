@@ -6,7 +6,7 @@ def build_extension(name)
   #Jake.run3("#{$make} all"  , dir)
 
   objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+  mkdir_p $tempdir unless File.exist? $tempdir
 
   mkdir_p $targetdir unless File.exist? $targetdir
 

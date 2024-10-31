@@ -48,7 +48,7 @@ if  System.get_property('platform') != 'WP8'
 		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest_s'), 'blob_bulk_test_s.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
 		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test_s.png')
-		File.exists?(file_name).should == true
+		File.exist?(file_name).should == true
 		puts "blob path = #{file_name}"		
 		item = BlobBulkTest_s.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test_s.png' })
 		items = BlobBulkTest_s.find(:all)
@@ -57,7 +57,7 @@ if  System.get_property('platform') != 'WP8'
 		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest'), 'blob_bulk_test.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
 		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test.png')
-		File.exists?(file_name).should == true
+		File.exist?(file_name).should == true
 		puts "blob path = #{file_name}"		
 		item = BlobBulkTest.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test.png' })
 		items = BlobBulkTest.find(:all)
@@ -65,7 +65,7 @@ if  System.get_property('platform') != 'WP8'
 
 		exportPath = ::Rhom::Rhom.database_export('user')
 		exportPath.should_not be_nil		
-		File.exists?(exportPath).should == true
+		File.exist?(exportPath).should == true
 		File.size(exportPath).should_not == 0
 
 		Rhom::Rhom.database_full_reset
@@ -84,7 +84,7 @@ if  System.get_property('platform') != 'WP8'
 		BlobBulkTest.find(:all).size.should == 1
 
 		File.delete(exportPath)
-		File.exists?(exportPath).should == false
+		File.exist?(exportPath).should == false
 	end
 
 	it "should reset database Database spec" do
@@ -101,7 +101,7 @@ if  System.get_property('platform') != 'WP8'
 		item.name.should == 'BlobTestItem'
 		item.image_uri.should == 'blob_bulk_test_s.png'
 		puts "item = #{item.inspect}"
-		File.exists?(File.join(Rho::RhoApplication::get_blob_folder(),item.image_uri)).should == true
+		File.exist?(File.join(Rho::RhoApplication::get_blob_folder(),item.image_uri)).should == true
 	end
 
 	it "should import invalid data and rollback" do

@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.util.Log;
 
@@ -33,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.kioskservices.PermissionManager;
 
 
 public class PermissionListGenerate {
@@ -42,6 +44,8 @@ public class PermissionListGenerate {
     private final Map<String, ArrayList<String>> permissionsMap = new HashMap<String, ArrayList<String>>();
     private AlertDialog.Builder ad;
     final static private Integer MY_PERMISSIONS_REQUEST = 1;
+    private final String accessibility_key = "ACCESSIBILITY_SERVICE";
+
     public PermissionListGenerate(Context context, Activity activity){
         this.mContext = context;
         this.mActivity = activity;
@@ -73,7 +77,7 @@ public class PermissionListGenerate {
                         addToListPermission(p);
                 }
             }
-        }
+        }        
     }
 
 
@@ -100,6 +104,9 @@ public class PermissionListGenerate {
 
     @NonNull
     private String formatName(String name) {
+        if(name == accessibility_key)
+            return "accessibility services";
+
         name = name.toLowerCase(Locale.ROOT);
 
         String[] splitNameToPoint = name.split("\\.");
@@ -124,6 +131,14 @@ public class PermissionListGenerate {
 
 
     public boolean checkAllPermissionsStatus(){
+        if( RhoConf.isExist("click_sound_with_accessibility_service") && 
+            RhoConf.getBool("click_sound_with_accessibility_service")){
+                if(permissionsMap.get(accessibility_key) == null){
+                    ArrayList<String> p = new ArrayList<String>();
+                    p.add(accessibility_key);
+                    permissionsMap.put(accessibility_key,p);
+                }
+            }
         if(RhoConf.getInt("strict_permission_requirements") == 1){
             for(Map.Entry<String, ArrayList<String>> entry : permissionsMap.entrySet()){
                 if(!getPermissionStatus(entry.getValue()))
@@ -141,6 +156,9 @@ public class PermissionListGenerate {
             return ContextCompat.checkSelfPermission(mContext, pNameManifest) == PackageManager.PERMISSION_GRANTED;
     }
     private boolean getPermissionStatus(@NonNull ArrayList<String> pNameManifest){
+        if(pNameManifest.contains(accessibility_key))
+            return PermissionManager.checkAccessibilityServicePermission(mContext);
+
         for(String value : pNameManifest){
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && value.equals("android.permission.MANAGE_EXTERNAL_STORAGE")){
                 boolean manageExternal =  Environment.isExternalStorageManager();
@@ -203,9 +221,25 @@ public class PermissionListGenerate {
         permissionLayout.addView(textView);
         permissionLayout.addView(space);
 
+        ScrollView scrollView = new ScrollView(mContext);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        ));
+        LinearLayout layoutForScrollView = new LinearLayout(mContext);
+        layoutForScrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        layoutForScrollView.setOrientation(LinearLayout.VERTICAL);
+        layoutForScrollView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
         for(Map.Entry<String, ArrayList<String>> entry : permissionsMap.entrySet()){
-            permissionLayout.addView(permissionLine(entry.getValue()));
+            layoutForScrollView.addView(permissionLine(entry.getValue()));
         }
+
+        scrollView.addView(layoutForScrollView);
+        permissionLayout.addView(scrollView);
 
         ad.setView(permissionLayout);
         mPermissionsDialog = ad.create();
@@ -289,6 +323,9 @@ public class PermissionListGenerate {
             btn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    if(pItems.contains(accessibility_key))
+                        PermissionManager.setAccessibilityServicePermission(mActivity);
+
                     openManageExternalStorage(pItems);
 
                     ActivityCompat.requestPermissions(mActivity, pItems.toArray(new String[0]), MY_PERMISSIONS_REQUEST);

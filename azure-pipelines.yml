@@ -12,9 +12,9 @@ variables:
 - name: RHO_RUNNER_SCRIPT
   value: run_app_on_simulator.sh
 - name: RHO_RUBY
-  value: ruby-2.7
+  value: ruby-3.0.7
 - name: ruby_version
-  value: '2.7'
+  value: '3.0.7'
 - name: BUILD_ARTEFACTS_DIR
   value: $(Pipeline.Workspace)/build_artefacts
 - name: RHO_APP
@@ -39,7 +39,7 @@ stages:
     jobs:
       - job: build
         pool:
-          vmImage: 'macos-11'
+          vmImage: 'macos-13'
         steps:
 #        - task: Bash@3
 #          inputs:
@@ -52,9 +52,12 @@ stages:
           inputs:
             targetType: 'inline'
             script: 'mkdir $BUILD_ARTEFACTS_DIR'
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'gem install highline'
+        - script: $BUILD_DIR/.ci/azure-build.sh
 
-        - script: $BUILD_DIR/.ci/azure-build.sh        
-        
         - task: S3Upload@1
           inputs:
             regionName: 'eu-central-1'

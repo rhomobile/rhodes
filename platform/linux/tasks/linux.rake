@@ -115,14 +115,14 @@ namespace "config" do
 			Jake.modify_file_if_content_changed( File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), fversion )
 
 			$app_icon_path = $app_path + "/icon/icon.ico"
-			$app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
+			$app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exist? $app_icon_path
 			cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
 
 			$qt_icon_path = $app_path + "/icon/icon.png"
-			$qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
+			$qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exist? $qt_icon_path
 			cp $qt_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
 			qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/" + $buildcfg + "/qrc_simulator.cpp"
-			rm qrcfile if File.exists? qrcfile
+			rm qrcfile if File.exist? qrcfile
 		end
 	end
 end
@@ -165,7 +165,7 @@ namespace "build" do
 				end
 
 				project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-				next unless (File.exists?( File.join(extpath, "build") ) || project_path)
+				next unless (File.exist?( File.join(extpath, "build") ) || project_path)
 
 				if (ext != 'openssl.so')
 					extensions_lib << "LIBS += -L$$PWD/../../../linux/bin/extensions/ -l#{ext.downcase}\n"
@@ -213,7 +213,7 @@ namespace "build" do
 			end
 
 			ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
-			mkdir_p ext_dir if not File.exists? ext_dir
+			mkdir_p ext_dir if not File.exist? ext_dir
 			File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
 				fextensions.puts "SOURCES += ../../ruby/ext/rho/extensions.c"
 				fextensions.puts extensions_lib
@@ -225,10 +225,10 @@ namespace "build" do
 			linux_rhopath = $tmpdir + '/rho'
 			mkdir_p linux_rhopath
 			namepath = File.join(linux_rhopath,"name.txt")
-			old_appname = File.read(namepath) if File.exists?(namepath)
+			old_appname = File.read(namepath) if File.exist?(namepath)
 
 			confpath = File.join(linux_rhopath,"apps/rhoconfig.txt.changes")
-			confpath_content = File.read(confpath) if File.exists?(confpath)
+			confpath_content = File.read(confpath) if File.exist?(confpath)
 
 			linux_rhopath = linux_rhopath + '/'
 			rm_rf linux_rhopath + 'lib'
@@ -253,7 +253,7 @@ namespace "build" do
 
 
 		target_app_name = File.join($target_path, $appname)
-		if !File.exists?(target_app_name)
+		if !File.exist?(target_app_name)
 			if $qmake_addition_args != nil and $qmake_addition_args != ''
 				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + 
 					$qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
@@ -272,7 +272,7 @@ namespace "build" do
 			cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), target_app_name
 		end
 		rho_path = File.join($target_path, "rho")
-		rm_rf rho_path if File.exists?(rho_path)
+		rm_rf rho_path if File.exist?(rho_path)
 		cp_r File.join($app_path, "bin/RhoBundle"), rho_path
 
 		chdir $startdir
@@ -364,10 +364,10 @@ namespace "device" do
 				$bin_file = "linux.tar"
 				$bin_archive = File.join(target_folder, $bin_file)
 
-				rm $bin_archive if File.exists? $bin_archive
+				rm $bin_archive if File.exist? $bin_archive
 				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
 				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
-				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
+				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exist? File.join(target_folder, "#{$appname}-#{$version_app}")
 
 				FileUtils.mkdir_p $buildroot
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
@@ -448,14 +448,14 @@ namespace "run" do
 			    linuxrhopath = File.join($target_path, 'rho')
 
 			    dbpath = File.join(linuxrhopath, 'db')
-			  	rm_rf dbpath if File.exists?(dbpath)
+			  	rm_rf dbpath if File.exist?(dbpath)
 
 			    linuxlogpath = File.join(linuxrhopath,"rholog.txt")
 			    linuxlogpospath = File.join(linuxrhopath, "rholog.txt_pos")
 			    linuxconfigpath = File.join(linuxrhopath, "apps", "rhoconfig.txt.changes")
-			    rm_rf linuxlogpath if File.exists?(linuxlogpath)
-			    rm_rf linuxlogpospath if File.exists?(linuxlogpospath)
-			    rm_rf linuxconfigpath if File.exists?(linuxconfigpath)
+			    rm_rf linuxlogpath if File.exist?(linuxlogpath)
+			    rm_rf linuxlogpospath if File.exist?(linuxlogpospath)
+			    rm_rf linuxconfigpath if File.exist?(linuxconfigpath)
 
 			    Jake.before_run_spec
 			    start = Time.now
@@ -519,10 +519,10 @@ namespace "clean" do
 		rm_rf File.join($startdir, 'platform/linux/bin')
 
 		#common_target_path = File.join($app_path, "bin")
-		#rm_rf common_target_path if File.exists? common_target_path
+		#rm_rf common_target_path if File.exist? common_target_path
 
-		rm_rf File.join($app_path, "bin", "tmp") if File.exists? File.join($app_path, "bin", "tmp")
-		rm_rf File.join($app_path, "bin", "RhoBundle") if File.exists? File.join($app_path, "bin", "RhoBundle")
-        rm_rf File.join($app_path, "bin", "target") if File.exists? File.join($app_path, "bin", "target")
+		rm_rf File.join($app_path, "bin", "tmp") if File.exist? File.join($app_path, "bin", "tmp")
+		rm_rf File.join($app_path, "bin", "RhoBundle") if File.exist? File.join($app_path, "bin", "RhoBundle")
+        rm_rf File.join($app_path, "bin", "target") if File.exist? File.join($app_path, "bin", "target")
 	end
 end

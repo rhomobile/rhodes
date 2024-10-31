@@ -22,7 +22,7 @@ namespace "build" do
 
   task :all => :config do
     objects = []
-    mkdir_p $tempdir unless File.exists? $tempdir
+    mkdir_p $tempdir unless File.exist? $tempdir
     mkdir_p $targetdir unless File.exist? $targetdir
 
     $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"

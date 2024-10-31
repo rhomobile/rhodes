@@ -42,7 +42,7 @@
 #include "statistic/RhoProfiler.h"
 #include <QtNetwork/QNetworkCookie>
 #include <QDesktopServices>
-#include <sailfishapp.h>
+#include <auroraapp.h>
 #include "impl/MainWindowImpl.h"
 #include <QCameraInfo>
 #include <QCryptographicHash>

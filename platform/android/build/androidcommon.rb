@@ -28,8 +28,13 @@ require 'tempfile'
 require 'open3'
 require 'stringio'
 require 'pathname'
+
+require File.join($rootdir, 'lib/build/compat.rb') if $rootdir
+require File.join($rootdir, 'lib/build/os.rb') if $rootdir
+
 require_relative 'ndkwrapper'
 require_relative 'hostplatform'
+
 
 #common functions for compiling android
 #
@@ -85,7 +90,7 @@ def setup_ndk(ndkpath,apilevel,abi)
   if $have_rlim_t.nil?
     $have_rlim_t = false
     resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-#{abi}", "usr", "include", "sys", "resource.h")
-    if File.exists? resource_h
+    if File.exist? resource_h
       File.open(resource_h, 'r') do |f|
         while line = f.gets
           if line =~ /^\s*typedef\b.*\brlim_t\s*;\s*$/
@@ -118,6 +123,9 @@ def cc_def_args
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << '-Wno-unused-parameter'
+    if($ndk_rev_major >= 26)
+      args << '-Wno-implicit-function-declaration'
+    end
     if($ndk_rev_major < 18)
       args << "-mandroid"
     end
@@ -153,6 +161,7 @@ def cpp_def_args
       args << "-std=c++11"
     else
       args << "-stdlib=libc++"
+      args << "-std=c++14"
       #args << "-std=c++17"
     end
 
@@ -192,9 +201,9 @@ end
 
 #def deps_uptodate?(target, source, deps)
 #  deplist = [deps, source]
-#  if(File.exists? deps)
+#  if(File.exist? deps)
 #    deplist += File.read(deps).gsub(/(^\s+|\s+$)/, '').split(/\s+/)
-#    return File.exists?(target) and FileUtils.uptodate?(target, deplist)
+#    return File.exist?(target) and FileUtils.uptodate?(target, deplist)
 #  else
 #    return false
 #  end
@@ -203,7 +212,7 @@ end
 def cc_deps(filename, objdir, additional)
   #puts "Check #{filename}..."
   depfile = File.join objdir, File.basename(filename).gsub(/\.[cC]([cC]|[xXpP][xXpP])?$/, ".d")
-  if File.exists? depfile
+  if File.exist? depfile
     if FileUtils.uptodate? depfile, File.read(depfile).gsub(/(^\s+|\s+$)/, '').split(/\s+/)
       return []
     end
@@ -231,7 +240,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
 
   isWinXP = false
-  if RUBY_PLATFORM =~ /(win|w)32$/
+  if OS.windows?
     begin
       winName = `WMIC OS get Name`
       #fix for invalid UTF
@@ -311,7 +320,7 @@ end
 def cc_build(sources, objdir, additional = nil)
   
   # Ruby 1.8 has problems with Thread.join on Windows
-  if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
+  if OS.windows? and RUBY_VERSION =~ /^1\.8\./
     sources.each do |f|
       return false unless cc_compile f, objdir, additional
     end
@@ -439,14 +448,14 @@ def cc_link(outname, objects, additional = nil, deps = nil)
 
   if($ndk_rev_major < 18)
     libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
-    if File.exists? libgnustl_static
+    if File.exist? libgnustl_static
       args << "-L\"#{libgnustl_static}\""
       args << "-lgnustl_static"
       puts "libgnustl_static exists"
     else
       localabi = "armeabi-v7a" if localabi == "armeabi"
       libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
-      if File.exists? libgnustl_static
+      if File.exist? libgnustl_static
         args << "-L\"#{libgnustl_static}\""
         args << "-lgnustl_static"
         puts "libgnustl_static exists"
@@ -457,7 +466,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   else
     localabi = "armeabi-v7a" if localabi == "armeabi"
     llvm_stl_shared = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-    if File.exists? llvm_stl_shared
+    if File.exist? llvm_stl_shared
       args << "-L\"#{llvm_stl_shared}\""
       args << "-lc++_shared"
       puts "llvm stl shared library exists"
@@ -471,11 +480,11 @@ end
 
 def cc_clean(name)
   [$objdir[name], $libname[name]].each do |x|
-    rm_rf x if File.exists? x
+    rm_rf x if File.exist? x
   end
 end
 
-def java_compile(outpath, classpath, srclist)
+def java_compile(outpath, classpath, srclist, java_version)
     javac = $config["env"]["paths"]["java"] + "/javac#{HostPlatform.exe_ext}"
 
     args = []
@@ -483,9 +492,9 @@ def java_compile(outpath, classpath, srclist)
     args << "-d"
     args << "\"" + outpath + "\""
     args << "-source"
-    args << "1.6"
+    args << "1.#{java_version}"
     args << "-target"
-    args << "1.6"
+    args << "1.#{java_version}"
     args << "-nowarn"
     args << "-encoding"
     args << "latin1"
@@ -498,7 +507,7 @@ def java_compile(outpath, classpath, srclist)
     end
 end
 
-def java_build(jarpath, buildpath, classpath, srclists)
+def java_build(jarpath, buildpath, classpath, srclists, java_version)
     deps = []
 
     fullsrclist = nil
@@ -538,7 +547,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
     buildpath = File.join(buildpath,'.java')
     mkdir_p buildpath unless File.directory? buildpath
 
-    java_compile(buildpath, classpath, fullsrclist)
+    java_compile(buildpath, classpath, fullsrclist, java_version)
 
     args = []
 

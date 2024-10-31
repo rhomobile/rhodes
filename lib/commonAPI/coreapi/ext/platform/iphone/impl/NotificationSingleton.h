@@ -18,7 +18,8 @@
 -(void) vibrate:(int)duration methodResult:(id<IMethodResult>)methodResult;
 -(void) setScheduler:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 
-
++(void) init_notification_object;
 
 
 @end
+

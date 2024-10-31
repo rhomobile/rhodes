@@ -158,6 +158,26 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
     return 0;
 }
 
+#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) || defined(ANDROID)
+
+ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len, CURLcode *err)
+{
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    *err = CURLE_OK;
+    return rho_ssl_send(mem, len, connssl->storage);
+}
+
+ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, CURLcode *err)
+{
+    struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    int iw = 0;
+    ssize_t ret = rho_ssl_recv(buf, size, &iw, connssl->storage);
+    *err = CURLE_OK;
+    return ret;
+}
+
+#else
+
 ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
@@ -172,6 +192,8 @@ ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, siz
     *wouldblock = (bool)iw;
     return ret;
 }
+
+#endif
 
 size_t Curl_rhossl_version(char *buffer, size_t size)
 {

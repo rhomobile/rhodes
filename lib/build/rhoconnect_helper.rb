@@ -89,7 +89,7 @@ module RhoconnectHelper
 	def self.start_server(dir)
 		@@server_path = dir
 
-		if RUBY_PLATFORM =~ /(win|w)32$/
+		if OS.windows?
 			@@server_pid = Kernel.spawn("ruby",@@rhoconnect_bin,"start",:chdir=>@@server_path,:out =>@@rc_out)
 		else
 			@@server_pid = execute_rhoconnect(@@server_path,"startbg")

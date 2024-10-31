@@ -2325,7 +2325,7 @@ module RhogenCore
 
           puts "Including #{base_path}"
 
-          if File.exists?(include_file_name)
+          if File.exist?(include_file_name)
             xml_f = File.new(include_file_name)
             template_xml = REXML::Document.new(xml_f)
             xml_f.close

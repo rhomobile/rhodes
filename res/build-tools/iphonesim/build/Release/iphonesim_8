@@ -40,12 +40,12 @@ end
 
 if device == nil
 
-    devicetype = SimCtl.devicetype(name: 'iPhone 7')
-    devicename = 'Rhomobile iPhone7 '+sdk_ver
+    devicetype = SimCtl.devicetype(name: 'iPhone 12')
+    devicename = 'Rhomobile iPhone12 '+sdk_ver
 
     if ARGV[3] == 'ipad'
-        devicetype = SimCtl.devicetype(name: 'iPad Air 2')
-        devicename = 'Rhomobile iPad Air 2 '+sdk_ver
+        devicetype = SimCtl.devicetype(name: 'iPad Air (4th generation)')
+        devicename = 'Rhomobile iPad Air (4th generation) '+sdk_ver
     end
 
     device = SimCtl.device(name: devicename)
@@ -116,7 +116,7 @@ if app_files_root == nil
         if File.directory? path and !(entry =='.' || entry == '..')
             #puts "iphonesim_8      check app files folder ["+path+"]"
             plist_path = File.join(path, '.com.apple.mobile_container_manager.metadata.plist')
-            if File.exists? plist_path
+            if File.exist? plist_path
                 plist_obj = CFPropertyList::List.new(:file => plist_path)
                 app_files_info_plist_hash = CFPropertyList.native_types(plist_obj.value)
 

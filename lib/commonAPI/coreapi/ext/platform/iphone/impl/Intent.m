@@ -6,7 +6,9 @@
 
 
 
-
+-(void) cleanStartParameters:(id<IMethodResult>)methodResult{
+    
+}
 
 
 @end

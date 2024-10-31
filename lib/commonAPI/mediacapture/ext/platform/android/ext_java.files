@@ -1,4 +1,5 @@
 ext/platform/android/src/com/rho/mediacapture/RhoListener.java
+ext/platform/android/src/com/rho/mediacapture/RhoCameraFileProvider.java
 ext/platform/android/generated/src/com/rho/camera/ICamera.java
 ext/platform/android/generated/src/com/rho/camera/ICameraSingleton.java
 ext/platform/android/generated/src/com/rho/camera/ICameraFactory.java

@@ -276,6 +276,27 @@ class NDKWrapper
     @rev_major
   end
 
+  def get_llvm_stl_path( arch )
+    if @rev_major <= 24
+      arch = 'arm64-v8a' if arch == "aarch64"
+      localabi = arch
+      localabi = "armeabi-v7a" if arch == "armeabi"
+      File.join(@root_path, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
+    else
+      arch = "arm" if arch == "armeabi"
+
+      platform = "linux-x86_64"
+
+      if HostPlatform.mac?
+        platform = "darwin-x86_64"
+      elsif HostPlatform.windows?
+        platform = "windows-x86_64"
+      end
+
+      File.join(@root_path, "toolchains", "llvm", "prebuilt", platform, "sysroot", "usr", "lib", @@abi_triple[arch], "libc++_shared.so")
+    end
+  end
+
   def select_tool_abi_prefix( tool, abi )
     prefix = abi
 
@@ -316,8 +337,10 @@ class NDKWrapper
   end
 
   def sysincludes(api,abi)
-    if @rev_major >= 16      
-      if @rev_major >= 22
+    if @rev_major >= 16
+      if @rev_major >= 26
+        nil
+      elsif @rev_major >= 22 # TODO: check if this really works with differend configurations: ABI, min NDK levels, build tools etc
         File.join( sysroot_18, 'usr', 'include' )
       elsif  @rev_major >= 18
         File.join( sysroot_18, 'usr', 'include', @@abi_triple[abi])

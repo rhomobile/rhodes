@@ -716,7 +716,7 @@ class String
     :reverse_color   => ["\033[7m","\033[27m"]
   }.each do |name, format|
     # use colorizer only for TTY for non windows systems
-    is_win = (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    is_win = OS.windows?
     if STDOUT.tty? && !is_win
       send :define_method, name do
         [format[0], self, format[1]].join

@@ -41,7 +41,7 @@ namespace "config" do
     $devroot = '/Applications/Xcode.app/Contents/Developer'
     $devbin = $devroot + '/usr/bin'
     $xcodebuild = $devbin + '/xcodebuild'
-    if !File.exists? $xcodebuild
+    if !File.exist? $xcodebuild
       $devroot = '/Developer'
       $devbin = '/usr/bin'
       $xcodebuild = $devbin + '/xcodebuild'
@@ -72,7 +72,7 @@ namespace "build" do
         $app_config["extensions"].each do |ext|
             $app_config["extpaths"].each do |p|
                 extpath = File.join(p, ext, 'ext')
-                next unless File.exists? File.join(extpath, "build")
+                next unless File.exist? File.join(extpath, "build")
                 ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "osx", "bin", "extensions", ext)
                 if ext != 'openssl.so'
                     $extensions_lib << " -l#{ext}"
@@ -92,7 +92,7 @@ namespace "build" do
         Rake::Task["build:osx:extensions"].invoke
 
         ext_dir = File.join($startdir, 'platform/osx/bin/extensions')
-        mkdir_p ext_dir if not File.exists? ext_dir
+        mkdir_p ext_dir if not File.exist? ext_dir
         File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
             fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
 LIBS += -L../../../osx/bin/extensions#{$extensions_lib}
@@ -101,7 +101,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
-        if File.exists? app_path
+        if File.exist? app_path
           Jake.run3("#{$remove} -Rf #{app_path}", nil, {}, true)
         end
 
@@ -127,7 +127,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 })
         end
 
-        qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1"
+        qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1  -early QMAKE_DEFAULT_LIBDIRS=$(xcrun -show-sdk-path)/usr/lib"
         Jake.run3(qmake                        , $qt_project_dir, {}, false)
         #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, false)
         Jake.run3("#{$make} all"               , $qt_project_dir, {}, false)

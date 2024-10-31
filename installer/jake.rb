@@ -67,7 +67,7 @@ class Jake
     
   def self.get_absolute_ex(path, currentdir)
     ret_path = File.expand_path(path, currentdir)
-    return ret_path  if File.exists?(ret_path)
+    return ret_path  if File.exist?(ret_path)
 
     path = currentdir + "/" + path
   
@@ -97,7 +97,7 @@ class Jake
             x.gsub!(/%.*?%/, conf.fetch_r($1).to_s)
           end
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
   	      end
   	      s
@@ -111,7 +111,7 @@ class Jake
           newhash[k.to_s] = config_parse(x)
         else
           s = x.to_s
-          if File.exists? s
+          if File.exist? s
             s.gsub!(/\\/, '/')
           end
           newhash[k.to_s] = s
@@ -158,7 +158,7 @@ class Jake
       f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
       f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
     end
-    if File.exists?(File.join($app_path, 'server.rb'))
+    if File.exist?(File.join($app_path, 'server.rb'))
       $local_server = server
       require File.join($app_path, 'server.rb')
     end
@@ -251,7 +251,7 @@ class Jake
 
     hideerrors = options[:hideerrors]
     if hideerrors
-      if RUBY_PLATFORM =~ /(win|w)32$/
+      if OS.windows?
         nul = "nul"
       else
         nul = "/dev/null"
@@ -299,12 +299,6 @@ class Jake
     jpath = $config["env"]["paths"]["java"]   
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
   
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
-
       p = Pathname.new(src)
     src = p.realpath
     currentdir = Dir.pwd()
@@ -324,11 +318,6 @@ class Jake
     jpath = $config["env"]["paths"]["java"]   
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
   
-#    if RUBY_PLATFORM =~ /(win|w)32$/
-#      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
-#    else
-#      cmd =  $config["env"]["paths"]["java"] + "/jar"
-#    end
     target.gsub!(/"/,"")
 
     args = []
@@ -344,8 +333,7 @@ class Jake
   def self.jar(target,manifest,files,isfolder=false)
     jpath = $config["env"]["paths"]["java"]   
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-    #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
-	
+
     target.gsub!(/"/,"")
     
     args = []
@@ -464,7 +452,7 @@ class Jake
   def self.modify_file_if_content_changed(file_name, f)
     f.rewind
     content = f.read()
-    old_content = File.exists?(file_name) ? File.read(file_name) : ""
+    old_content = File.exist?(file_name) ? File.read(file_name) : ""
 
     if old_content != content  
         puts "Modify #{file_name}"      

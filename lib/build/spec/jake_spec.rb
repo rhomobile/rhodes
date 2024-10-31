@@ -9,7 +9,7 @@ end
 describe 'Zipping' do
 
   before :each do
-    if File.exists?(temporary_directory)
+    if File.exist?(temporary_directory)
       FileUtils.rm_rf(temporary_directory)
     end
     Dir.mkdir(temporary_directory)
@@ -50,7 +50,7 @@ end
 describe 'Unzipping' do
 
   before :each do
-    if File.exists?(temporary_directory)
+    if File.exist?(temporary_directory)
       FileUtils.rm_rf(temporary_directory)
     end
     Dir.mkdir(temporary_directory)

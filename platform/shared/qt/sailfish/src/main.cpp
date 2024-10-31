@@ -1,4 +1,4 @@
-#include <sailfishapp.h>
+#include <auroraapp.h>
 #include <QObject>
 #include <QDebug>
 #include <QFileInfo>
@@ -19,11 +19,7 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
-#ifndef ENABLE_Q_WEB_ENGINE
 #include <QWebSettings>
-#else
-#include <QtWebEngine/QtWebEngine>
-#endif
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -95,18 +91,8 @@ int main(int argc, char *argv[])
 {
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling); // DPI support
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); //HiDPI pixmaps
-#ifdef ENABLE_Q_WEB_ENGINE
-    QString debugAddress;
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost) && debugAddress.isEmpty())
-        debugAddress = address.toString();
-    }
-    if (!debugAddress.isEmpty()){debugAddress.append(":");}
-    debugAddress.append("9090");
-    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", debugAddress.toLocal8Bit());
-#endif
 
-    QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
+    QScopedPointer<QGuiApplication> pApplication(Aurora::Application::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
     qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
@@ -116,32 +102,19 @@ int main(int argc, char *argv[])
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
-    #ifdef ENABLE_Q_WEB_ENGINE
-    QtWebEngine::initialize();
-    QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
-    #endif
-
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
-    QScopedPointer<QQuickView> pView(SailfishApp::createView());
+    QScopedPointer<QQuickView> pView(Aurora::Application::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
 
-    #ifndef ENABLE_Q_WEB_ENGINE
-    /*QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
-    QWebSettings::globalSettings( )->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
-    QWebSettings::globalSettings( )->setAttribute( QWebSettings::OfflineWebApplicationCacheEnabled, true );
-    QWebSettings::setMaximumPagesInCache( 0 );
-    QWebSettings::setObjectCacheCapacities( 0, 0, 0 );
-    QWebSettings::clearMemoryCaches( );*/
-    #endif
     QtMainWindow::setView(view);
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     // Create the main application window
-    QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
+    QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << ( view->isActive()? "Active" : "Not active" );});
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
-    qDebug() << "Main path to QML: " + SailfishApp::pathToMainQml().toString();
+    qDebug() << "Main path to QML: " + Aurora::Application::pathToMainQml().toString();
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();
@@ -189,7 +162,7 @@ int main(int argc, char *argv[])
 
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
     view->rootContext()->setContextProperty("rootDelegate", RootDelegate::getInstance());
-    view->setSource(SailfishApp::pathToMainQml());
+    view->setSource(Aurora::Application::pathToMainQml());
     view->showFullScreen();
     RHODESAPP().startApp();
     //QTimer::singleShot(1000, ()[&]{rho_rhodesapp_callUiCreatedCallback();});
@@ -197,11 +170,6 @@ int main(int argc, char *argv[])
 
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
-
-#ifdef ENABLE_Q_WEB_ENGINE
-    debugAddress.prepend("Debug address is ");
-    RAWLOGC_INFO("QTMain", debugAddress.toStdString().c_str());
-#endif
 
     application->exec();
 

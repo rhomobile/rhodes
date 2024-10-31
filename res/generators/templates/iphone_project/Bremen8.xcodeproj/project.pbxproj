@@ -49,6 +49,7 @@
 		FA5890522117F05C006768DB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5890512117F05C006768DB /* WebKit.framework */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
 		FA6747E71D3DD1D000F0A09D /* rhorunner_production.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */; };
+		FA75B4972BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */; };
 		FA8266821BC05F46006871AB /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8266811BC05F46006871AB /* GameKit.framework */; };
 		FAA5A5BC182B11EB00590B1F /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */; };
 		FAA714AB1DDE835500E5E7AD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA714AA1DDE835500E5E7AD /* WebKit.framework */; };
@@ -66,6 +67,7 @@
 		FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7893183C3A8200BC7028 /* libRhodes.a */; };
 		FAF3BF3218E26D3B00860FCA /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3018E26D3B00860FCA /* app_build_configs.c */; };
 		FAF3BF3318E26D3B00860FCA /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3118E26D3B00860FCA /* extensions.c */; };
+		FAFAEA392C91E32E009DC17B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,7 @@
 		FA5890512117F05C006768DB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		FA6A403318319D0E00794752 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
+		FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FA8266811BC05F46006871AB /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
 		FAA5A5BB182B11EB00590B1F /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/usr/lib/libstdc++.dylib"; sourceTree = DEVELOPER_DIR; };
 		FAA714AA1DDE835500E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -152,6 +155,7 @@
 		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
 		FAF3BF3118E26D3B00860FCA /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = Rhodes/extensions.c; sourceTree = "<group>"; };
+		FAFAEA382C91E32E009DC17B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +222,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */,
+				FA75B4962BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy */,
 				A81EA26920228C0600E2F8AD /* Media.xcassets */,
 				<PLACEHOLDER FOR RESOURCES 03>
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
@@ -415,7 +421,9 @@
 				FA20C1B1182AFD870036D304 /* BluePushpin.png in Resources */,
 				FAD18F251E3AF8100064808C /* forward_btn@2x.png in Resources */,
 				BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */,
+				FA75B4972BC3A0FF001CAA68 /* PrivacyInfo.xcprivacy in Resources */,
 				FA20C1AA182AFD760036D304 /* forward_btn.png in Resources */,
+				FAFAEA392C91E32E009DC17B /* LaunchScreen.storyboard in Resources */,
 				FA20C1B4182AFD870036D304 /* esri@2x.png in Resources */,
 				FA20C1AB182AFD760036D304 /* gears.png in Resources */,
 				FAD18F261E3AF8100064808C /* forward_btn@3x.png in Resources */,
@@ -499,6 +507,17 @@
 			targetProxy = FAED78CC183C3CDF00BC7028 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		FAFAEA372C91E32E009DC17B /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FAFAEA382C91E32E009DC17B /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {

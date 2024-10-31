@@ -1,4 +1,29 @@
-Please see here to know more about Rho versioning - http://forums.tau-technologies.com/thread/32/branch-version-management
+Please see here to know more about Rho versioning - https://forums.tau-platform.com/thread/32/branch-version-management
+
+
+7.6 - February 2024
+- Android: support for new build v34.0.0 and refactored build system
+- Android: Support for Android 13
+- Android: Support for NDK up to v25
+- Android: Support actual requirements for publishing to PlayStore
+- Android: add complex functionality for support Kiosk mode in Rhodes applications
+- Android: fix issues with HTTPS
+- Android: fix issues with disk access on latest Android versions
+- Android: fix issues in Camera on latest Android versions
+- Android: fix issues with background Service with Ruby core
+- Android: refactor WebView for support Keyboard disable and other features
+- iOS: support actual requirements for publishing to AppStore.
+- iOS: support latest XCode(15.x) and iOS SDK (17.x)
+- iOS: support custom protocol in WKWebView for direct URL request processing.
+- iOS: fix issue with Notifications
+- iOS: remove deprecated armv7
+- iOS: support Apple M chips for Mac OS building
+- iOS: support AES GCM crypto algorithm
+- iOS: update fcm-push extension
+- Win32: fix issue with path with spaces
+- Ruby Gem: fix deps issues
+- General: multiple fixes
+
 
 7.5 - May 2022
 - Android: dependencies updated to use androidx instead of support packaga

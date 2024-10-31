@@ -109,7 +109,7 @@ VALUE rjson_tokener_parse(const char *str, char** pszError)
 {
     struct json_tokener* tok = NULL;
     struct json_object* obj = NULL;
-    VALUE result = NULL;
+    VALUE result = 0;
     
     tok = json_tokener_new();
     obj = json_tokener_parse_ex(tok, str, -1);

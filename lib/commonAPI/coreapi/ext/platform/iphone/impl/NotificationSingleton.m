@@ -9,6 +9,7 @@
 
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
+#import "common/RhoConf.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
@@ -508,6 +509,15 @@ static NotificationReminder* reminder = nil;
 -(void) vibrate:(int)duration methodResult:(id<IMethodResult>)methodResult{
     id runnable = [AlertVibrateTask class];
     [Rhodes performOnUiThread:runnable wait:NO];
+}
+
+
++(void) init_notification_object {
+    if (rho_conf_is_property_exists("ios_request_notification_permission_on_start")!=0) {
+        if (rho_conf_getBool("ios_request_notification_permission_on_start")!=0 ) {
+            NotificationReminder* rem = [NotificationReminder instance];
+        }
+    }
 }
 
 @end

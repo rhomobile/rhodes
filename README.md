@@ -9,7 +9,7 @@
 Currently Rhomobile solution supported and improved by TAU Technologies.
 For questions on commercial support contact [contact mail](mailto:info@tau-platform.com) or reach out to the [TAU Technologies website](http://tau-platform.com).
 
-Current actual version is Rhomobile Suite 7.5. [Download RMS 7.5](http://tau-platform.com/developers/downloads/)
+Current actual version is Rhomobile Suite 7.6. [Download RMS 7.6.0](http://tau-platform.com/developers/downloads/)
 
 Actual documentation located on [RMS 7.5 documentation](http://docs.tau-platform.com/en/7.5/home)
 
@@ -53,31 +53,31 @@ Example of RhoMobile release tree ( just for reference, it may not correspond to
 
 ## Installation
 
-[Windows First-time Install (32- and 64-bit)](http://docs.tau-platform.com/en/7.0/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
+[Windows First-time Install (32- and 64-bit)](http://docs.tau-platform.com/en/7.5/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
 
-[Mac OS X First-time Install](http://docs.tau-platform.com/en/7.0/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
+[Mac OS X First-time Install](http://docs.tau-platform.com/en/7.5/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
 
 ## Building apps
 
-[Build for Android](http://docs.tau-platform.com/en/7.0/guide/build_android) - How to build apps for Android.
+[Build for Android](http://docs.tau-platform.com/en/7.5/guide/build_android) - How to build apps for Android.
 
-[Build for iOS](http://docs.tau-platform.com/en/7.0/guide/build_ios) - How to build apps for iOS.
+[Build for iOS](http://docs.tau-platform.com/en/7.5/guide/build_ios) - How to build apps for iOS.
 
-[Building for Windows](http://docs.tau-platform.com/en/7.0/guide/build_win) - How to build apps for Windows.
+[Building for Windows](http://docs.tau-platform.com/en/7.5/guide/build_win) - How to build apps for Windows.
 
-[Building for Windows ME/CE](http://docs.tau-platform.com/en/7.0/guide/build_wm) - How to build apps for Windows Mobile.
+[Building for Windows ME/CE](http://docs.tau-platform.com/en/7.5/guide/build_wm) - How to build apps for Windows Mobile.
 
-[Building for Windows 10(UWP)](http://docs.tau-platform.com/en/7.0/guide/build_uwp) - How to build apps for Windows 10(UWP).
+[Building for Windows 10(UWP)](http://docs.tau-platform.com/en/7.5/guide/build_uwp) - How to build apps for Windows 10(UWP).
 
 
 ## RhoConnect Push Synchronization
-[Introduction to Push](http://docs.tau-platform.com/en/7.0/rhoconnect/push)
+[Introduction to Push](http://docs.tau-platform.com/en/7.5/rhoconnect/push)
 
-[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
+[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-platform.com/en/7.5/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
 
-[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
+[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-platform.com/en/7.5/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
 
-[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
+[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-platform.com/en/7.5/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
 
 
 ## Windows Mobile/CE Docs

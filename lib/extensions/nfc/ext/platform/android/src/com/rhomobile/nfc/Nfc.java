@@ -38,6 +38,8 @@ import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import android.app.Activity;
+
 
 public class Nfc extends AbstractRhoListener implements IRhoListener {
 
@@ -198,7 +200,9 @@ public class Nfc extends AbstractRhoListener implements IRhoListener {
 		NfcAdapter nfcAdapter = getDefaultAdapter(activity);
 		if (nfcAdapter != null) {
 			nfcAdapter.disableForegroundDispatch(activity);
-			nfcAdapter.disableForegroundNdefPush(activity);
+
+			// UNSUPPORTED FROM ANDROID 14 
+			// nfcAdapter.disableForegroundNdefPush(activity);
 		}
 	}
 	
@@ -218,7 +222,9 @@ public class Nfc extends AbstractRhoListener implements IRhoListener {
 			
 			nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
 			if (ourP2PNdefMessage != null) {
-				nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
+
+				// UNSUPPORTED FROM ANDROID 14 
+				// nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
 			}
 		}
 	}
@@ -1066,7 +1072,9 @@ public class Nfc extends AbstractRhoListener implements IRhoListener {
 						if (RhodesActivity.safeGetInstance().isForegroundNow()) {
 							NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
 							if (nfcAdapter != null) {
-								nfcAdapter.enableForegroundNdefPush(RhodesActivity.safeGetInstance(), ourP2PNdefMessage);
+
+								// UNSUPPORTED FROM ANDROID 14 
+								// nfcAdapter.enableForegroundNdefPush(RhodesActivity.safeGetInstance(), ourP2PNdefMessage);
 							}
 						}
 					}
@@ -1082,7 +1090,9 @@ public class Nfc extends AbstractRhoListener implements IRhoListener {
 				if (RhodesActivity.safeGetInstance().isForegroundNow()) {
 					NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
 					if (nfcAdapter != null) {
-						nfcAdapter.disableForegroundNdefPush(RhodesActivity.safeGetInstance());
+						
+						// UNSUPPORTED FROM ANDROID 14 
+						// nfcAdapter.disableForegroundNdefPush(RhodesActivity.safeGetInstance());
 					}
 				}
 			}
