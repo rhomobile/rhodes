@@ -2,6 +2,10 @@ package com.rhomobile.rhodes.deviceowner;
 
 import com.rhomobile.rhodes.RhodesActivity;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -17,6 +21,15 @@ public class KisokModeDeviceOwner {
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mAdminComponentName;
     private Activity mActivity;
+
+    private static String[] packageNameForSetDeviceOwner = null;
+
+    public static void SetIgnorePackageForDeviceOwner(Activity activity, String packages){
+        List<String> listPackage = new ArrayList<>();
+        listPackage.add(activity.getPackageName());
+        listPackage.addAll(Arrays.asList(packages.split(";")));
+        packageNameForSetDeviceOwner = listPackage.toArray(new String[0]);
+    }
 
     public KisokModeDeviceOwner(Activity mActivity){
         this.mDevicePolicyManager= (DevicePolicyManager) mActivity.getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -58,11 +71,13 @@ public class KisokModeDeviceOwner {
     // endregion
 
     private void setLockTask(Boolean start) {
-        if(start){
-            String[] pack = new String[] {mActivity.getPackageName()};
-            mDevicePolicyManager.setLockTaskPackages(mAdminComponentName, pack);
+        if (start){
+            if (packageNameForSetDeviceOwner == null){
+                packageNameForSetDeviceOwner = new String[] {mActivity.getPackageName()};
+            }
+            mDevicePolicyManager.setLockTaskPackages(mAdminComponentName, packageNameForSetDeviceOwner);
             mActivity.startLockTask();
-        }else {
+        } else {
             mDevicePolicyManager.setLockTaskPackages(mAdminComponentName, new String[]{});
             mActivity.stopLockTask();
         }
