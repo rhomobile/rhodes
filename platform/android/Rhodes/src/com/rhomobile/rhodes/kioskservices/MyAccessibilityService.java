@@ -20,6 +20,8 @@ import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.webview.RhoInputListener;
 import com.rhomobile.rhodes.Logger;
 
+import com.rhomobile.rhodes.kioskservices.PermissionManager;
+
 
 public class MyAccessibilityService extends AccessibilityService {
 
@@ -37,8 +39,14 @@ public class MyAccessibilityService extends AccessibilityService {
     private static List<String> ignorePackets = null;
     private static boolean isEnabled = false;
 
+    private static boolean isCheckLauncherAfterAccessibilityEvent = true;
+
     public static void setPowerProcessing(boolean value) {
         isPowerProcessing = value;
+    }
+
+    public static void disabledCheckLauncher(){
+        isCheckLauncherAfterAccessibilityEvent = false;
     }
 
     public static void setIgnoreEventsFromPackets(String packets){
@@ -107,7 +115,7 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         try {
-
+            
 
             if (event == null) {
                 Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
@@ -116,6 +124,13 @@ public class MyAccessibilityService extends AccessibilityService {
                 Logger.T(this.TAG, "================================================================");
                 return;
             }
+
+            if (isCheckLauncherAfterAccessibilityEvent) {
+                if (!PermissionManager.isMyLauncherDefault(getApplicationContext())){
+                    return;
+                }
+            }
+
             //Log.d("myLog", "Kiosk status: "+(KioskManager.getKioskModeStatus()?"true":"false")+"; event: "+ event.toString());
             Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
             Logger.T(this.TAG, event.toString());
