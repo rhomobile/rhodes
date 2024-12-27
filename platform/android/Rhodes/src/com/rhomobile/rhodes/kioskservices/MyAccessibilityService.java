@@ -103,7 +103,13 @@ public class MyAccessibilityService extends AccessibilityService {
         //Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
 
         Log.d(TAG, "Accessibility service connected");
-        kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
+        try {
+            kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
+            KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
+        } catch(Exception e) {
+            Logger.E(TAG, "Exception in AccessibilityService : " + e.getMessage() + "\n");
+            e.printStackTrace();
+        }
         Log.d(TAG, "kioskEnabledWithStart: " + ( kioskEnabledWithStart ? "true" : "false" ));
 
     }
@@ -115,7 +121,7 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         try {
-            
+
 
             if (event == null) {
                 Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
@@ -143,7 +149,7 @@ public class MyAccessibilityService extends AccessibilityService {
                     event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
                 {
 
-                    kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
+                    //kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
 
                     if( ( kioskEnabledWithStart || KioskManager.getKioskModeStatus() ) &&
                         event.getPackageName() != null &&
