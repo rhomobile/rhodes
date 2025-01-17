@@ -117,7 +117,12 @@ class NDKWrapper
     if HostPlatform.windows?
       ndkhostvariant = 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
     else
-      ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
+      platform = `uname -m`.strip
+      if platform.downcase! == "arm"
+        ndkhostvariant = `uname -s`.downcase!.chomp! + "-x86_64"
+      else
+        ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
+      end
     end
 
     return File.join( @root_path, 'toolchains', 'llvm', 'prebuilt', ndkhostvariant, 'sysroot')
@@ -177,7 +182,8 @@ class NDKWrapper
         ndkhostvariants << 'windows'
     else
         ndkhostvariants = [
-          `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
+          `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!,
+          `uname -s`.downcase!.chomp! + "-x86_64",
           `uname -s`.downcase!.chomp! + '-x86'
         ]
     end
