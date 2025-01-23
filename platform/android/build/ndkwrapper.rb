@@ -11,7 +11,7 @@ class NDKWrapper
   @rev_minor = nil
   @rev_tiny  = nil
 
-  @gccver = "unknown"  
+  @gccver = "unknown"
 
   #https://android.googlesource.com/platform/ndk/+/ndk-release-r16/docs/UnifiedHeaders.md
   @@abi_triple = {
@@ -63,8 +63,8 @@ class NDKWrapper
     path = nil
 
     if @rev_major >= 22
-      #look for libs inside toolchain      
-      p = File.join( sysroot_18,'usr','lib',@@abi_triple[abi])      
+      #look for libs inside toolchain
+      p = File.join( sysroot_18,'usr','lib',@@abi_triple[abi])
       puts "Checking NDK sysroot at: #{p}"
       path = p if File.directory?(p)
 
@@ -87,7 +87,7 @@ class NDKWrapper
 
   def link_sysroot_level_ext( api, abi )
 
-    if @rev_major >= 18      
+    if @rev_major >= 18
       File.join( sysroot_18, 'usr', 'lib', @@abi_triple[abi], api.to_s)
     else
       nil
@@ -117,11 +117,11 @@ class NDKWrapper
     if HostPlatform.windows?
       ndkhostvariant = 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
     else
-      platform = `uname -m`.strip
-      if platform.downcase! == "arm"
-        ndkhostvariant = `uname -s`.downcase!.chomp! + "-x86_64"
+      platform = `uname -m`.strip.downcase
+      if platform == "arm" || platform == "arm64"
+        ndkhostvariant = `uname -s`.downcase.chomp + "-x86_64"
       else
-        ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
+        ndkhostvariant = `uname -s`.downcase.chomp! + "-" + `uname -m`.chomp
       end
     end
 
@@ -144,12 +144,12 @@ class NDKWrapper
         puts "Checking #{sys_root} for NDK nsysroot"  if Rake.application.options.trace
         next unless File.directory? sys_root
         next unless platform =~ /android-([0-9]+)$/
-        api_level = $1.to_i 
+        api_level = $1.to_i
         api_levels.push api_level if (api_level<=max_ndk_api_level)
         puts "NDK API level: #{api_level}" if Rake.application.options.trace
       end
     end
-    
+
     api_levels.sort!
 
     last_api_level = 0
@@ -162,7 +162,7 @@ class NDKWrapper
     sys_abi_root = nil
     variants.each do |variant|
       sys_abi_root = File.join(@root_path, variant, "android-#{last_api_level}/arch-#{abi}")
-      next unless File.directory? sys_abi_root      
+      next unless File.directory? sys_abi_root
       break
     end
     if sys_abi_root.nil?
@@ -244,13 +244,13 @@ class NDKWrapper
 
 
         variants.each do |variant|
-          puts "Check toolchain path: #{variant}" if Rake.application.options.trace    
+          puts "Check toolchain path: #{variant}" if Rake.application.options.trace
           next unless File.directory? variant
 
           ndktools = variant
           ndkabi = @toolchain_name
           @gccver = version
-          
+
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
           ndkabi = 'x86_64-linux-android' if ndkabi == 'x86_64'
 
@@ -258,7 +258,7 @@ class NDKWrapper
           @toolchain_root = ndktools
 
           tools = {}
-          
+
           [ 'gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
               name = tool.gsub('+', 'p')
               tools[name] = check_tool( tool, ndktools, ndkabi)
@@ -271,7 +271,7 @@ class NDKWrapper
 
     if ndktools.nil?
       raise "Can't detect NDK toolchain path (corrupted NDK installation?), toolchain is " + @toolchain_name
-    end 
+    end
   end
 
   def gccver
@@ -308,7 +308,7 @@ class NDKWrapper
 
     if (@rev_major >= 22 )
       prefix = 'llvm'
-    elsif (@rev_major >= 18) 
+    elsif (@rev_major >= 18)
       prefix = 'arm-linux-androideabi' if abi == 'armv7a-linux-androideabi'
     end
 
@@ -334,7 +334,7 @@ class NDKWrapper
       end
     end
     puts "Checking tool path #{toolpath} for tool #{tool}" if Rake.application.options.trace
-    
+
     if File.file? toolpath
       return toolpath
     else
