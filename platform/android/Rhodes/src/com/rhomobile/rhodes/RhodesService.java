@@ -131,12 +131,18 @@ import android.os.Environment;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import androidx.core.content.FileProvider;
+import android.media.ToneGenerator;
+import android.media.AudioManager;
+
 
 import java.util.Enumeration;
 import java.net.NetworkInterface;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.SocketException;
+
+
+
 
 public class RhodesService extends Service {
 
@@ -1957,5 +1963,17 @@ public class RhodesService extends Service {
 
     	return ret;
     }
+
+
+	public static void beep() {
+		ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+		toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,500);
+	}
+
+	public static void beep_mini() {
+		ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+		toneGen1.startTone(ToneGenerator.TONE_CDMA_ONE_MIN_BEEP,100);
+	}
+
 
 }

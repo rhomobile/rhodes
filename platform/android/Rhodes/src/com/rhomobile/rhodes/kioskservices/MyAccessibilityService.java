@@ -19,8 +19,12 @@ import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.webview.RhoInputListener;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesService;
 
 import com.rhomobile.rhodes.kioskservices.PermissionManager;
+
+//import com.rho.zebrakiosk.ZebraHomeLauncherTool;
+import java.lang.reflect.Method;
 
 
 public class MyAccessibilityService extends AccessibilityService {
@@ -40,6 +44,20 @@ public class MyAccessibilityService extends AccessibilityService {
     private static boolean isEnabled = false;
 
     private static boolean isCheckLauncherAfterAccessibilityEvent = true;
+
+
+    private void forceHomeLauncher() {
+        try {
+            Class<?> c = Class.forName("com.rho.zebrakiosk.ZebraHomeLauncherTool");
+            Method h = c.getMethod("setHomeLauncher", String.class, Context.class);
+            h.invoke(c, getPackageName(), getApplicationContext());
+
+            //ZebraHomeLauncherTool.setHomeLauncher("com.tau.taubrowser", getApplicationContext());
+        } catch (Exception ignored) {
+
+            Logger.E(TAG, "Error during get zebrakiosk class = "+ignored.getMessage());
+        }
+    }
 
     public static void setPowerProcessing(boolean value) {
         isPowerProcessing = value;
@@ -73,6 +91,29 @@ public class MyAccessibilityService extends AccessibilityService {
     }
 
     @Override
+    public void onCreate() {
+        Log.d(TAG, "Accessibility service created");
+
+
+        try {
+            kioskEnabledWithStart = KioskManager.isKioskModeOnStartForAccessebility(getApplicationContext());
+            KioskManager.decreaseKioskModeOnStartForAccessebility(getApplicationContext());
+
+
+        } catch(Exception e) {
+            Logger.E(TAG, "Exception in AccessibilityService : " + e.getMessage() + "\n");
+            e.printStackTrace();
+        }
+        Log.d(TAG, "kioskEnabledWithStart: " + ( kioskEnabledWithStart ? "true" : "false" ));
+
+        if (kioskEnabledWithStart) {
+            forceHomeLauncher();
+        }
+
+        super.onCreate();
+    }
+
+    @Override
     protected void onServiceConnected() {
         try {
             super.onServiceConnected();
@@ -103,14 +144,14 @@ public class MyAccessibilityService extends AccessibilityService {
         //Toast.makeText(this, "Accessibility Service connected", Toast.LENGTH_LONG).show();
 
         Log.d(TAG, "Accessibility service connected");
-        try {
-            kioskEnabledWithStart = KioskManager.GetKioskModeEnabledFilteringEventsOnStart(getApplicationContext());
-            KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
-        } catch(Exception e) {
-            Logger.E(TAG, "Exception in AccessibilityService : " + e.getMessage() + "\n");
-            e.printStackTrace();
+
+
+
+        if (kioskEnabledWithStart) {
+            forceHomeLauncher();
+            //RhodesService.beep();
+            //performGlobalAction(GLOBAL_ACTION_HOME);
         }
-        Log.d(TAG, "kioskEnabledWithStart: " + ( kioskEnabledWithStart ? "true" : "false" ));
 
     }
 
@@ -123,6 +164,8 @@ public class MyAccessibilityService extends AccessibilityService {
         try {
 
 
+            //RhodesService.beep_mini();
+
             if (event == null) {
                 Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
                 Logger.T(this.TAG, "event == null !");
@@ -133,7 +176,13 @@ public class MyAccessibilityService extends AccessibilityService {
 
             if (isCheckLauncherAfterAccessibilityEvent) {
                 if (!PermissionManager.isMyLauncherDefault(getApplicationContext())){
-                    return;
+                    Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
+                    Logger.T(this.TAG, "============  Tau Browser is not Home Launcher !!! ============");
+                    Logger.T(this.TAG, "===================== onAccessibilityEvent ====================");
+                    if (kioskEnabledWithStart || KioskManager.getKioskModeStatus()) {
+                        forceHomeLauncher();
+                    }
+                    //return;
                 }
             }
 
@@ -157,6 +206,7 @@ public class MyAccessibilityService extends AccessibilityService {
                         isIgnorPackages(event.getPackageName()))
                     {
                         Logger.T(this.TAG, "====================    GLOBAL_ACTION_HOME    =======================");
+                        //RhodesService.beep_mini();
                         performGlobalAction(GLOBAL_ACTION_HOME);
                         if(event.getPackageName().equals(oldEvent)) {
                             //Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
