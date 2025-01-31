@@ -38,7 +38,7 @@ public class KioskManager {
         SharedPreferences sharedPreferences2 = context.getSharedPreferences("ADVANCED_KIOSK_SETTINGS", 0);
         SharedPreferences.Editor editor2 = sharedPreferences2.edit();
         if (status) {
-            editor2.putInt("KIOSK_MODE_ENABLE_FILTERING_EVENTS_ON_START_INDEX", 2);
+            editor2.putInt("KIOSK_MODE_ENABLE_FILTERING_EVENTS_ON_START_INDEX", 3);
         }
         else {
             editor2.putInt("KIOSK_MODE_ENABLE_FILTERING_EVENTS_ON_START_INDEX", 0);
