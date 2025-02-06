@@ -246,6 +246,13 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
 
     boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
+
+    if ( nRes==SQLITE_NOTADB  ) {//kill db and try again
+        LOG(INFO) + "Open DB: DB file exists, but it is either corrupted or encrypted with an unknown key - no way to recover, kill the DB and create it from scratch.";
+        CRhoFile::deleteFile(strDbPath.c_str());
+        nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
+    }
+
     if ( !checkDbError(nRes) )
         return;
     //TODO: raise exception if error
