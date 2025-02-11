@@ -21,6 +21,11 @@ public class RhoDeviceAdminReceiver extends DeviceAdminReceiver {
         return mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName());
     }
 
+    public static void cleanDeviceOwner(Activity acivity){
+        DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager)activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mDevicePolicyManager.clearDeviceOwnerApp(acivity.getPackageName());
+    }
+
     @Override
     public void onEnabled(@NonNull Context context, @NonNull Intent intent) {
         super.onEnabled(context, intent);
