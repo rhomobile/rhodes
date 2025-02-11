@@ -141,5 +141,9 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/PermissionManager
 platform/android/Rhodes/src/com/rhomobile/rhodes/kioskservices/IKioskMode.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/PermissionListGenerate.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/permissioncheck/CheckDrawable.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/RhoDeviceAdminReceiver.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/KisokModeDeviceOwner.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/ProvisioningModeActivity.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/deviceowner/AdminPolicyComplianceActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoInputConnectionWrapper.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoInputListener.java

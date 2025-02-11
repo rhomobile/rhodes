@@ -10,6 +10,7 @@ import java.util.Map;
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.deviceowner.RhoDeviceAdminReceiver;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -52,6 +53,9 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.InputContentInfo;
+
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 
 
 import android.content.Context;
@@ -562,6 +566,26 @@ public class GoogleWebView implements IRhoWebView {
             } catch (Exception e) {
                 Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
             }
+            
+            if(mIsShouldKillKeyboardMethodUse && RhoDeviceAdminReceiver.isDeviceOwner(RhodesActivity.safeGetInstance())){
+                try{
+                    RhodesActivity.safeGetInstance();
+                    Context context = RhodesActivity.getContext();
+                    String default_input_method_local = Settings.Secure.getString(context.getContentResolver(), "default_input_method");
+
+                    if (!default_input_method_local.contains(tauSipValue)){
+                        DevicePolicyManager devicePolicyManager = (DevicePolicyManager)context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        ComponentName adminComponentName = RhoDeviceAdminReceiver.getComponentName(context);
+                        devicePolicyManager.setSecureSetting(adminComponentName, Settings.Secure.DEFAULT_INPUT_METHOD,tauSipValue);
+
+                        mSavedDefaultInputMethod = default_input_method_local;
+
+                        mIsShouldKillKeyboardMethodUse = false;
+                    }
+                } catch (Exception e){
+                    Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+                }
+            }
 
             if (mIsShouldKillKeyboardMethodUse) {
                 Logger.E(this.TAG, "TAU KEYBOARD no android.permission.WRITE_SECURE_SETTINGS permission - use alternative method !");
@@ -619,12 +643,28 @@ public class GoogleWebView implements IRhoWebView {
             String to_restore = mSavedDefaultInputMethod;
             mSavedDefaultInputMethod = null;
             Logger.I(this.TAG, "TAU KEYBOARD restore saved default_input_method");
+            boolean isDefault = false;
             try {
                 RhodesActivity.safeGetInstance();
                 Context context = RhodesActivity.getContext();
                 Settings.Secure.putString(context.getContentResolver(), "default_input_method", to_restore);
+                isDefault = true;
             } catch (Exception e) {
                 Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+            }
+
+            if(!isDefault){
+                try{
+                    RhodesActivity.safeGetInstance();
+                    Context context = RhodesActivity.getContext();
+
+                    DevicePolicyManager devicePolicyManager = (DevicePolicyManager)context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    ComponentName adminComponentName = RhoDeviceAdminReceiver.getComponentName(context);
+                    devicePolicyManager.setSecureSetting(adminComponentName, Settings.Secure.DEFAULT_INPUT_METHOD, to_restore);
+                    isDefault = true;
+                } catch (Exception e) {
+                    Logger.E(this.TAG, "TAU KEYBOARD Exception = " + e.getMessage());
+                }
             }
         }
         removeKeyboardListener();

@@ -51,6 +51,9 @@ import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.kioskservices.MyOverlayService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.deviceowner.RhoDeviceAdminReceiver;
+import com.rhomobile.rhodes.deviceowner.KisokModeDeviceOwner;
+
 
 
 import android.os.Build;
@@ -89,6 +92,8 @@ import android.widget.Button;
 import android.app.AlertDialog;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.app.admin.DevicePolicyManager;
+
 
 import java.util.Vector;
 
@@ -138,6 +143,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private AlertDialog mPermissionsDialog = null;
 	private static boolean mIsUseOverlay = false;
 
+    private KisokModeDeviceOwner kisokModeDeviceOwner;
 
 	private class AdditionalContentView {
 		public View view = null;
@@ -368,10 +374,22 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                     this,
                     requestedPermissions.toArray(new String[0]),
                     RHODES_PERMISSIONS_REQUEST);
+                
+                Activity mActivity= (Activity) this;
+                if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
+                    getPermission();
+                }
             }
         } catch (NameNotFoundException e) {
             throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
         }
+    }
+
+    private void getPermission(){
+        Context mContext = getApplicationContext();
+        DevicePolicyManager devicePolicyManager = (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminComponentName = RhoDeviceAdminReceiver.getComponentName(mContext);
+        devicePolicyManager.setPermissionPolicy(adminComponentName, DevicePolicyManager.PERMISSION_POLICY_AUTO_GRANT);
     }
 
     @Override
@@ -1022,20 +1040,26 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		mIsUseOverlay = use_overlay;
         Activity mActivity= (Activity) this;
         Context mContext = getApplicationContext();
-		//if (!KioskManager.getKioskModeStatus()) {
-	        if(PermissionManager.checkPermissions(mContext, mActivity)){
-	            //Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
-	            if(permissionWindowShow) permissionWindowShow = false;
-				if (mPermissionsDialog != null) {
-					try {
-						mPermissionsDialog.dismiss();
-					}
-					catch(Exception ex) {
 
-					}
-					mPermissionsDialog = null;
-				}
-	            KioskManager.setKioskMode(true);
+
+        if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
+            kisokModeDeviceOwner = new KisokModeDeviceOwner(mActivity);
+            kisokModeDeviceOwner.setKioskMode(true);
+            KioskManager.setKioskMode(true);
+        }else{
+            if(PermissionManager.checkPermissions(mContext, mActivity)){
+                //Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
+                if(permissionWindowShow) permissionWindowShow = false;
+                if (mPermissionsDialog != null) {
+                    try {
+                        mPermissionsDialog.dismiss();
+                    }
+                    catch(Exception ex) {
+
+                    }
+                    mPermissionsDialog = null;
+                }
+                KioskManager.setKioskMode(true);
 
                 Log.d("TAG", RhodesService.kioskModeEnableFilteringEventsOnStart() ? "true" : "false");
 
@@ -1044,6 +1068,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 } else {
                     KioskManager.ClearAdvencedKioskSettings(mContext);
                 }
+
 
                 MyAccessibilityService.disabledCheckLauncher();
 
@@ -1055,26 +1080,30 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			             }
 			        }, 500);
 
-				}
-	        }
-	        else{
-	            permissionWindowShow = true;
-	            showAlertPermission();
-	        }
-		//}
+
+                }
+            }
+            else{
+                permissionWindowShow = true;
+                showAlertPermission();
+            }
+        }
     }
 
     @Override
     public void stopKioskMode() {
 		if (KioskManager.getKioskModeStatus()) {
-	        KioskManager.setKioskMode(false);
+            KioskManager.setKioskMode(false);
             KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
-
-	        Context mContext = getApplicationContext();
-	        Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
-			if (mIsUseOverlay) {
-				stopOverlay();
-			}
+            if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
+                kisokModeDeviceOwner.setKioskMode(false);
+            }else{
+                Context mContext = getApplicationContext();
+                Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();
+                if (mIsUseOverlay) {
+                    stopOverlay();
+                }
+            }
 
 			//PermissionManager.setDefaultLauncher(this);
 		}
