@@ -12,7 +12,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 
 public class RhoDeviceAdminReceiver extends DeviceAdminReceiver {
-    
+
     public static ComponentName getComponentName(Context context){
         return new ComponentName(context.getApplicationContext(), RhoDeviceAdminReceiver.class);
     }
@@ -21,9 +21,9 @@ public class RhoDeviceAdminReceiver extends DeviceAdminReceiver {
         return mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName());
     }
 
-    public static void cleanDeviceOwner(Activity acivity){
+    public static void cleanDeviceOwner(Activity activity){
         DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager)activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        mDevicePolicyManager.clearDeviceOwnerApp(acivity.getPackageName());
+        mDevicePolicyManager.clearDeviceOwnerApp(activity.getPackageName());
     }
 
     @Override
