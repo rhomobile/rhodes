@@ -22,6 +22,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -43,6 +44,8 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.webview.GoogleWebView;
+import com.rhomobile.rhodes.kioskservices.MyOverlayService;
+
 
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
@@ -549,7 +552,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     }
                     return false;
                 }});
-            builder.create().show();
+            AlertDialog ad = builder.create();
+            if ( isOverlay() ) {
+                ad.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            }
+            ad.show();
         }
     }
 
@@ -593,10 +600,15 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     dialog.dismiss();
                 }
             });
-            builder.create().show();
+            AlertDialog ad = builder.create();
+            if ( isOverlay() ) {
+                ad.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            }
+            ad.show();
+
         }
     }
-    
+
 
     public void onAuthRequest(View view, final IRhoExtension.IAuthRequest request) {
         final IRhoWebView rhoWebView = makeDefExtData(view);
@@ -683,7 +695,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     rhoWebView.goBack();
                 }
             });
-            builder.create().show();
+            AlertDialog ad = builder.create();
+            if ( isOverlay() ) {
+                ad.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            }
+            ad.show();
         }
     }
 
@@ -816,7 +832,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     dialog.dismiss();
                 }
             });
-            builder.create().show();
+            AlertDialog ad = builder.create();
+            if ( isOverlay() ) {
+                ad.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+            }
+            ad.show();
         }
     }
 
@@ -1040,6 +1060,16 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         for (IRhoListener listener: mListeners) {
             listener.onEBLicenseDestroyed();
         }
+    }
+
+    private static boolean isOverlay() {
+        MyOverlayService os = MyOverlayService.getInstance();
+		if (os != null) {
+			if (MyOverlayService.isOverlayMode()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

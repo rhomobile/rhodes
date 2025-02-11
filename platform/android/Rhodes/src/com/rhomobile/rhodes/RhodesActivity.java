@@ -42,6 +42,7 @@ import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.kioskservices.IKioskMode;
 import com.rhomobile.rhodes.kioskservices.KioskManager;
+import com.rhomobile.rhodes.kioskservices.MyAccessibilityService;
 import com.rhomobile.rhodes.kioskservices.PermissionManager;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
@@ -471,9 +472,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			} else {
 				IS_RESIZE_SIP = false;
 			}
-	   }
+	    }
 
-       requestPermissions();
+        requestPermissions();
     }
 
 
@@ -1068,13 +1069,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                     KioskManager.ClearAdvencedKioskSettings(mContext);
                 }
 
-                if (mIsUseOverlay) {
-                    PerformOnUiThread.exec(new Runnable() {
-                        @Override
-                        public void run() {
-                            startOverlay();
-                        }
-                    }, 500);
+
+                MyAccessibilityService.disabledCheckLauncher();
+
+				if (mIsUseOverlay) {
+					PerformOnUiThread.exec(new Runnable() {
+			             @Override
+			             public void run() {
+			                 startOverlay();
+			             }
+			        }, 500);
+
 
                 }
             }
