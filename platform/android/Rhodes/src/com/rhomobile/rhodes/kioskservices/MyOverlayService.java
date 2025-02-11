@@ -90,82 +90,89 @@ public class MyOverlayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.T(TAG, "$$$ onStartCommand() ");
-        if (ourInstance != null) {
-            //return super.onStartCommand(intent, flags, startId);
-        }
-        ourInstance = this;
-        ourIsOverlayModeEnabled = true;
 
-        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        try {
 
-        if (overlayLayout != null) {
-            wm.removeView(overlayLayout);
-            overlayLayout = null;
-        }
+            if (ourInstance != null) {
+                //return super.onStartCommand(intent, flags, startId);
+            }
+            ourInstance = this;
+            ourIsOverlayModeEnabled = true;
 
-        overlayLayout = new LinearLayout(this);
-        overlayLayout.setOrientation(LinearLayout.VERTICAL);
-        overlayLayout.setBackgroundColor(0xFFFFFFFF);
+            wm = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        // Button btnClose = new Button(this);
-        // btnClose.setText("STOP OVERLAY");
-        // btnClose.setOnClickListener(new View.OnClickListener() {
-        //     @Override
-        //     public void onClick(View v){
-        //         stopOverlayMode();
-        //     }
-        // });
-
-        LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        lparams.topMargin = 8;
-        lparams.bottomMargin = 8;
-        lparams.leftMargin = 8;
-        lparams.rightMargin = 8;
-
-        // overlayLayout.addView(btnClose, lparams);
-
-/*
-        |
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-*/
-
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            PixelFormat.TRANSLUCENT
-        );
-
-        mFrameLayout = new FrameLayout(this);
-
-
-        FrameLayout.LayoutParams wvlparams = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        );
-
-        mMainView = RhodesActivity.extractMainView();
-        if(mMainView != null){
-            if(mMainView != null){
-                Logger.T(TAG, "$$$ mMainView != NULL ! class = "+mMainView.getClass().getSimpleName());
-            }else{
-                Logger.T(TAG, "$$$ mMainView == NULL ! ");
+            if (overlayLayout != null) {
+                wm.removeView(overlayLayout);
+                overlayLayout = null;
             }
 
-            mFrameLayout.addView(mMainView.getView(), wvlparams);
+            overlayLayout = new LinearLayout(this);
+            overlayLayout.setOrientation(LinearLayout.VERTICAL);
+            overlayLayout.setBackgroundColor(0xFFFFFFFF);
+
+            // Button btnClose = new Button(this);
+            // btnClose.setText("STOP OVERLAY");
+            // btnClose.setOnClickListener(new View.OnClickListener() {
+            //     @Override
+            //     public void onClick(View v){
+            //         stopOverlayMode();
+            //     }
+            // });
+
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            );
+            lparams.topMargin = 8;
+            lparams.bottomMargin = 8;
+            lparams.leftMargin = 8;
+            lparams.rightMargin = 8;
+
+            // overlayLayout.addView(btnClose, lparams);
+
+    /*
+            |
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+    */
+
+            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                PixelFormat.TRANSLUCENT
+            );
+
+            mFrameLayout = new FrameLayout(this);
+
+
+            FrameLayout.LayoutParams wvlparams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            );
+
+            mMainView = RhodesActivity.extractMainView();
+            if(mMainView != null){
+                if(mMainView != null){
+                    Logger.T(TAG, "$$$ mMainView != NULL ! class = "+mMainView.getClass().getSimpleName());
+                }else{
+                    Logger.T(TAG, "$$$ mMainView == NULL ! ");
+                }
+
+                mFrameLayout.addView(mMainView.getView(), wvlparams);
+            }
+
+            callListsnersOnStart();
+
+            overlayLayout.addView(RhodesActivity.onOverlayStarted(mFrameLayout), lparams);
+
+
+            wm.addView(overlayLayout, params);
         }
-
-        callListsnersOnStart();
-
-        overlayLayout.addView(RhodesActivity.onOverlayStarted(mFrameLayout), lparams);
-
-
-        wm.addView(overlayLayout, params);
+        catch(Exception e) {
+            Logger.E(TAG, "Error during Overlay start command = "+e.getMessage());
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
