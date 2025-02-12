@@ -1093,6 +1093,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void stopKioskMode() {
 		if (KioskManager.getKioskModeStatus()) {
+			Activity mActivity= (Activity) this;
             KioskManager.setKioskMode(false);
             KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
             if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
