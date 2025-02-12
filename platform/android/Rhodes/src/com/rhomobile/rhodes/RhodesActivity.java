@@ -1046,7 +1046,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             kisokModeDeviceOwner = new KisokModeDeviceOwner(mActivity);
             kisokModeDeviceOwner.setKioskMode(true);
             KioskManager.setKioskMode(true);
-            RhoDeviceAdminReceiver.setHomeLauncher(mActivity, mActivity.getPackageName());
+            RhoDeviceAdminReceiver.setHomeLauncher(true, mActivity, mActivity.getPackageName());
         }else{
             if(PermissionManager.checkPermissions(mContext, mActivity)){
                 //Toast.makeText(mContext, "Kiosk mode started", Toast.LENGTH_SHORT).show();
@@ -1098,6 +1098,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             KioskManager.ClearAdvencedKioskSettings(getApplicationContext());
             if(RhoDeviceAdminReceiver.isDeviceOwner(mActivity)){
                 kisokModeDeviceOwner.setKioskMode(false);
+                RhoDeviceAdminReceiver.setHomeLauncher(false, mActivity, mActivity.getPackageName());
             }else{
                 Context mContext = getApplicationContext();
                 Toast.makeText(mContext, "Kiosk mode finished", Toast.LENGTH_SHORT).show();

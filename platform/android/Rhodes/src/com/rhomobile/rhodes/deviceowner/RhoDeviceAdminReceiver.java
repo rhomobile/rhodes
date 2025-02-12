@@ -8,7 +8,12 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.kioskservices.PermissionManager;
+
 import android.content.IntentFilter;
+import android.provider.Settings;
+
 import android.app.Activity;
 
 
@@ -29,26 +34,25 @@ public class RhoDeviceAdminReceiver extends DeviceAdminReceiver {
         mDevicePolicyManager.clearDeviceOwnerApp(activity.getPackageName());
     }
 
-    public static void setHomeLauncher(Activity activity, String packageName){
+    public static void setHomeLauncher(boolean status, Activity activity, String packageName){
         DevicePolicyManager dpm = (DevicePolicyManager)activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        Context context = (Context) activity;
-        ComponentName adminComponentName = new ComponentName(context, RhoDeviceAdminReceiver.class);
-        dpm.clearPackagePersistentPreferredActivities(adminComponentName, packageName);
         IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
         filter.addCategory(Intent.CATEGORY_HOME);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
-        ComponentName rhodesActivity = new ComponentName(context.getPackageName(), RhodesActivity.class.getName());
-        dpm.addPersistentPreferredActivity(adminComponentName, filter, rhodesActivity);
-
-        disabledKeyguard(dpm, adminComponentName);
+        if (status) {
+            dpm.addPersistentPreferredActivity (
+                new ComponentName((Context) activity, RhoDeviceAdminReceiver.class), 
+                filter, 
+                new ComponentName((Context) activity, RhodesActivity.class.getName())
+            );
+        } else {
+            dpm.clearPackagePersistentPreferredActivities(new ComponentName((Context) activity, RhoDeviceAdminReceiver.class), packageName);
+        }
     }
 
-    private static void disabledKeyguard(DevicePolicyManager dpm, ComponentName adminComponentName){
-        dpm.setKeyguardDisabledFeatures(
-            adminComponentName,
-            DevicePolicyManager.KEYGUARD_DISABLE_FEATURES_ALL
-        );
-    }
+    // private static void disabledKeyguard(DevicePolicyManager dpm, ComponentName adminComponentName){
+    //     dpm.setKeyguardDisabled(adminComponentName, true);
+    // }
 
     @Override
     public void onEnabled(@NonNull Context context, @NonNull Intent intent) {
