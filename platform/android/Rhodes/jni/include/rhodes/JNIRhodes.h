@@ -43,7 +43,7 @@
 #include <genconfig.h>
 #endif
 
-static int const RHO_FD_BASE = 512;
+static int const RHO_FD_BASE = 1024;
 
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
