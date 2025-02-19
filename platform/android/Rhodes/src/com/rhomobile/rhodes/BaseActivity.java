@@ -224,16 +224,22 @@ public class BaseActivity extends Activity implements ServiceConnection {
             
             if(RhodesService.getInstance() == null) {
                 Logger.D(TAG, "onCreate() startForegroundService PRE");
+                /*
                 if (sdkVersion >= 28) {
                     serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
                 }
                 else {
-                    serviceName = startService(intent);
-                }
+                    // serviceName = startService(intent);
+                } */
+                
+                serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
+
                 Logger.D(TAG, "onCreate() startForegroundService POST");
                 //ComponentName serviceName = startService(intent);
-                if (serviceName == null)
+                if (serviceName == null){
+                    Logger.D(TAG, "onCreate() service name == null");
                     throw new RuntimeException("Can not start Rhodes service");
+                }
                 
             } else {
                 Logger.D(TAG, "onCreate() RhodesService allready started");
@@ -319,13 +325,17 @@ public class BaseActivity extends Activity implements ServiceConnection {
             int sdkVersion = Build.VERSION.SDK_INT;
             
             if(RhodesService.getInstance() == null) {
+                /*
                 Logger.D(TAG, "onCreate() startForegroundService PRE");
                 if (sdkVersion >= 28) {
                     serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
                 }
                 else {
                     serviceName = startService(intent);
-                }
+                } */
+                
+                serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
+
                 Logger.D(TAG, "onCreate() startForegroundService POST");
                 //ComponentName serviceName = startService(intent);
                 if (serviceName == null)

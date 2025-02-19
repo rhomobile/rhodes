@@ -102,6 +102,7 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 
 	@Override
 	public ComponentName startForegroundService(Activity activity, Intent service) {
+        Logger.D(TAG, "startService from AndroidFunctionality01");
 		return activity.startService(service);
 	}
 }

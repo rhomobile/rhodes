@@ -41,7 +41,9 @@ public class AndroidFunctionalityManager {
 		if (ourFunctionality == null) {
 			int sdkVersion = Build.VERSION.SDK_INT;
 
-			if (sdkVersion >= 26) {
+			if (sdkVersion >= 28){
+				ourFunctionality = new AndroidFunctionality28();
+			}else if (sdkVersion >= 26) {
 				ourFunctionality = new AndroidFunctionality26();
 			}else if (sdkVersion >= Build.VERSION_CODES.HONEYCOMB) { // 3.0.x - 11
 				ourFunctionality = new AndroidFunctionality11();
