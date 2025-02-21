@@ -166,5 +166,6 @@
 #endif
 
 - (void)registerForRemoteNotification;
+- (void)processPushMessage:(NSDictionary*)userInfo;
 
 @end
