@@ -126,9 +126,14 @@ static NotificationReminder* reminder = nil;
    }
    else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
    }
-    NSDictionary *userInfo = response.notification.request.content.userInfo;
-    [[Rhodes sharedInstance] processPushMessage:userInfo];
- 
+
+    UNNotification *notification = response.notification;
+    if (notification){
+        NSDictionary *userInfo = ExtractUserInfo(notification);
+        if (userInfo){
+            [[Rhodes sharedInstance] processPushMessage:userInfo];
+        }
+    }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center 
@@ -136,9 +141,37 @@ static NotificationReminder* reminder = nil;
            withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler 
 {
     NSLog(@"Notification recived"); 
-    NSDictionary *userInfo = notification.request.content.userInfo;
-    [[Rhodes sharedInstance] processPushMessage:userInfo];
+
+    NSDictionary *userInfo = ExtractUserInfo(notification);
+    if (userInfo){
+        NSDictionary *userInfo = notification.request.content.userInfo;
+        [[Rhodes sharedInstance] processPushMessage:userInfo];
+    }
     completionHandler(UNAuthorizationOptionAlert + UNAuthorizationOptionSound);
+}
+
+NSDictionary * _Nullable ExtractUserInfo(UNNotification * _Nullable notification) {
+    if (!notification) {
+        NSLog(@"notification is nil");
+        return nil;
+    }
+    UNNotificationRequest *request = notification.request;
+    if (!request){
+        NSLog(@"notification request is nil");
+        return nil;
+    }
+    UNNotificationContent *content = request.content;
+    if (!content) {
+        NSLog(@"notification content is nil");
+        return nil;
+    }
+    NSDictionary *userInfo = content.userInfo;
+    if (!userInfo) {
+        NSLog(@"notification userInfo is nil");
+        return nil;
+    }
+
+    return userInfo;
 }
 
 -(void) setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
