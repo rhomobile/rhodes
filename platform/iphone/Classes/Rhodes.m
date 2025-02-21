@@ -1161,6 +1161,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 #endif
         UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+#ifdef APP_BUILD_CAPABILITY_PUSH
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+#endif
     } else
 #endif
     {
@@ -1404,6 +1407,7 @@ withCompletionHandler:(void(^)())completionHandler {
 
 -(void) processPushMessage:(NSDictionary*)userInfo {
     NSLog(@"PUSH Received notification: %@", userInfo);
+#ifdef APP_BUILD_CAPABILITY_PUSH
     //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
@@ -1411,6 +1415,7 @@ withCompletionHandler:(void(^)())completionHandler {
     else {
         mPushStoredData_UserInfo = [userInfo copy];
     }
+#endif
 }
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {

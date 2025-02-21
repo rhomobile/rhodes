@@ -64,7 +64,7 @@ static NotificationReminder* reminder = nil;
     {
         dispatch_semaphore_t question_semaphore = dispatch_semaphore_create(0);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound)
+            [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge)
                 completionHandler:^(BOOL granted, NSError * _Nullable error) {
                 granted_notification = granted;
                 dispatch_semaphore_signal(question_semaphore);
@@ -126,6 +126,8 @@ static NotificationReminder* reminder = nil;
    }
    else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
    }
+    NSDictionary *userInfo = response.notification.request.content.userInfo;
+    [[Rhodes sharedInstance] processPushMessage:userInfo];
  
 }
 
@@ -134,6 +136,8 @@ static NotificationReminder* reminder = nil;
            withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler 
 {
     NSLog(@"Notification recived"); 
+    NSDictionary *userInfo = notification.request.content.userInfo;
+    [[Rhodes sharedInstance] processPushMessage:userInfo];
     completionHandler(UNAuthorizationOptionAlert + UNAuthorizationOptionSound);
 }
 
