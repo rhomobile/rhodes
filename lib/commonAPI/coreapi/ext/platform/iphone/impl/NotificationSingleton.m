@@ -147,7 +147,7 @@ static NotificationReminder* reminder = nil;
         NSDictionary *userInfo = notification.request.content.userInfo;
         [[Rhodes sharedInstance] processPushMessage:userInfo];
     }
-    completionHandler(UNAuthorizationOptionAlert + UNAuthorizationOptionSound);
+    completionHandler( UNAuthorizationOptionSound);
 }
 
 NSDictionary * _Nullable ExtractUserInfo(UNNotification * _Nullable notification) {
