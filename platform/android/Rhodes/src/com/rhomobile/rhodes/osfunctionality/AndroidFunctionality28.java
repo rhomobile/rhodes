@@ -24,7 +24,7 @@ public class AndroidFunctionality28 extends AndroidFunctionality26 implements An
         java.lang.reflect.Method methodStartForegroundService = null;
         ComponentName resultOfInvoke = null;
 
-        if (RhoConf.isExist("using_start_foreground_service") && RhoConf.getInt("using_start_foreground_service") == 1){
+        if (!RhoConf.isExist("using_start_foreground_service") || RhoConf.getInt("using_start_foreground_service") == 1){
             try {
                 methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
             } catch( Exception e ) {
@@ -48,28 +48,6 @@ public class AndroidFunctionality28 extends AndroidFunctionality26 implements An
         resultOfInvoke = activity.startService(service);
         Logger.D( TAG, "startForegroundService() FINISH" );
         return resultOfInvoke;
-
-        // try {
-        //     methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
-        // } catch( Exception e ) {
-        //     Logger.E( TAG, "Error: Activity class do not has startForegroundService() method !" );
-        //     Logger.E( TAG, e.toString() );
-        // }
-        // if (methodStartForegroundService!= null) {
-        //     try {
-        //         Logger.D( TAG, "invoke startForegroundService()" );
-        //         resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
-        //     } catch( Exception e ) {
-        //         Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
-        //         Logger.E( TAG, e.toString() );
-        //     }
-        // }
-        // else {
-        //     Logger.D( TAG, "use old startService()" );
-        //     resultOfInvoke = activity.startService(service);
-        // }
-        // Logger.D( TAG, "startForegroundService() FINISH" );
-        // return resultOfInvoke;
 	}
 
 }

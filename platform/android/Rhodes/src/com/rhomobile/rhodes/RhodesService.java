@@ -424,11 +424,11 @@ public class RhodesService extends Service {
 		super.onCreate();
 		// use new mechanism for foregorund service only for 9.0 and later
 		
-		/*
-		if (Build.VERSION.SDK_INT >= 28) {
-			innerStartForeground();
+		if (!RhoConf.isExist("using_start_foreground_service") || RhoConf.getInt("using_start_foreground_service") == 1){
+			if (Build.VERSION.SDK_INT >= 28) {
+				innerStartForeground();
+			}
 		}
-			*/
 
 		sInstance = this;
 
