@@ -37,7 +37,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
 import java.lang.Throwable;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
