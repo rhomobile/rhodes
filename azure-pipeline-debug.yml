@@ -214,7 +214,7 @@ jobs:
         ${{variables.sdk_manager}} --uninstall 'platforms;android-34'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext4'
         ${{variables.sdk_manager}} --uninstall 'platforms;android-33-ext5'
-        ${{variables.sdk_manager}} --install 'ndk;$(NDK_VERSION)'
+        echo yes | ${{variables.sdk_manager}} --install 'ndk;$(NDK_VERSION)'
       displayName: "Setup Android environment"
 
     - script: |
