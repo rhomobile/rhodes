@@ -416,6 +416,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "Creating default main view");
 
         mTopLayout = new FrameLayout(this);
+
+        if (Build.VERSION.SDK_INT > 34) {
+            mTopLayout.setFitsSystemWindows(true);
+        }
         setContentView(mTopLayout);
 
 
