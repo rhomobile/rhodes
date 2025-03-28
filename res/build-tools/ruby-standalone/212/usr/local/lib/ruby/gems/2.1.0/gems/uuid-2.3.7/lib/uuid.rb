@@ -175,7 +175,7 @@ class UUID
 
     @state_file = File.join(state_dir, 'ruby-uuid')
 
-    if !File.writable?(state_dir) || (File.exists?(@state_file) && !File.writable?(@state_file)) then
+    if !File.writable?(state_dir) || (File.exist?(@state_file) && !File.writable?(@state_file)) then
       @state_file = File.expand_path('.ruby-uuid', '~')
     end
 
@@ -267,7 +267,7 @@ class UUID
       @sequence = rand 0x10000
 
       # Ensure the mode is respected, even with a restrictive umask
-      File.open(state_file, 'w') { |f| f.chmod(self.class.mode) } if state_file && !File.exists?(state_file)
+      File.open(state_file, 'w') { |f| f.chmod(self.class.mode) } if state_file && !File.exist?(state_file)
 
       if state_file
         open_lock 'wb' do |io|

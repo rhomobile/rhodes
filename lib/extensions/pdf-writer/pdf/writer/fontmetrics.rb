@@ -35,7 +35,7 @@ class PDF::Writer::FontMetrics
     # Open the font file and return a PDF::Writer::FontMetrics object
     # containing it. The +font_name+ may specify just a font file or a full
     # path. If a path is specified, that is the only place where the font
-    # file will be looked for. 
+    # file will be looked for.
   def self.open(font_name)
     file  = font_name.gsub(/\\/o, "/")
     dir   = File.dirname(file)
@@ -64,7 +64,7 @@ class PDF::Writer::FontMetrics
         # Attempt to unmarshal an .afm.rfm file first. If it is loaded,
         # we're in good shape.
       begin
-        if File.exists?(rfm_file)
+        if File.exist?(rfm_file)
           data = File.open(rfm_file, "rb") { |file| file.read }
           font = Marshal.load(data)
           return font
@@ -138,7 +138,7 @@ class PDF::Writer::FontMetrics
               #
               #   N <name>
               #     The PostScript name of the font. Optional.
-              #   
+              #
               #   B <llx> <lly> <urx> <ury>
               #     Character bounding box for the lower left corner and the
               #     upper right corner. Optional.

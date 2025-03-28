@@ -1,63 +1,62 @@
- 
+
 #
 # It is auto-generated content.
 # Do not do required for this file in your application.
 #
- 
+
 class Dir
   def self.open(rest)
-  end  
+  end
   def self.foreach(rest)
-  end  
+  end
   def self.entries(rest)
-  end  
+  end
   def self.chdir(rest)
-  end  
+  end
   def self.getwd
-  end  
+  end
   def self.pwd
-  end  
+  end
   def self.chroot
-  end  
+  end
   def self.mkdir(rest)
-  end  
+  end
   def self.rmdir(req)
-  end  
+  end
   def self.delete(req)
-  end  
+  end
   def self.unlink(req)
-  end  
+  end
   def self.home(rest)
-  end  
+  end
   def self.glob(rest)
-  end  
+  end
   def self.[](rest)
-  end  
-  def self.exist?(req)
-  end  
+  end
   def self.exists?(req)
-  end  
+  end
+  def self.exists?(req)
+  end
   def path
-  end  
+  end
   def to_path
-  end  
+  end
   def inspect
-  end  
+  end
   def read
-  end  
+  end
   def each
-  end  
+  end
   def rewind
-  end  
+  end
   def tell
-  end  
+  end
   def seek(req)
-  end  
+  end
   def pos
-  end  
+  end
   def pos=(req)
-  end  
+  end
   def close
-  end  
+  end
 end
-

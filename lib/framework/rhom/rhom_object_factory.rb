@@ -1802,7 +1802,7 @@ end
         end #unless
         #modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
         #puts "classname: #{classname}; modelname: #{modelname}"
-        #require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}" + RHO_RB_EXT)
+        #require "#{classname}/#{modelname}" if File.exist? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}" + RHO_RB_EXT)
       #end
     end #init_object
   end # RhomObjectFactory

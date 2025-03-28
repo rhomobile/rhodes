@@ -146,14 +146,14 @@ describe "IO#reopen with a String" do
     @io = new_io @name, "w"
 
     @io.reopen(@other_name)
-    File.exists?(@other_name).should be_true
+    File.exist?(@other_name).should be_true
   end
 
   it "creates the file if it doesn't exist if the IO is opened in write mode" do
     @io = new_io @name, "a"
 
     @io.reopen(@other_name)
-    File.exists?(@other_name).should be_true
+    File.exist?(@other_name).should be_true
   end
 end
 

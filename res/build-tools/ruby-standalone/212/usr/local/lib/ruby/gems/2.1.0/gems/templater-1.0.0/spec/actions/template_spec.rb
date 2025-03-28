@@ -26,17 +26,17 @@ describe Templater::Actions::Template do
   end
 
   describe '#render' do
-    it "should render a simple template" do  
+    it "should render a simple template" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple.rbt'), '/path/to/destination')
       template.render.should == "Hello World"
     end
 
-    it "should render some basic erb" do  
+    it "should render some basic erb" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), '/path/to/destination')
       template.render.should == "test2test"
     end
 
-    it "should render some erb and convert erb literals" do  
+    it "should render some erb and convert erb literals" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('literals_erb.rbt'), '/path/to/destination')
       template.render.should == "test2test<%= 1+1 %>blah"
     end
@@ -49,12 +49,12 @@ describe Templater::Actions::Template do
   end
 
   describe '#exists?' do
-    it "should exist if the destination file exists" do  
+    it "should exist if the destination file exists" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple.rbt'), result_path('erb.rbs'))
       template.should be_exists
     end
 
-    it "should not exist if the destination file does not exist" do  
+    it "should not exist if the destination file does not exist" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple.rbt'), result_path('some_weird_file.rbs'))
       template.should_not be_exists
     end
@@ -65,18 +65,18 @@ describe Templater::Actions::Template do
       @context = class << self; self end
     end
 
-    it "should not be identical if the destination file doesn't exist" do  
+    it "should not be identical if the destination file doesn't exist" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('some_weird_file.rbs'))
       template.should_not be_identical
     end
 
-    it "should not be identical if the rendered content does not match the content of the file" do  
+    it "should not be identical if the rendered content does not match the content of the file" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('random.rbs'))
       template.should be_exists
       template.should_not be_identical
     end
 
-    it "should be identical if the rendered content matches the content of the file" do  
+    it "should be identical if the rendered content matches the content of the file" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('simple_erb.rbs'))
       template.should be_exists
       template.should be_identical
@@ -84,24 +84,24 @@ describe Templater::Actions::Template do
   end
 
   describe '#invoke!' do
-    it "should render the template and copy it to the destination" do  
+    it "should render the template and copy it to the destination" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('test.rbs'))
 
       template.invoke!
 
-      File.exists?(result_path('test.rbs')).should be_true
+      File.exist?(result_path('test.rbs')).should be_true
       File.read(result_path('test.rbs')).should == "test2test"
     end
 
-    it "should render the template and copy it to the destination, creating any required subdirectories" do  
+    it "should render the template and copy it to the destination, creating any required subdirectories" do
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('path/to/subdir/test.rbs'))
 
       template.invoke!
 
-      File.exists?(result_path('path/to/subdir/test.rbs')).should be_true
+      File.exist?(result_path('path/to/subdir/test.rbs')).should be_true
       File.read(result_path('path/to/subdir/test.rbs')).should == "test2test"
     end
-    
+
     it "should trigger before and after callbacks" do
       @options = { :before => :ape, :after => :elephant }
       template = Templater::Actions::Template.new(@generator, :monkey, template_path('simple_erb.rbt'), result_path('path/to/subdir/test.rbs'), @options)
@@ -111,7 +111,7 @@ describe Templater::Actions::Template do
 
       template.invoke!
     end
-    
+
     after do
       FileUtils.rm_rf(result_path('path'))
     end
@@ -123,12 +123,12 @@ describe Templater::Actions::Template do
 
       template.invoke!
 
-      File.exists?(result_path('test.rbs')).should be_true
+      File.exist?(result_path('test.rbs')).should be_true
       File.read(result_path('test.rbs')).should == "test2test"
 
       template.revoke!
 
-      File.exists?(result_path('test.rbs')).should be_false
+      File.exist?(result_path('test.rbs')).should be_false
     end
 
     it "should do nothing when the destination file doesn't exist" do

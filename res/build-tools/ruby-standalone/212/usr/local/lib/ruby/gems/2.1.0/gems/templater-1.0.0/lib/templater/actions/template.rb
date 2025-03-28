@@ -1,7 +1,7 @@
 module Templater
   module Actions
     class Template < Action
-  
+
       # Builds a new template.
       #
       # === Parameters
@@ -17,7 +17,7 @@ module Templater
         self.destination = destination
         self.options = options
       end
-  
+
       # Renders the template using ERB and returns the result as a String.
       #
       # === Returns
@@ -32,17 +32,17 @@ module Templater
       # === Returns
       # Boolean:: true if the file exists, false otherwise.
       def exists?
-        ::File.exists?(destination)
+        ::File.exist?(destination)
       end
-  
+
       # Checks if the content of the file at the destination is identical to the rendered result.
-      # 
+      #
       # === Returns
       # Boolean:: true if it is identical, false otherwise.
       def identical?
-        ::File.read(destination) == render if ::File.exists?(destination)
+        ::File.read(destination) == render if ::File.exist?(destination)
       end
-  
+
       # Renders the template and copies it to the destination.
       def invoke!
         callback(:before)
@@ -50,12 +50,12 @@ module Templater
         ::File.open(destination, 'w') {|f| f.write render }
         callback(:after)
       end
-    
+
       # removes the destination file
       def revoke!
         ::FileUtils.rm(destination, :force => true)
       end
-      
+
     end
   end
 end

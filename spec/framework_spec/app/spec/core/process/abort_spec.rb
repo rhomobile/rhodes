@@ -18,8 +18,8 @@ describe "Process.abort" do
         touch(@name) { |f| f.write 'rubinius' }
       end
 
-      File.exists?(@name).should == false
+      File.exist?(@name).should == false
     end
   end
-end    
+end
 end
