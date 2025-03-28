@@ -14,10 +14,10 @@ The Key is the only class you need to understand for simple use.
 The crypto algorithms default to aes-128-cbc however on any of the class methods you can change it to one of the standard openssl cipher names using the
 optional <tt>:algorithm=>alg name</tt> parameter.
 
-Eg. 
+Eg.
     Key.new @raw, :algorithm=>"des"
     Key.generate :algorithm=>"blowfish"
-    Key.with_password @pwd,@salt,:algorithm=>"aes256"    
+    Key.with_password @pwd,@salt,:algorithm=>"aes256"
 
 
 == License
@@ -213,18 +213,18 @@ Decrypts a Base64 formatted string
     def decrypt64(data)
       decrypt(Base64.decode64(data))
     end
-    
+
 =begin rdoc
 Allows keys to be marshalled
 =end
     def marshal_dump
        "#{self.algorithm}$$$#{self.encode}"
     end
-    
+
 =begin rdoc
 Allows keys to be unmarshalled
 =end
-    def marshal_load(s) 
+    def marshal_load(s)
        a, r = s.split '$$$'
        @algorithm = a
        @raw = Base64.decode64(r)
@@ -244,7 +244,7 @@ it to a block. By default only the owner may read it.
       ensure
         File.umask(old_umask)
       end
-      File.chmod(mod, file) if File.exists?(file)
+      File.chmod(mod, file) if File.exist?(file)
       File.size(file)
     end
 
@@ -267,9 +267,9 @@ This is not very safe :-)
           f.flush
         end
       ensure
-        File.delete(file) if File.exists?(file)
+        File.delete(file) if File.exist?(file)
       end
-      return !File.exists?(file)
+      return !File.exist?(file)
     end
 
 
@@ -407,17 +407,17 @@ the delete_source is 'true'.
           end
         end
       end
-      safe_delete(sourcefile) if delete_source && File.exists?(targetfile)
+      safe_delete(sourcefile) if delete_source && File.exist?(targetfile)
       return targetfile
     end
-    
+
     private :cipher_file
-    
+
   end
-  
+
 =begin rdoc
 Abstract Wrapper around OpenSSL's Cipher object. Extended by Encrypter and Decrypter.
-  
+
 You probably should be using the Key class instead.
 
 Warning! The interface may change.
@@ -426,10 +426,10 @@ Warning! The interface may change.
   class CipherWrapper #:nodoc:
 
 =begin rdoc
-  
+
 =end
     def initialize(key,target,mode,algorithm)
-      @cipher = OpenSSL::Cipher::Cipher.new(algorithm)  
+      @cipher = OpenSSL::Cipher::Cipher.new(algorithm)
       if mode
         @cipher.encrypt
       else
@@ -440,12 +440,12 @@ Warning! The interface may change.
       @target=target
       @finished=false
     end
-    
-    
+
+
     def to_target(data)
       return data
     end
-    
+
 =begin rdoc
 Process the givend data with the cipher.
 =end
@@ -455,12 +455,12 @@ Process the givend data with the cipher.
     end
 
 =begin rdoc
-  
+
 =end
     def <<(data)
       update(data)
     end
-    
+
 =begin rdoc
 Finishes up any last bits of data in the cipher and returns the final result.
 =end
@@ -469,19 +469,19 @@ Finishes up any last bits of data in the cipher and returns the final result.
       @finished=true
       @target
     end
-    
+
 =begin rdoc
 Processes the entire data string using update and performs a final on it returning the data.
 =end
     def gulp(data)
       update(data)
-      final 
+      final
 #    rescue
 #      breakpoint
-    end  
+    end
 
 =begin rdoc
-  
+
 =end
     def reset(target="")
       @target=target
@@ -500,16 +500,16 @@ Warning! The interface may change.
   class Encrypter<EzCrypto::CipherWrapper #:nodoc:
 
 =begin rdoc
-  
+
 =end
     def initialize(key,target="",algorithm="aes-128-cbc")
       super(key,target,true,algorithm)
     end
-    
+
 =begin rdoc
-  
-=end    
-    def encrypt(data)    
+
+=end
+    def encrypt(data)
       gulp(data)
     end
   end
@@ -523,15 +523,15 @@ Warning! The interface may change.
 =end
   class Decrypter<EzCrypto::CipherWrapper #:nodoc:
 =begin rdoc
-  
+
 =end
     def initialize(key,target="",algorithm="aes-128-cbc")
       super(key,target,false,algorithm)
     end
-    
+
 =begin rdoc
-  
-=end    
+
+=end
     def decrypt(data)
       gulp(data)
     end
@@ -540,41 +540,41 @@ Warning! The interface may change.
 =begin rdoc
 
 =end
-  class Digester    
+  class Digester
 =begin rdoc
-Various handy Digest methods. 
+Various handy Digest methods.
 
 Warning! The interface may change.
 =end
     def self.get_key(password,salt,size)
         digest(salt+password,size)
     end
-  
+
 =begin rdoc
-  
+
 =end
     def self.generate_key(size=16)
         key=OpenSSL::Random.random_bytes(size)
         digest(key,size)
     end
-  
+
 =begin rdoc
-  
+
 =end
     def self.generate_key64(size=32)
         key=OpenSSL::Random.random_bytes(size)
         digest64(key,size)
-    end   
+    end
 =begin rdoc
 
 =end
     def self.generate_hexkey(size=40)
         key=OpenSSL::Random.random_bytes(size)
         hexdigest(key,size)
-    end   
-    
+    end
+
 =begin rdoc
-  
+
 =end
     def self.digest(data,size=16)
       if size==0
@@ -598,9 +598,9 @@ Warning! The interface may change.
         Digest::SHA256.hexdigest(data)[0..(size-1)]
       end
     end
-    
+
 =begin rdoc
-  
+
 =end
     def self.digest64(data,size=16)
       Base64.encode64(digest(data,size))
@@ -608,5 +608,3 @@ Warning! The interface may change.
 	end
 
 end
-
-

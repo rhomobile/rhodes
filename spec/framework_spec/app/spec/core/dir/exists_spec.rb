@@ -3,7 +3,7 @@ require File.expand_path('../fixtures/common', __FILE__)
 require File.expand_path('../shared/exists', __FILE__)
 
 ruby_version_is "1.9" do
-  describe "Dir.exists?" do
+  describe "Dir.exist?" do
     before :all do
       DirSpecs.create_mock_dirs
     end

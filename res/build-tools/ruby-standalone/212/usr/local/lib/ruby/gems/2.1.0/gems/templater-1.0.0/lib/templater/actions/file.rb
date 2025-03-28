@@ -1,7 +1,7 @@
 module Templater
   module Actions
     class File < Action
-  
+
       # Builds a new file.
       #
       # === Parameters
@@ -31,17 +31,17 @@ module Templater
       # === Returns
       # Boolean:: true if the file exists, false otherwise.
       def exists?
-        ::File.exists?(destination)
+        ::File.exist?(destination)
       end
-  
+
       # Checks if the content of the file at the destination is identical to the rendered result.
-      # 
+      #
       # === Returns
       # Boolean:: true if it is identical, false otherwise.
       def identical?
         exists? && ::FileUtils.identical?(source, destination)
       end
-  
+
       # Renders the template and copies it to the destination.
       def invoke!
         callback(:before)
@@ -49,7 +49,7 @@ module Templater
         ::FileUtils.cp_r(source, destination)
         callback(:after)
       end
-    
+
       # removes the destination file
       def revoke!
         ::FileUtils.rm_r(destination, :force => true)

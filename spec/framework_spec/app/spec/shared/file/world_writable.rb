@@ -8,7 +8,7 @@ describe :file_world_writable, :shared => true do
   end
 
   after(:each) do
-    File.unlink(@file) if File.exists?(@file)
+    File.unlink(@file) if File.exist?(@file)
   end
 
   # These will surely fail on Windows.
@@ -36,7 +36,7 @@ describe :file_world_writable, :shared => true do
   it "returns a Fixnum if the file is a directory and chmod 777" do
     dir = rand().to_s + '-ww'
     Dir.mkdir(dir)
-    Dir.exists?(dir).should be_true
+    Dir.exist?(dir).should be_true
     File.chmod(0777, dir)
     #@object.world_writable?(dir).should be_an_instance_of(Fixnum)
     Dir.rmdir(dir)

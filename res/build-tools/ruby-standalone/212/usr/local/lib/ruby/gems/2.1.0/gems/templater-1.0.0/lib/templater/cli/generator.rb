@@ -1,7 +1,7 @@
 module Templater
-  
+
   module CLI
-    
+
     class Generator
 
       def initialize(generator_name, generator_class, destination_root, name, version)
@@ -30,7 +30,7 @@ module Templater
 
       def run(arguments)
         generator_class = @generator_class # FIXME: closure wizardry, there has got to be a better way than this?
-        
+
         @options = Templater::CLI::Parser.parse(arguments) do |opts, options|
           opts.separator "Options specific for this generator:"
           # the reason this is reversed is so that the 'main' generator will always have the last word
@@ -67,10 +67,10 @@ module Templater
           end
         end
 
-        if @options[:pretend] 
+        if @options[:pretend]
           puts "Generating with #{@generator_name} generator (just pretending):"
         else
-          puts "Generating with #{@generator_name} generator:" 
+          puts "Generating with #{@generator_name} generator:"
         end
         step_through_templates
 
@@ -88,7 +88,7 @@ module Templater
           else
             if action.identical?
               say_status('identical', action, :blue)
-            elsif action.exists?
+            elsif action.exist?
               if @options[:force]
                 action.invoke! unless @options[:pretend]
                 say_status('forced', action, :yellow)
