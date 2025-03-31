@@ -1409,7 +1409,7 @@ module Rhogen
             else
               if action.identical?
                 say_status('identical', action, :blue)
-              elsif action.exist?
+              elsif action.exists?
                 if @options[:force]
                   action.invoke! unless @options[:pretend]
                   say_status('forced', action, :yellow)
