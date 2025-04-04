@@ -60,6 +60,11 @@ end
 def setup_ndk(ndkpath,apilevel,abi)
   puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if Rake.application.options.trace
   apilevel = 21 if apilevel.to_i < 21 && abi == 'aarch64'
+
+  if apilevel.to_i == 36
+    apilevel = 35
+  end
+
   $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
   

@@ -89,6 +89,8 @@ class NDKWrapper
 
     if @rev_major >= 18
       File.join( sysroot_18, 'usr', 'lib', @@abi_triple[abi], api.to_s)
+      myApi = api.to_i == 36 ? 35 : api
+      File.join( sysroot_18, 'usr', 'lib', @@abi_triple[abi], myApi.to_s)
     else
       nil
     end
