@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 import android.app.Notification;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,7 +45,39 @@ public class MyAccessibilityService extends AccessibilityService {
     private static boolean isEnabled = false;
 
     private static boolean isCheckLauncherAfterAccessibilityEvent = true;
+    private static boolean isUseTaskManagerBlockOtherTasks = false;
 
+
+    private static int ourRhodesActivityID = 0;
+
+
+    public static void setRhodesActivityID(int id) {
+        ourRhodesActivityID = id;
+    }
+
+    public static void setUseTaskManagerForBlockOtherTasks(boolean use_flag) {
+        isUseTaskManagerBlockOtherTasks = use_flag;
+    }
+
+    private void doReturnToRhodesActivity() {
+        try {
+            //performGlobalAction(GLOBAL_ACTION_HOME);
+            if (PermissionManager.isIgnoreHomeLauncherCheckPermission() || isUseTaskManagerBlockOtherTasks) {
+                if (ourRhodesActivityID != 0) {
+                    ActivityManager am = (ActivityManager)getSystemService( Context.ACTIVITY_SERVICE );
+                    am.moveTaskToFront( ourRhodesActivityID, 0, null );
+                }
+                Intent intent = new Intent(this, com.rhomobile.rhodes.RhodesActivity.class);
+                startActivity(intent);
+            }
+            else {
+                performGlobalAction(GLOBAL_ACTION_HOME);
+            }
+        } catch (Exception ignored) {
+
+            Logger.E(TAG, "Error during get zebrakiosk class = "+ignored.getMessage());
+        }
+    }
 
     private void forceHomeLauncher() {
         try {
@@ -207,7 +240,7 @@ public class MyAccessibilityService extends AccessibilityService {
                     {
                         Logger.T(this.TAG, "====================    GLOBAL_ACTION_HOME    =======================");
                         //RhodesService.beep_mini();
-                        performGlobalAction(GLOBAL_ACTION_HOME);
+                        doReturnToRhodesActivity();
                         if(event.getPackageName().equals(oldEvent)) {
                             //Toast.makeText(this, "package: " + event.getPackageName(), Toast.LENGTH_SHORT).show();
                             oldEvent = event.getPackageName();

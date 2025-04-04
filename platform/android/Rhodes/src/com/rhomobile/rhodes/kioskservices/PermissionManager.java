@@ -31,12 +31,33 @@ import java.util.stream.Collectors;
 public class PermissionManager {
     final static private Integer MY_PERMISSIONS_REQUEST = 343457842;
 
+
+    private static boolean ourIsIgnoreHomeLauncher = false;
+    private static boolean ourIsIgnoreNotificationAccess = false;
+    private static boolean ourIsIgnoreOverlay = false;
+
+    public static void setIgnoreHomeLauncherCheckPermission(boolean check) {
+        ourIsIgnoreHomeLauncher  = check;
+    }
+
+    public static boolean isIgnoreHomeLauncherCheckPermission() {
+        return ourIsIgnoreHomeLauncher;
+    }
+
+    public static void setIgnoreNotificationAccessCheckPermission(boolean check) {
+        ourIsIgnoreNotificationAccess  = check;
+    }
+
+    public static void setIgnoreOverlayCheckPermission(boolean check) {
+        ourIsIgnoreOverlay  = check;
+    }
+
     static public Boolean checkPermissions(Context context, Activity activity){
         boolean callPhonePermissionIgnor = RhoConf.isExist("call_phone_permission_ignor") && RhoConf.getBool("call_phone_permission_ignor");
         boolean callPhonePermission = true;
         if(!callPhonePermissionIgnor)
             callPhonePermission = checkCallPhonePermission(context);
-            
+
         return checkAccessibilityServicePermission(context)
                 && checkNotificationServicePermission(activity, context)
                 && isMyLauncherDefault(context)
@@ -63,7 +84,7 @@ public class PermissionManager {
         if (MyAccessibilityService.getStatus()){
             return true;
         }
-        
+
         AccessibilityManager am = (AccessibilityManager)context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> enabledService = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
         for (AccessibilityServiceInfo service: enabledService){
@@ -90,6 +111,11 @@ public class PermissionManager {
     //===================== NOTIFICATION SERVICE =====================
 
     static public Boolean checkNotificationServicePermission(Activity activity, Context context){
+
+        if (ourIsIgnoreNotificationAccess) {
+            return true;
+        }
+
         String theList = Settings.Secure.getString(activity.getContentResolver(), "enabled_notification_listeners");
         if (theList == null)
             theList = "";
@@ -123,6 +149,11 @@ public class PermissionManager {
     //===================== DEFAULT LAUNCHER =====================
 
     static public Boolean isMyLauncherDefault(Context context) {
+
+        if (ourIsIgnoreHomeLauncher) {
+            return true;
+        }
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
         filter.addCategory(Intent.CATEGORY_HOME);
         List<IntentFilter> filters = new ArrayList<IntentFilter>();
@@ -222,6 +253,9 @@ public class PermissionManager {
     //===================== OVERLAY PERMISSION =====================
 
     static public Boolean checkOverlayPermission(Context context){
+        if (ourIsIgnoreOverlay) {
+            return true;
+        }
         return Settings.canDrawOverlays(context);
     }
 
