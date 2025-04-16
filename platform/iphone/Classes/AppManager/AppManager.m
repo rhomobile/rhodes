@@ -574,9 +574,29 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             }
         }
 #endif
+
+#ifdef __IPHONE_10_0
+    
+        NSURL *url = [NSURL URLWithString:strUrl];
+        UIApplication *application = [UIApplication sharedApplication];
+        if ([application canOpenURL:url]) {
+            [application openURL:url options:@{} completionHandler:^(BOOL success) {
+            if (success) {
+                const char* full_url = [strUrl UTF8String];
+                RAWLOG_INFO1("URL is opened [%s]", full_url);
+            }
+            else {
+                const char* full_url = [strUrl UTF8String];
+                RAWLOG_ERROR1("URL is NOT opened [%s]", full_url);
+            }
+            }];
+        }
+
+#else
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]]) {
             res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
         }
+#endif
     }
 	if ( res)
 		RAWLOG_INFO("rho_sys_open_url suceeded.");

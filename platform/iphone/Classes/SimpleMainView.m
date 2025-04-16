@@ -1147,21 +1147,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
                 NSString *value = nil;
                 if (size == 2)
                     value = [nv objectAtIndex:1];
-                
+
                 if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
                     external = YES;
                     break;
                 }
             }
         }
-    
+
     if (external) {
         // This is not http url so try to open external application for it
         RAWLOG_INFO1("Open url in external application: %s", [[url absoluteString] UTF8String]);
-        [[UIApplication sharedApplication] openURL:url];
+        [[AppManager instance] openURL:[url absoluteString]];
         return NO;
     }
-    
+
     // Retrieve cookie for http url
     //NSString *c = [[Rhodes sharedInstance] cookie:[url absoluteString]];
     //if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
