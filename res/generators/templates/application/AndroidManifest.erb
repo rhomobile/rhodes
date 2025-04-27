@@ -76,7 +76,7 @@
       <property android:name='android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE' android:value='Required to run API and components of RhoMobile platform.'/>
     </service>
 
-    <% if  @androidVerMaj >= 7 %>
+    <% if  @androidVerMaj >= 7 && (@usesPermissions&["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"]).length > 0 %>
       <provider
         android:name='com.rhomobile.rhodes.RhoFileProvider'
         android:authorities='<%=@appPackageName%>.provider'
