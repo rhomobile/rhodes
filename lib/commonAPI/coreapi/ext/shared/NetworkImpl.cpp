@@ -263,7 +263,51 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     
     bool overwriteFile = propertyMap.containsKey("overwriteFile") && (propertyMap.get("overwriteFile")=="true");
     bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
-    bool fileExists = false;
+    bool wantMoreCallbacks = propertyMap.containsKey( "wantReceiveProgressCallbacks" ) && (propertyMap.get( "wantReceiveProgressCallbacks" )=="true");
+    bool fileExists = false;        
+
+    //inplace callback for download progress notifications    
+    struct NetCallback : public net::INetRequestCallback
+    {
+        rho::apiGenerator::CMethodResult& m_result;
+
+        NetCallback();
+        NetCallback( rho::apiGenerator::CMethodResult& r ) : m_result(r) {}
+
+        virtual void didReceiveResponse(NetResponse& resp, const Hashtable<String,String>* headers)
+        {
+            Hashtable<String,String>& mapRes = m_result.getStringHash();
+            mapRes["status"] = "progress_headers";
+            mapRes["http_error"] = convertToStringA(resp.getRespCode());
+            if ( headers != 0 ) {
+                m_result.getStringHashL2()["headers"] = *headers;
+            }
+
+            m_result.set(mapRes);
+        }
+
+        virtual void didReceiveData(const char* data, int len)
+        {
+            (m_result.getStringHashL2()["headers"]).clear();
+
+            Hashtable<String,String>& mapRes = m_result.getStringHash();
+            mapRes["status"] = "progress_data";
+            mapRes["length"] = convertToStringA( len );
+            //mapRes["data"] = String( data, len );
+
+            m_result.set(mapRes);
+        }
+
+        virtual void didFinishLoading() {}
+        virtual void didFail(NetResponse&) {}
+    };
+
+    NetCallback cb(oResult);
+
+    if ( wantMoreCallbacks )
+    {        
+        reqWrapper.setCallback( &cb );
+    }
 
     NetResponse resp = reqWrapper.pullFile( propertyMap.get("url"), propertyMap.get("filename"), NULL, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
