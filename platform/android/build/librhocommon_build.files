@@ -59,3 +59,13 @@ platform/shared/rhoruby/impl/ObjectImpl.cpp
 platform/shared/rhoruby/impl/RefCountedObjectImpl.cpp
 platform/shared/rhoruby/impl/RhoRubyImpl.cpp
 platform/shared/rhoruby/impl/RhoRubySingletone.cpp
+platform/shared/minizip-ng/mz_crypt.c
+platform/shared/minizip-ng/mz_os.c
+platform/shared/minizip-ng/mz_strm.c
+platform/shared/minizip-ng/mz_strm_buf.c
+platform/shared/minizip-ng/mz_strm_mem.c
+platform/shared/minizip-ng/mz_strm_split.c
+platform/shared/minizip-ng/mz_strm_zlib.c
+platform/shared/minizip-ng/mz_zip.c
+platform/shared/minizip-ng/mz_zip_rw.c
+platform/shared/minizip-ng/mz_strm_os_posix.c
