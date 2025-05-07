@@ -33,7 +33,7 @@
 #include "sync/RhoconnectClientManager.h"
 #include "net/INetRequest.h"
 
-#ifdef OS_ANDROID
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
 #include "minizip-ng/mz.h"
 #include "minizip-ng/mz_strm.h"
 #include "minizip-ng/mz_strm_os.h"
@@ -363,7 +363,7 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outpu
   switch( rho_get_zip_format(szZipPath) )
   {
     case RHO_ZIP_FORMAT_ZIP:  
-#ifdef OS_ANDROID
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
         return rho_internal_unzip_zipfile_with_minizip(szZipPath, psw);
 #else
         return rho_internal_unzip_zip(szZipPath, psw);

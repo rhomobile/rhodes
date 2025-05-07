@@ -177,6 +177,16 @@
 		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
 		FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD0471C1757A81700000F15 /* CJSEntryPoint.h */; };
 		FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */; };
+		FAD259C32DCBBFDE00E328A9 /* mz_strm_mem.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BD2DCBBFDE00E328A9 /* mz_strm_mem.c */; };
+		FAD259C42DCBBFDE00E328A9 /* mz_strm.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BB2DCBBFDE00E328A9 /* mz_strm.c */; };
+		FAD259C52DCBBFDE00E328A9 /* mz_os.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BA2DCBBFDE00E328A9 /* mz_os.c */; };
+		FAD259C62DCBBFDE00E328A9 /* mz_crypt.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259B92DCBBFDE00E328A9 /* mz_crypt.c */; };
+		FAD259C72DCBBFDE00E328A9 /* mz_strm_os_posix.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BE2DCBBFDE00E328A9 /* mz_strm_os_posix.c */; };
+		FAD259C82DCBBFDE00E328A9 /* mz_strm_split.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BF2DCBBFDE00E328A9 /* mz_strm_split.c */; };
+		FAD259C92DCBBFDE00E328A9 /* mz_strm_zlib.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259C02DCBBFDE00E328A9 /* mz_strm_zlib.c */; };
+		FAD259CA2DCBBFDE00E328A9 /* mz_zip_rw.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259C22DCBBFDE00E328A9 /* mz_zip_rw.c */; };
+		FAD259CB2DCBBFDE00E328A9 /* mz_strm_buf.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259BC2DCBBFDE00E328A9 /* mz_strm_buf.c */; };
+		FAD259CC2DCBBFDE00E328A9 /* mz_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = FAD259C12DCBBFDE00E328A9 /* mz_zip.c */; };
 		FAE78C89225848C9001A1150 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C75225848C7001A1150 /* RhoRubySingletone.h */; };
 		FAE78C8A225848C9001A1150 /* IRhoRubyMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */; };
 		FAE78C8B225848C9001A1150 /* IRhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C77225848C7001A1150 /* IRhoRuby.h */; };
@@ -215,6 +225,8 @@
 		FAE78CDB22597413001A1150 /* RhoRubyMutableStringImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA022584B62001A1150 /* RhoRubyMutableStringImpl.mm */; };
 		FAE78CDC22597590001A1150 /* RhoRubyMutableHashImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CB022584B63001A1150 /* RhoRubyMutableHashImpl.h */; };
 		FAE78CDD22597593001A1150 /* RhoRubyMutableHashImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CAA22584B63001A1150 /* RhoRubyMutableHashImpl.mm */; };
+		FAEE1F602DCBDA47000A856F /* mz_crypt_apple.c in Sources */ = {isa = PBXBuildFile; fileRef = FAEE1F5F2DCBDA47000A856F /* mz_crypt_apple.c */; };
+		FAEE1F622DCBDA86000A856F /* mz_os_posix.c in Sources */ = {isa = PBXBuildFile; fileRef = FAEE1F612DCBDA86000A856F /* mz_os_posix.c */; };
 		FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DB916AED9D200E22B05 /* BaseClasses.h */; };
 		FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */; };
 		FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */; };
@@ -393,6 +405,16 @@
 		FAC6EE68143B20B600B8E352 /* RhoMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMath.h; path = ../../shared/common/RhoMath.h; sourceTree = "<group>"; };
 		FAD0471C1757A81700000F15 /* CJSEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSEntryPoint.h; sourceTree = "<group>"; };
 		FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSEntryPoint.mm; sourceTree = "<group>"; };
+		FAD259B92DCBBFDE00E328A9 /* mz_crypt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_crypt.c; path = "../../shared/minizip-ng/mz_crypt.c"; sourceTree = "<group>"; };
+		FAD259BA2DCBBFDE00E328A9 /* mz_os.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_os.c; path = "../../shared/minizip-ng/mz_os.c"; sourceTree = "<group>"; };
+		FAD259BB2DCBBFDE00E328A9 /* mz_strm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm.c; path = "../../shared/minizip-ng/mz_strm.c"; sourceTree = "<group>"; };
+		FAD259BC2DCBBFDE00E328A9 /* mz_strm_buf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm_buf.c; path = "../../shared/minizip-ng/mz_strm_buf.c"; sourceTree = "<group>"; };
+		FAD259BD2DCBBFDE00E328A9 /* mz_strm_mem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm_mem.c; path = "../../shared/minizip-ng/mz_strm_mem.c"; sourceTree = "<group>"; };
+		FAD259BE2DCBBFDE00E328A9 /* mz_strm_os_posix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm_os_posix.c; path = "../../shared/minizip-ng/mz_strm_os_posix.c"; sourceTree = "<group>"; };
+		FAD259BF2DCBBFDE00E328A9 /* mz_strm_split.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm_split.c; path = "../../shared/minizip-ng/mz_strm_split.c"; sourceTree = "<group>"; };
+		FAD259C02DCBBFDE00E328A9 /* mz_strm_zlib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_strm_zlib.c; path = "../../shared/minizip-ng/mz_strm_zlib.c"; sourceTree = "<group>"; };
+		FAD259C12DCBBFDE00E328A9 /* mz_zip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_zip.c; path = "../../shared/minizip-ng/mz_zip.c"; sourceTree = "<group>"; };
+		FAD259C22DCBBFDE00E328A9 /* mz_zip_rw.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_zip_rw.c; path = "../../shared/minizip-ng/mz_zip_rw.c"; sourceTree = "<group>"; };
 		FAE78C75225848C7001A1150 /* RhoRubySingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubySingletone.h; path = ../rhodesruby/api/RhoRubySingletone.h; sourceTree = "<group>"; };
 		FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableInteger.h; path = ../rhodesruby/api/IRhoRubyMutableInteger.h; sourceTree = "<group>"; };
 		FAE78C77225848C7001A1150 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../rhodesruby/api/IRhoRuby.h; sourceTree = "<group>"; };
@@ -433,6 +455,8 @@
 		FAE78CB122584B63001A1150 /* RhoRubyImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyImpl.mm; path = ../rhodesruby/impl/RhoRubyImpl.mm; sourceTree = "<group>"; };
 		FAE78CB222584B63001A1150 /* RhoRubyMutableBooleanImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableBooleanImpl.h; path = ../rhodesruby/impl/RhoRubyMutableBooleanImpl.h; sourceTree = "<group>"; };
 		FAE78CB322584B63001A1150 /* RhoRubyMutableArrayImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableArrayImpl.h; path = ../rhodesruby/impl/RhoRubyMutableArrayImpl.h; sourceTree = "<group>"; };
+		FAEE1F5F2DCBDA47000A856F /* mz_crypt_apple.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_crypt_apple.c; path = "/Users/MOHUS/tauplatform/rhodes.minizip/platform/shared/minizip-ng/mz_crypt_apple.c"; sourceTree = "<absolute>"; };
+		FAEE1F612DCBDA86000A856F /* mz_os_posix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mz_os_posix.c; path = "/Users/MOHUS/tauplatform/rhodes.minizip/platform/shared/minizip-ng/mz_os_posix.c"; sourceTree = "<absolute>"; };
 		FAEF1DB916AED9D200E22B05 /* BaseClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseClasses.h; path = ../../shared/api_generator/BaseClasses.h; sourceTree = "<group>"; };
 		FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneratorQueue.h; path = ../../shared/api_generator/GeneratorQueue.h; sourceTree = "<group>"; };
 		FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSConverter.h; sourceTree = "<group>"; };
@@ -484,6 +508,7 @@
 				5CE03CC912DB7E670058B474 /* sqlite */,
 				5C6B45280F9468C5003CB43A /* statistic */,
 				5C59BF4A115B4BA300E96ADE /* unzip */,
+				FAD259B82DCBBE9C00E328A9 /* minizip */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -748,6 +773,25 @@
 				FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */,
 			);
 			name = map;
+			sourceTree = "<group>";
+		};
+		FAD259B82DCBBE9C00E328A9 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				FAEE1F612DCBDA86000A856F /* mz_os_posix.c */,
+				FAEE1F5F2DCBDA47000A856F /* mz_crypt_apple.c */,
+				FAD259B92DCBBFDE00E328A9 /* mz_crypt.c */,
+				FAD259BA2DCBBFDE00E328A9 /* mz_os.c */,
+				FAD259BB2DCBBFDE00E328A9 /* mz_strm.c */,
+				FAD259BC2DCBBFDE00E328A9 /* mz_strm_buf.c */,
+				FAD259BD2DCBBFDE00E328A9 /* mz_strm_mem.c */,
+				FAD259BE2DCBBFDE00E328A9 /* mz_strm_os_posix.c */,
+				FAD259BF2DCBBFDE00E328A9 /* mz_strm_split.c */,
+				FAD259C02DCBBFDE00E328A9 /* mz_strm_zlib.c */,
+				FAD259C12DCBBFDE00E328A9 /* mz_zip.c */,
+				FAD259C22DCBBFDE00E328A9 /* mz_zip_rw.c */,
+			);
+			name = minizip;
 			sourceTree = "<group>";
 		};
 		FAE78C7222584867001A1150 /* rhoruby_iphone */ = {
@@ -1087,7 +1131,9 @@
 				FAE78CD122597116001A1150 /* RhoRubyMutableFloatImpl.mm in Sources */,
 				5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */,
 				5CBD462A1087399700107D0D /* URI.cpp in Sources */,
+				FAEE1F622DCBDA86000A856F /* mz_os_posix.c in Sources */,
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
+				FAEE1F602DCBDA47000A856F /* mz_crypt_apple.c in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
 				C51A572119D1FF380064CE87 /* inftrees.cpp in Sources */,
@@ -1118,6 +1164,16 @@
 				C51A572719D202B90064CE87 /* zutil.cpp in Sources */,
 				FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */,
 				FAC6EE5F143B1FC800B8E352 /* GeocodingMapEngine.cpp in Sources */,
+				FAD259C32DCBBFDE00E328A9 /* mz_strm_mem.c in Sources */,
+				FAD259C42DCBBFDE00E328A9 /* mz_strm.c in Sources */,
+				FAD259C52DCBBFDE00E328A9 /* mz_os.c in Sources */,
+				FAD259C62DCBBFDE00E328A9 /* mz_crypt.c in Sources */,
+				FAD259C72DCBBFDE00E328A9 /* mz_strm_os_posix.c in Sources */,
+				FAD259C82DCBBFDE00E328A9 /* mz_strm_split.c in Sources */,
+				FAD259C92DCBBFDE00E328A9 /* mz_strm_zlib.c in Sources */,
+				FAD259CA2DCBBFDE00E328A9 /* mz_zip_rw.c in Sources */,
+				FAD259CB2DCBBFDE00E328A9 /* mz_strm_buf.c in Sources */,
+				FAD259CC2DCBBFDE00E328A9 /* mz_zip.c in Sources */,
 				C51A572519D200F20064CE87 /* adler32.cpp in Sources */,
 				C51A571F19D1FE900064CE87 /* infback.cpp in Sources */,
 				FAC6EE61143B1FC800B8E352 /* GoogleMapEngine.cpp in Sources */,
