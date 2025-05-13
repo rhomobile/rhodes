@@ -32,20 +32,37 @@
 #include "unzip/gunzip.h"
 #include "sync/RhoconnectClientManager.h"
 #include "net/INetRequest.h"
-
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
-#include "minizip-ng/mz.h"
-#include "minizip-ng/mz_strm.h"
-#include "minizip-ng/mz_strm_os.h"
-#include "minizip-ng/mz_zip.h"
-#endif
+#include "common/IRhoClassFactory.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 extern "C" int  rho_ruby_is_started();
 extern "C" const char* rho_rhodesapp_getapprootpath();
 
+static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
+static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
+static int rho_get_zip_format(const char* szZipPath);
+
 namespace rho {
 namespace common{
+
+class DefaultArchiver : public IArchiever
+{
+public:
+    DefaultArchiver() {}
+    ~DefaultArchiver() {}
+
+    int unzipZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_zip(strFilePath.c_str(), strPassword.c_str());
+    }
+
+    int unzipGZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_gzip(strFilePath.c_str(), strPassword.c_str());
+    }
+};
+
+static DefaultArchiver g_defaultArchiver;
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
@@ -90,6 +107,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
     m_bRubyNodeJSApplication = rubynodejs_app && (strcmp(rubynodejs_app,"true") == 0);
 
     initAppUrls();
+
+    rho_get_RhoClassFactory()->registerArchiever( "default", &g_defaultArchiver, true );
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
+    rho_get_RhoClassFactory()->setDefaultArchiever( "default");
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
 }
 	
 void CRhodesAppBase::initAppUrls() 
@@ -352,191 +374,30 @@ static int rho_get_zip_format(const char* szZipPath)
   }
   return RHO_ZIP_FORMAT_INVALID;
 }
-
-static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
-static int rho_internal_unzip_zipfile_with_minizip(const char* szZipPath, const char* psw);
-static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
     
 //TODO: use System.unzip_file
 int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
 {
+
+    rho::common::IArchiever* archiever = rho_get_RhoClassFactory()->createArchiever();
+
+    LOG(TRACE) + "Archiever: " + (long)archiever;
+
+    if (archiever==0)
+    {
+        LOG(ERROR) + "Archiever not found";
+        return -1;
+    }
+
   switch( rho_get_zip_format(szZipPath) )
   {
     case RHO_ZIP_FORMAT_ZIP:  
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
-        return rho_internal_unzip_zipfile_with_minizip(szZipPath, psw);
-#else
-        return rho_internal_unzip_zip(szZipPath, psw);
-#endif
+        return archiever->unzipZipFile(szZipPath, psw);
     case RHO_ZIP_FORMAT_GZIP: 
-        return rho_internal_unzip_gzip(szZipPath, outputFilename);
+        return archiever->unzipGZipFile(szZipPath, psw);
   }
 
   return -1;
-}
-
-static int rho_internal_unzip_zipfile_with_minizip(const char* szZipPath, const char* psw)
-{
-    //log
-    LOG(TRACE) + "Unzip : " + szZipPath;
-
-    rho::common::CFilePath oPath(szZipPath);
-    rho::String strBaseDir = oPath.getFolderName();
-
-    //trace
-    LOG(TRACE) + "Unzip : " + szZipPath + "; Base dir : " + strBaseDir;
-
-    void *zip_handle = NULL;
-    void *stream = NULL;
-    int err = MZ_OK;
-
-    //trace
-    LOG(TRACE) + "Minizip: creating stream for zip file: " + oPath.getPath();
-
-    stream = mz_stream_os_create();
-    if (stream == NULL) {
-        LOG(ERROR) + ("Minizip: failed to create OS stream");
-        return -1;
-    }
-
-    //trace
-    LOG(TRACE) + "Minizip: opening stream for zip file: " + oPath.getPath();
-
-    err = mz_stream_open(stream, oPath.getPath(), MZ_OPEN_MODE_READ);
-    if (err != MZ_OK) {
-        LOG(ERROR) + ("Minizip: failed to open stream");
-        mz_stream_os_delete(&stream);
-        return -1;
-    }
-
-    //trace
-    LOG(TRACE) + "Minizip: creating zip handle";
-
-    zip_handle = mz_zip_create();
-    if (zip_handle == NULL) {
-        LOG(ERROR) + ("Minizip: failed to create zip handle");
-        mz_stream_close(stream);
-        mz_stream_os_delete(&stream);
-        return -1;
-    }
-
-    //trace
-    LOG(TRACE) + "Minizip: opening zip file: " + oPath.getPath();
-
-    err = mz_zip_open(zip_handle, stream, MZ_OPEN_MODE_READ);
-    if (err != MZ_OK) {
-        LOG(ERROR) + ("Minizip: failed to open zip file");
-        mz_zip_delete(&zip_handle);
-        mz_stream_close(stream);
-        mz_stream_os_delete(&stream);
-        return -1;
-    }
-
-    //trace
-    LOG(TRACE) + "Minizip: going to first entry in zip file";
-
-    err = mz_zip_goto_first_entry(zip_handle);
-
-    uint32_t buflen = 1024 * 4096;
-    std::unique_ptr<char[]> buffer(new char[buflen]); // 4MB buffer
-
-    while (err == MZ_OK) {
-
-        //trace
-        LOG(TRACE) + "Minizip: going to next entry in zip file";
-
-        mz_zip_file *file_info = NULL;
-        err = mz_zip_entry_get_info(zip_handle, &file_info);
-        if (err != MZ_OK) {
-            LOG(ERROR) + ("Minizip: failed to get file info");
-            break;
-        }
-
-        //trace
-        LOG(TRACE) + "Minizip: opening zip entry: " + file_info->filename;
-
-        err = mz_zip_entry_read_open(zip_handle,0,psw);
-        if (err != MZ_OK) {
-            LOG(ERROR) + "Minizip: failed to open zip entry: " + err;
-            break;
-        }
-
-        //trace
-        LOG(TRACE) + "Minizip: reading zip entry: " + file_info->filename;
-
-        //get uncompressed size and crc32
-        uint32_t crc32 = file_info->crc;
-        int64_t compressed_size = file_info->compressed_size;
-        int64_t uncompressed_size = file_info->uncompressed_size;
-        
-        LOG(INFO) + "Unzip : " + file_info->filename + "; Compressed size : " + compressed_size +
-            "; Uncompressed size : " + uncompressed_size + "; CRC32 : " + crc32;
-
-        //create output file path
-        
-        rho::String strFilePath = oPath.join(strBaseDir,file_info->filename);
-        rho::common::CRhoFile oFile;
-
-        //trace
-        LOG(TRACE) + "Minizip: creating output file: " + strFilePath;
-
-        if ( !oFile.open(strFilePath.c_str(), rho::common::CRhoFile::OpenForWrite) )
-        {
-            LOG(ERROR) + "Minizip: failed to open output file: " + strFilePath;
-            mz_zip_entry_close(zip_handle);
-            break;
-        }
-
-        //trace
-        LOG(TRACE) + "Minizip: writing to output file: " + strFilePath;
-   
-        int64_t bytes_to_read = uncompressed_size;
-        int64_t bytes_read = 0;
-
-        //trace
-        LOG(TRACE) + "Minizip: reading zip entry data: " + file_info->filename;
-
-        while (bytes_to_read > 0) {
-
-            //trace
-            LOG(TRACE) + "Minizip: reading zip entry data: " + file_info->filename + "; bytes to read: " + bytes_to_read;
-
-            int64_t bytes_to_read_now = (bytes_to_read > buflen) ? buflen : bytes_to_read;
-            err = mz_zip_entry_read(zip_handle, buffer.get(), (int32_t)bytes_to_read_now);
-            if (err < 0) {
-                LOG(ERROR) + ("Minizip: failed to read zip entry");
-                break;
-            }
-
-            //trace
-            LOG(TRACE) + "Minizip: writing to output file: " + strFilePath + "; bytes read: " + err;
-
-            oFile.write(buffer.get(), (unsigned int)err);
-            bytes_read += err;
-            bytes_to_read -= err;
-        }
-        //trace
-        LOG(TRACE) + "Minizip: closing output file: " + strFilePath;
-
-        oFile.flush();            
-
-        mz_zip_entry_close(zip_handle);
-
-        err = mz_zip_goto_next_entry(zip_handle);
-    }
-
-    //trace
-    LOG(TRACE) + "Minizip: closing zip file: " + oPath.getPath();
-
-    mz_zip_close(zip_handle);
-    mz_zip_delete(&zip_handle);
-    mz_stream_close(stream);
-    mz_stream_os_delete(&stream);
-
-    //trace
-    LOG(TRACE) + "Minizip: finished unzipping zip file: " + oPath.getPath();
-
-    return err;
 }
 
 static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
