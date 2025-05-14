@@ -32,13 +32,37 @@
 #include "unzip/gunzip.h"
 #include "sync/RhoconnectClientManager.h"
 #include "net/INetRequest.h"
+#include "common/IRhoClassFactory.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 extern "C" int  rho_ruby_is_started();
 extern "C" const char* rho_rhodesapp_getapprootpath();
 
+static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
+static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
+static int rho_get_zip_format(const char* szZipPath);
+
 namespace rho {
 namespace common{
+
+class DefaultArchiver : public IArchiever
+{
+public:
+    DefaultArchiver() {}
+    ~DefaultArchiver() {}
+
+    int unzipZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_zip(strFilePath.c_str(), strPassword.c_str());
+    }
+
+    int unzipGZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_gzip(strFilePath.c_str(), strPassword.c_str());
+    }
+};
+
+static DefaultArchiver g_defaultArchiver;
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
@@ -83,6 +107,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
     m_bRubyNodeJSApplication = rubynodejs_app && (strcmp(rubynodejs_app,"true") == 0);
 
     initAppUrls();
+
+    rho_get_RhoClassFactory()->registerArchiever( "default", &g_defaultArchiver, true );
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
+    rho_get_RhoClassFactory()->setDefaultArchiever( "default");
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
 }
 	
 void CRhodesAppBase::initAppUrls() 
@@ -345,17 +374,27 @@ static int rho_get_zip_format(const char* szZipPath)
   }
   return RHO_ZIP_FORMAT_INVALID;
 }
-
-static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
-static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
     
 //TODO: use System.unzip_file
 int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
 {
+
+    rho::common::IArchiever* archiever = rho_get_RhoClassFactory()->createArchiever();
+
+    LOG(TRACE) + "Archiever: " + (long)archiever;
+
+    if (archiever==0)
+    {
+        LOG(ERROR) + "Archiever not found";
+        return -1;
+    }
+
   switch( rho_get_zip_format(szZipPath) )
   {
-  case RHO_ZIP_FORMAT_ZIP:  return rho_internal_unzip_zip(szZipPath, psw); break;
-  case RHO_ZIP_FORMAT_GZIP: return rho_internal_unzip_gzip(szZipPath, outputFilename); break;
+    case RHO_ZIP_FORMAT_ZIP:  
+        return archiever->unzipZipFile(szZipPath, psw);
+    case RHO_ZIP_FORMAT_GZIP: 
+        return archiever->unzipGZipFile(szZipPath, psw);
   }
 
   return -1;

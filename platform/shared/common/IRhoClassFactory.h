@@ -47,6 +47,15 @@ struct IRhoThreadImpl;
 struct IRhoCrypt;
 class ISecurityTokenGenerator;
 
+struct IArchiever
+{
+    virtual ~IArchiever(){};
+    //TODO: implement later
+    //virtual int zip(const String& strFilePath, const String& strPassword) = 0;
+    virtual int unzipZipFile(const String& strFilePath, const String& strPassword) = 0;
+    virtual int unzipGZipFile(const String& strFilePath, const String& strPassword) = 0;
+};
+
 struct IRhoClassFactory
 {
     virtual ~IRhoClassFactory(void){;}
@@ -61,6 +70,10 @@ struct IRhoClassFactory
     virtual void setDefaultNetRequestBuilder( const String& name ) = 0;
 
     virtual const ISecurityTokenGenerator* createSecurityTokenGenerator() = 0;
+
+    virtual IArchiever* createArchiever() = 0;
+    virtual void registerArchiever( const String& name, IArchiever* archiever, bool setAsDefault = true ) = 0;
+    virtual void setDefaultArchiever( const String& name ) = 0;
 };
 
 //abstract base class stubbing some of IRhoClassFactory.
@@ -70,7 +83,7 @@ class CBaseRhoClassFactory : public IRhoClassFactory
 public:
 
     CBaseRhoClassFactory()
-        : mSelectedNetRequestBuilder(0)
+        : mSelectedNetRequestBuilder(0), mSelectedArchiever(0)
     {
 
     }
@@ -103,9 +116,39 @@ public:
         return ret;
     }
 
+    virtual void registerArchiever( const String& name, IArchiever* archiever, bool setAsDefault = true )
+    {
+        mArchievers[name] = archiever;
+
+        if ( setAsDefault ) {
+            setDefaultArchiever( name );
+        }
+    }
+
+    virtual void setDefaultArchiever( const String& name )
+    {
+        mSelectedArchiever = 0;
+
+        auto search = mArchievers.find( name );
+        if ( search != mArchievers.end() ) {
+            mSelectedArchiever = search->second;
+        }
+    }
+
+    virtual IArchiever* createArchiever()
+    {
+        IArchiever* ret = 0;
+        if ( mSelectedArchiever != 0 ) {
+            ret = mSelectedArchiever;
+        }
+        return ret;
+    }
+
 private:
     std::map<String, net::INetRequestBuilder*> mNetRequestBuilders;
     net::INetRequestBuilder* mSelectedNetRequestBuilder;
+    std::map<String, IArchiever*> mArchievers;
+    IArchiever* mSelectedArchiever;
 };
 
 }
