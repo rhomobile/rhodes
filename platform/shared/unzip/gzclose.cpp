@@ -11,8 +11,7 @@ namespace zlib
 /* gzclose() is in a separate file so that it is linked in only if it is used.
    That way the other gzclose functions can be used instead to avoid linking in
    unneeded compression or decompression routines. */
-int ZEXPORT gzclose(gzFile file)
-{
+int ZEXPORT gzclose(gzFile file) {
 #ifndef NO_GZCOMPRESS
     gz_statep state;
 
@@ -26,4 +25,5 @@ int ZEXPORT gzclose(gzFile file)
 #endif
 }
 
-}
+
+} // namespace zlib
