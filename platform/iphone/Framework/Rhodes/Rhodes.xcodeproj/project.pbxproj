@@ -105,6 +105,7 @@
 		FAE3BEDE2265657700AE0C99 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9722630F9B00B95E07 /* librholib.a */; };
 		FAE3BEDF2265657A00AE0C99 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB922630F9C00B95E07 /* librhorubylib.a */; };
 		FAE3BEE02265657D00AE0C99 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA322630F9C00B95E07 /* librhosynclib.a */; };
+		FAED2B462DDE67660050B75E /* Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED2B452DDE67660050B75E /* Empty.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -353,6 +354,7 @@
 		FAD356B92264206E00419673 /* RhoApplication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoApplication.xcodeproj; path = ../RhoApplication/RhoApplication.xcodeproj; sourceTree = "<group>"; };
 		FAD3572F226458D700419673 /* RhodesLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesLib.h; path = ../../../../rhodeslib/api/RhodesLib.h; sourceTree = "<group>"; };
 		FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Decryptstub.xcodeproj; path = ../../../../lib/extensions/decryptstub/ext/platform/iphone/Decryptstub.xcodeproj; sourceTree = "<group>"; };
+		FAED2B452DDE67660050B75E /* Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Empty.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -433,6 +435,7 @@
 				FA7A090A22603A0F00B95E07 /* Rhodes.h */,
 				FA7A090B22603A0F00B95E07 /* Info.plist */,
 				FA7A09AB2260419D00B95E07 /* StubCode.m */,
+				FAED2B452DDE67660050B75E /* Empty.swift */,
 			);
 			path = Rhodes;
 			sourceTree = "<group>";
@@ -674,6 +677,7 @@
 				TargetAttributes = {
 					FA7A090622603A0E00B95E07 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1630;
 					};
 					FA7A09D82260564500B95E07 = {
 						CreatedOnToolsVersion = 10.1;
@@ -870,6 +874,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA7A09AC2260419D00B95E07 /* StubCode.m in Sources */,
+				FAED2B462DDE67660050B75E /* Empty.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -972,7 +977,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1029,7 +1034,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1042,6 +1047,7 @@
 		FA7A091022603A0F00B95E07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
@@ -1075,6 +1081,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1082,6 +1090,7 @@
 		FA7A091122603A0F00B95E07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
@@ -1115,6 +1124,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
