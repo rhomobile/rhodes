@@ -69,12 +69,14 @@ class IPhoneBuild
         options = {}
 
         project_workspace_path = File.join(currentdir, ext_name + ".xcworkspace")
+        pods_path = File.join(currentdir, "Pods")
+
 
         podfile_path = File.join(currentdir, "Podfile")
 
-        if (File.exist?(podfile_path)) && (!File.exist?(project_workspace_path))
+        if (File.exist?(podfile_path)) && ( (!File.exist?(project_workspace_path)) || (!File.exist?(pods_path)))
             #we shoudl setup project for cocoapods
-            puts "We found Podfile, but workspace are not exists - we should run 'pod install' to generte workspace"
+            puts "We found Podfile, but workspace or Pods are not exists - we should run 'pod install' to generte workspace and Pods"
 
             require File.join(ENV['RHO_ROOT'], 'lib','build','jake')
 
