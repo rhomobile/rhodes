@@ -1937,6 +1937,15 @@ namespace "build" do
         # copy result framework to target path
         framework_path = File.join(framework_dir, "Rhodes-Aggregated/Rhodes.framework")
         framework_target_path = File.join(target_path, "Rhodes.framework")
+
+        #fix Swift header
+        swift_header_path = File.join(framework_path, "Headers", "Rhodes-Swift.h")
+        correct_swift_header_path = File.join(framework_dir, "Rhodes", "Rhodes-Swift.h")
+
+        rm_rf swift_header_path if File.exist? swift_header_path
+        cp correct_swift_header_path, swift_header_path
+
+        #copy framework to native app
         rm_rf framework_target_path if File.exist? framework_target_path
         cp_r framework_path, framework_target_path
 
