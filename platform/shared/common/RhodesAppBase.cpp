@@ -44,10 +44,10 @@ extern "C"
 #define RHO_ZIP_FORMAT_GZIP     2
 #define RHO_ZIP_FORMAT_INVALID  -1
 
-static int rho_get_zip_format(const char* szZipPath)
+static int rho_get_zip_format(const rho::String& sZipPath)
 {
   rho::common::CRhoFile f;
-  f.open(szZipPath, rho::common::CRhoFile::OpenReadOnly);
+  f.open(sZipPath.c_str(), rho::common::CRhoFile::OpenReadOnly);
   if ( f.isOpened() )
   {
     unsigned char buf[4];
@@ -65,6 +65,24 @@ static int rho_get_zip_format(const char* szZipPath)
 //TODO: use System.unzip_file
 int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
 {
+    rho::String sZipPath("");
+    rho::String sPsw("");
+    rho::String sOutputFilename("");
+    
+    if ( szZipPath != 0 )
+    {
+        sZipPath = szZipPath;
+    }
+    
+    if ( psw != 0 )
+    {
+        sPsw = psw;
+    }
+    
+    if ( outputFilename != 0 )
+    {
+        sOutputFilename = outputFilename;
+    }
 
     rho::common::IArchiever* archiever = rho_get_RhoClassFactory()->createArchiever();
 
@@ -76,31 +94,31 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outpu
         return -1;
     }
 
-  switch( rho_get_zip_format(szZipPath) )
+  switch( rho_get_zip_format(sZipPath) )
   {
     case RHO_ZIP_FORMAT_ZIP:  
-        return archiever->unzipZipFile(szZipPath, psw);
-    case RHO_ZIP_FORMAT_GZIP: 
-        return archiever->unzipGZipFile(szZipPath, psw);
+        return archiever->unzipZipFile(sZipPath, sPsw);
+    case RHO_ZIP_FORMAT_GZIP:
+        return archiever->unzipGZipFile(sZipPath, sPsw);
   }
 
   return -1;
 }
 
-static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
-{
-    rho::common::CFilePath oPath(szZipPath);
+static int rho_internal_unzip_zip(const rho::String& sZipPath, const rho::String& sPsw)
+{   
+    rho::common::CFilePath oPath(sZipPath);
     rho::String strBaseDir = oPath.getFolderName();
 #if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_UWP)
     rho::StringW strZipPathW;
-    rho::common::convertToStringW(szZipPath, strZipPathW);
-    HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
+    rho::common::convertToStringW(sZipPath, strZipPathW);
+    HZIP hz = OpenZipFile(strZipPathW.c_str(), sPsw.empty()?0:sPsw.c_str());
     if ( !hz )
         return -1;
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
-    HZIP hz = OpenZipFile((TCHAR*)szZipPath, psw);
+    HZIP hz = OpenZipFile((TCHAR*)sZipPath.c_str(), sPsw.empty()?0:sPsw.c_str());
     
     if ( !hz )
         return -1;
@@ -116,7 +134,7 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
 	res = GetZipItem(hz,-1,&ze);
 	int numitems = ze.index;
 
-    LOG(INFO) + "Unzip : " + szZipPath + "; Number of items : " + numitems;
+    LOG(INFO) + "Unzip : " + sZipPath + "; Number of items : " + numitems;
 	// Iterate through items and unzip them
 	for (int zi = 0; zi<numitems; zi++)
 	{ 
@@ -141,9 +159,9 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
     return res;
 }
 
-static int rho_internal_unzip_gzip(const char* inputFilename, const char* outputFilename)
+static int rho_internal_unzip_gzip(const rho::String& inputFilename, const rho::String& outputFilename)
 {
-    return gunzip::UnzipGzip(inputFilename, outputFilename);
+    return gunzip::UnzipGzip(inputFilename.c_str(), outputFilename.c_str());
 }
 
 } // extern "C"
@@ -159,12 +177,12 @@ public:
 
     int unzipZipFile(const String& strFilePath, const String& strPassword) 
     {
-        return rho_internal_unzip_zip(strFilePath.c_str(), strPassword.c_str());
+        return rho_internal_unzip_zip(strFilePath, strPassword);
     }
 
     int unzipGZipFile(const String& strFilePath, const String& strPassword) 
     {
-        return rho_internal_unzip_gzip(strFilePath.c_str(), strPassword.c_str());
+        return rho_internal_unzip_gzip(strFilePath, strPassword);
     }
 };
 
