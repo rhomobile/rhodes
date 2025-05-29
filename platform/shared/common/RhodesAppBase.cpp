@@ -111,8 +111,8 @@ static int rho_internal_unzip_zip(const rho::String& sZipPath, const rho::String
     rho::String strBaseDir = oPath.getFolderName();
 #if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_UWP)
     rho::StringW strZipPathW;
-    rho::common::convertToStringW(sZipPath, strZipPathW);
-    HZIP hz = OpenZipFile(strZipPathW.c_str(), sPsw.empty()?0:sPsw.c_str());
+    rho::common::convertToStringW(sZipPath.c_str(), strZipPathW);
+    HZIP hz = OpenZipFile((TCHAR*)strZipPathW.c_str(), sPsw.empty()?0:sPsw.c_str());
     if ( !hz )
         return -1;
 	// Set base for unziping
