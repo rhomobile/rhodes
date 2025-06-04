@@ -1,0 +1,1346 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		FA4919062DED599300F3CEF6 /* FrameworkPods */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FA4919082DED599300F3CEF6 /* Build configuration list for PBXAggregateTarget "FrameworkPods" */;
+			buildPhases = (
+				FA4919072DED599300F3CEF6 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = FrameworkPods;
+			productName = Framework;
+		};
+		FA7A09D82260564500B95E07 /* Framework */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FA7A09D92260564500B95E07 /* Build configuration list for PBXAggregateTarget "Framework" */;
+			buildPhases = (
+				FA7A09DE2260570000B95E07 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Framework;
+			productName = Framework;
+		};
+		FAD3576F22646BEF00419673 /* Framework copy */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD3577122646BEF00419673 /* Build configuration list for PBXAggregateTarget "Framework copy" */;
+			buildPhases = (
+				FAD3577022646BEF00419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Framework copy";
+			productName = Framework;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		FA7A090C22603A0F00B95E07 /* Rhodes.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A090A22603A0F00B95E07 /* Rhodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A091422603A9000B95E07 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091322603A9000B95E07 /* EventKit.framework */; };
+		FA7A091622603A9B00B95E07 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091522603A9B00B95E07 /* QuartzCore.framework */; };
+		FA7A091822603AA200B95E07 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091722603AA200B95E07 /* Security.framework */; };
+		FA7A091A22603AA700B95E07 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091922603AA700B95E07 /* CFNetwork.framework */; };
+		FA7A091C22603AAE00B95E07 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091B22603AAE00B95E07 /* MapKit.framework */; };
+		<PLACEHOLDER FOR FRAMEWORKS 01>
+		<PLACEHOLDER FOR RESOURCES 01>
+		FA7A091E22603AB900B95E07 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091D22603AB900B95E07 /* libc++.tbd */; };
+		FA7A092022603AC000B95E07 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A091F22603AC000B95E07 /* libz.tbd */; };
+		FA7A092222603AC700B95E07 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092122603AC700B95E07 /* CoreGraphics.framework */; };
+		FA7A092422603AD000B95E07 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092322603ACF00B95E07 /* AVFoundation.framework */; };
+		FA7A092622603AD600B95E07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092522603AD600B95E07 /* AudioToolbox.framework */; };
+		FA7A092822603ADE00B95E07 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092722603ADE00B95E07 /* SystemConfiguration.framework */; };
+		FA7A092A22603AE500B95E07 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092922603AE500B95E07 /* CoreLocation.framework */; };
+		FA7A092C22603AEE00B95E07 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092B22603AED00B95E07 /* CoreFoundation.framework */; };
+		FA7A092E22603AF400B95E07 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092D22603AF400B95E07 /* CoreVideo.framework */; };
+		FA7A093022603AFB00B95E07 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A092F22603AFB00B95E07 /* CoreMedia.framework */; };
+		FA7A093222603B0400B95E07 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093122603B0400B95E07 /* CoreMotion.framework */; };
+		FA7A093422603B0C00B95E07 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093322603B0C00B95E07 /* MobileCoreServices.framework */; };
+		FA7A093622603B1600B95E07 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093522603B1400B95E07 /* libsqlite3.0.tbd */; };
+		FA7A093822603B1E00B95E07 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093722603B1E00B95E07 /* libiconv.tbd */; };
+		FA7A093A22603B2500B95E07 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093922603B2500B95E07 /* MediaPlayer.framework */; };
+		FA7A093C22603B2E00B95E07 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093B22603B2C00B95E07 /* WebKit.framework */; };
+		FA7A093E22603B3400B95E07 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093D22603B3400B95E07 /* CoreImage.framework */; };
+		FA7A094022603B3F00B95E07 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093F22603B3F00B95E07 /* ImageIO.framework */; };
+		FA7A094222603B4500B95E07 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A094122603B4500B95E07 /* UIKit.framework */; };
+		FA7A094422603B4C00B95E07 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A094322603B4C00B95E07 /* Foundation.framework */; };
+		FA7A096D22603D0300B95E07 /* IRhoRubyBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095A22603D0200B95E07 /* IRhoRubyBoolean.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A096E22603D0300B95E07 /* IRhoRubyMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A096F22603D0300B95E07 /* IRhoRubyMutableFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095C22603D0200B95E07 /* IRhoRubyMutableFloat.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097022603D0300B95E07 /* IRhoRubyArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095D22603D0200B95E07 /* IRhoRubyArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097122603D0300B95E07 /* IRhoRubyMutableString.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095E22603D0200B95E07 /* IRhoRubyMutableString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097222603D0300B95E07 /* IRhoRubyInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095F22603D0200B95E07 /* IRhoRubyInteger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097322603D0300B95E07 /* IRhoRubyHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096022603D0200B95E07 /* IRhoRubyHash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097422603D0300B95E07 /* IRhoRubyMutableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096122603D0200B95E07 /* IRhoRubyMutableArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097522603D0300B95E07 /* IRhoRubyNil.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096222603D0200B95E07 /* IRhoRubyNil.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097622603D0300B95E07 /* IRhoRubyRunnable.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096322603D0200B95E07 /* IRhoRubyRunnable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097722603D0300B95E07 /* IRhoRubyMutableHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096422603D0200B95E07 /* IRhoRubyMutableHash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097822603D0300B95E07 /* IRhoRubyString.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096522603D0200B95E07 /* IRhoRubyString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097922603D0300B95E07 /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096622603D0200B95E07 /* RhoRuby.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097A22603D0300B95E07 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096722603D0200B95E07 /* RhoRubySingletone.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097B22603D0300B95E07 /* IRhoRubyObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096822603D0200B95E07 /* IRhoRubyObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097C22603D0300B95E07 /* IRhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096922603D0200B95E07 /* IRhoRuby.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097D22603D0300B95E07 /* IRhoRubyFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096A22603D0300B95E07 /* IRhoRubyFloat.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A097E22603D0300B95E07 /* IRhoRubyMutableBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A096B22603D0300B95E07 /* IRhoRubyMutableBoolean.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FA7A09AC2260419D00B95E07 /* StubCode.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7A09AB2260419D00B95E07 /* StubCode.m */; };
+		FA7A09C322604B3B00B95E07 /* IArray.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098B22603D2100B95E07 /* IArray.h */; };
+		FA7A09C422604B3B00B95E07 /* IBoolean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098022603D2000B95E07 /* IBoolean.h */; };
+		FA7A09C522604B3B00B95E07 /* IFloat.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098A22603D2000B95E07 /* IFloat.h */; };
+		FA7A09C622604B3B00B95E07 /* IHash.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A099122603D2100B95E07 /* IHash.h */; };
+		FA7A09C722604B3B00B95E07 /* IInteger.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098C22603D2100B95E07 /* IInteger.h */; };
+		FA7A09C822604B3B00B95E07 /* IMutableArray.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A099022603D2100B95E07 /* IMutableArray.h */; };
+		FA7A09C922604B3B00B95E07 /* IMutableBoolean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098122603D2000B95E07 /* IMutableBoolean.h */; };
+		FA7A09CA22604B3B00B95E07 /* IMutableFloat.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098922603D2000B95E07 /* IMutableFloat.h */; };
+		FA7A09CB22604B3B00B95E07 /* IMutableHash.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098722603D2000B95E07 /* IMutableHash.h */; };
+		FA7A09CC22604B3B00B95E07 /* IMutableInteger.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098E22603D2100B95E07 /* IMutableInteger.h */; };
+		FA7A09CD22604B3B00B95E07 /* IMutableString.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098422603D2000B95E07 /* IMutableString.h */; };
+		FA7A09CE22604B3B00B95E07 /* INil.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098322603D2000B95E07 /* INil.h */; };
+		FA7A09CF22604B3B00B95E07 /* IObject.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A097F22603D2000B95E07 /* IObject.h */; };
+		FA7A09D022604B3B00B95E07 /* IRefCountedObject.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098622603D2000B95E07 /* IRefCountedObject.h */; };
+		FA7A09D122604B3B00B95E07 /* IRhoRuby.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A099222603D2100B95E07 /* IRhoRuby.h */; };
+		FA7A09D222604B3B00B95E07 /* IRunnable.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098D22603D2100B95E07 /* IRunnable.h */; };
+		FA7A09D322604B3B00B95E07 /* IString.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098F22603D2100B95E07 /* IString.h */; };
+		FA7A09D422604B3B00B95E07 /* RhoRuby.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098822603D2000B95E07 /* RhoRuby.h */; };
+		FA7A09D522604B3B00B95E07 /* RhoRubySingletone.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098222603D2000B95E07 /* RhoRubySingletone.h */; };
+		FA7A09D622604B3B00B95E07 /* SmartPointer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098522603D2000B95E07 /* SmartPointer.h */; };
+		FAD35730226458D700419673 /* RhodesLib.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD3572F226458D700419673 /* RhodesLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAE3BEDA2265656000AE0C99 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9D22630F9B00B95E07 /* libcurl.a */; };
+		FAE3BEDB2265656800AE0C99 /* libRhoAppBaseStandaloneLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB222630F9C00B95E07 /* libRhoAppBaseStandaloneLib.a */; };
+		FAE3BEDC2265656D00AE0C99 /* libRhoApplication.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD356C32264206E00419673 /* libRhoApplication.a */; };
+		FAE3BEDD2265657300AE0C99 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA922630F9C00B95E07 /* librhoextlib.a */; };
+		FAE3BEDE2265657700AE0C99 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9722630F9B00B95E07 /* librholib.a */; };
+		FAE3BEDF2265657A00AE0C99 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB922630F9C00B95E07 /* librhorubylib.a */; };
+		FAE3BEE02265657D00AE0C99 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA322630F9C00B95E07 /* librhosynclib.a */; };
+		FAED2B462DDE67660050B75E /* Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAED2B452DDE67660050B75E /* Empty.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FA7A0A9622630F9B00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = RhoLib;
+		};
+		FA7A0A9C22630F9B00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = curl;
+		};
+		FA7A0AA222630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		FA7A0AA822630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = rhoextlib;
+		};
+		FA7A0AAF22630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = RhoAppBaseLib;
+		};
+		FA7A0AB122630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAE78C5C22583F6C001A1150;
+			remoteInfo = RhoAppBaseStandaloneLib;
+		};
+		FA7A0AB822630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC046055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		FA7A0ABA22630F9C00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A8A6D30E1E24AADD00016427;
+			remoteInfo = rubymac;
+		};
+		FA7A0AE522631E4E00B95E07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAC155F3145855CF0016F3BD;
+			remoteInfo = CoreAPI;
+		};
+		FAD356C22264206E00419673 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA67F3632264051800482671;
+			remoteInfo = RhoApplication;
+		};
+		FAE3BECA2265652600AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FA67F3622264051800482671;
+			remoteInfo = RhoApplication;
+		};
+		FAE3BECC2265653600AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = rhoextlib;
+		};
+		FAE3BECE2265653B00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		FAE3BED02265653F00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		FAE3BED22265654300AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoLib;
+		};
+		FAE3BED42265654900AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FAE78BDF22583F6C001A1150;
+			remoteInfo = RhoAppBaseStandaloneLib;
+		};
+		FAE3BED62265654F00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoAppBaseLib;
+		};
+		FAE3BED82265655200AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = curl;
+		};
+		FAE3BEED22656ED500AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAC155F3145855CF0016F3BD;
+			remoteInfo = Decryptstub;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FA7A09C222604B1600B95E07 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Headers/rhoruby;
+			dstSubfolderSpec = 16;
+			files = (
+				FA7A09C322604B3B00B95E07 /* IArray.h in CopyFiles */,
+				FA7A09C422604B3B00B95E07 /* IBoolean.h in CopyFiles */,
+				FA7A09C522604B3B00B95E07 /* IFloat.h in CopyFiles */,
+				FA7A09C622604B3B00B95E07 /* IHash.h in CopyFiles */,
+				FA7A09C722604B3B00B95E07 /* IInteger.h in CopyFiles */,
+				FA7A09C822604B3B00B95E07 /* IMutableArray.h in CopyFiles */,
+				FA7A09C922604B3B00B95E07 /* IMutableBoolean.h in CopyFiles */,
+				FA7A09CA22604B3B00B95E07 /* IMutableFloat.h in CopyFiles */,
+				FA7A09CB22604B3B00B95E07 /* IMutableHash.h in CopyFiles */,
+				FA7A09CC22604B3B00B95E07 /* IMutableInteger.h in CopyFiles */,
+				FA7A09CD22604B3B00B95E07 /* IMutableString.h in CopyFiles */,
+				FA7A09CE22604B3B00B95E07 /* INil.h in CopyFiles */,
+				FA7A09CF22604B3B00B95E07 /* IObject.h in CopyFiles */,
+				FA7A09D022604B3B00B95E07 /* IRefCountedObject.h in CopyFiles */,
+				FA7A09D122604B3B00B95E07 /* IRhoRuby.h in CopyFiles */,
+				FA7A09D222604B3B00B95E07 /* IRunnable.h in CopyFiles */,
+				FA7A09D322604B3B00B95E07 /* IString.h in CopyFiles */,
+				FA7A09D422604B3B00B95E07 /* RhoRuby.h in CopyFiles */,
+				FA7A09D522604B3B00B95E07 /* RhoRubySingletone.h in CopyFiles */,
+				FA7A09D622604B3B00B95E07 /* SmartPointer.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FA7A090722603A0F00B95E07 /* Rhodes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Rhodes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA7A090A22603A0F00B95E07 /* Rhodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rhodes.h; sourceTree = "<group>"; };
+		FA7A090B22603A0F00B95E07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FA7A091322603A9000B95E07 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		FA7A091522603A9B00B95E07 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA7A091722603AA200B95E07 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		FA7A091922603AA700B95E07 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		FA7A091B22603AAE00B95E07 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		<PLACEHOLDER FOR FRAMEWORKS 02>
+        <PLACEHOLDER FOR RESOURCES 02>
+		FA7A091D22603AB900B95E07 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		FA7A091F22603AC000B95E07 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		FA7A092122603AC700B95E07 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FA7A092322603ACF00B95E07 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FA7A092522603AD600B95E07 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		FA7A092722603ADE00B95E07 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		FA7A092922603AE500B95E07 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		FA7A092B22603AED00B95E07 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		FA7A092D22603AF400B95E07 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		FA7A092F22603AFB00B95E07 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FA7A093122603B0400B95E07 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		FA7A093322603B0C00B95E07 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		FA7A093522603B1400B95E07 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
+		FA7A093722603B1E00B95E07 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		FA7A093922603B2500B95E07 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		FA7A093B22603B2C00B95E07 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		FA7A093D22603B3400B95E07 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		FA7A093F22603B3F00B95E07 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		FA7A094122603B4500B95E07 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FA7A094322603B4C00B95E07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA7A095A22603D0200B95E07 /* IRhoRubyBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyBoolean.h; path = ../../../../rhodesruby/api/IRhoRubyBoolean.h; sourceTree = "<group>"; };
+		FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableInteger.h; path = ../../../../rhodesruby/api/IRhoRubyMutableInteger.h; sourceTree = "<group>"; };
+		FA7A095C22603D0200B95E07 /* IRhoRubyMutableFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableFloat.h; path = ../../../../rhodesruby/api/IRhoRubyMutableFloat.h; sourceTree = "<group>"; };
+		FA7A095D22603D0200B95E07 /* IRhoRubyArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyArray.h; path = ../../../../rhodesruby/api/IRhoRubyArray.h; sourceTree = "<group>"; };
+		FA7A095E22603D0200B95E07 /* IRhoRubyMutableString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableString.h; path = ../../../../rhodesruby/api/IRhoRubyMutableString.h; sourceTree = "<group>"; };
+		FA7A095F22603D0200B95E07 /* IRhoRubyInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyInteger.h; path = ../../../../rhodesruby/api/IRhoRubyInteger.h; sourceTree = "<group>"; };
+		FA7A096022603D0200B95E07 /* IRhoRubyHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyHash.h; path = ../../../../rhodesruby/api/IRhoRubyHash.h; sourceTree = "<group>"; };
+		FA7A096122603D0200B95E07 /* IRhoRubyMutableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableArray.h; path = ../../../../rhodesruby/api/IRhoRubyMutableArray.h; sourceTree = "<group>"; };
+		FA7A096222603D0200B95E07 /* IRhoRubyNil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyNil.h; path = ../../../../rhodesruby/api/IRhoRubyNil.h; sourceTree = "<group>"; };
+		FA7A096322603D0200B95E07 /* IRhoRubyRunnable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyRunnable.h; path = ../../../../rhodesruby/api/IRhoRubyRunnable.h; sourceTree = "<group>"; };
+		FA7A096422603D0200B95E07 /* IRhoRubyMutableHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableHash.h; path = ../../../../rhodesruby/api/IRhoRubyMutableHash.h; sourceTree = "<group>"; };
+		FA7A096522603D0200B95E07 /* IRhoRubyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyString.h; path = ../../../../rhodesruby/api/IRhoRubyString.h; sourceTree = "<group>"; };
+		FA7A096622603D0200B95E07 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../../../rhodesruby/api/RhoRuby.h; sourceTree = "<group>"; };
+		FA7A096722603D0200B95E07 /* RhoRubySingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubySingletone.h; path = ../../../../rhodesruby/api/RhoRubySingletone.h; sourceTree = "<group>"; };
+		FA7A096822603D0200B95E07 /* IRhoRubyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyObject.h; path = ../../../../rhodesruby/api/IRhoRubyObject.h; sourceTree = "<group>"; };
+		FA7A096922603D0200B95E07 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../../../../rhodesruby/api/IRhoRuby.h; sourceTree = "<group>"; };
+		FA7A096A22603D0300B95E07 /* IRhoRubyFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyFloat.h; path = ../../../../rhodesruby/api/IRhoRubyFloat.h; sourceTree = "<group>"; };
+		FA7A096B22603D0300B95E07 /* IRhoRubyMutableBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableBoolean.h; path = ../../../../rhodesruby/api/IRhoRubyMutableBoolean.h; sourceTree = "<group>"; };
+		FA7A097F22603D2000B95E07 /* IObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IObject.h; path = ../../../../../shared/rhoruby/api/IObject.h; sourceTree = "<group>"; };
+		FA7A098022603D2000B95E07 /* IBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IBoolean.h; path = ../../../../../shared/rhoruby/api/IBoolean.h; sourceTree = "<group>"; };
+		FA7A098122603D2000B95E07 /* IMutableBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableBoolean.h; path = ../../../../../shared/rhoruby/api/IMutableBoolean.h; sourceTree = "<group>"; };
+		FA7A098222603D2000B95E07 /* RhoRubySingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubySingletone.h; path = ../../../../../shared/rhoruby/api/RhoRubySingletone.h; sourceTree = "<group>"; };
+		FA7A098322603D2000B95E07 /* INil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INil.h; path = ../../../../../shared/rhoruby/api/INil.h; sourceTree = "<group>"; };
+		FA7A098422603D2000B95E07 /* IMutableString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableString.h; path = ../../../../../shared/rhoruby/api/IMutableString.h; sourceTree = "<group>"; };
+		FA7A098522603D2000B95E07 /* SmartPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmartPointer.h; path = ../../../../../shared/rhoruby/api/SmartPointer.h; sourceTree = "<group>"; };
+		FA7A098622603D2000B95E07 /* IRefCountedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRefCountedObject.h; path = ../../../../../shared/rhoruby/api/IRefCountedObject.h; sourceTree = "<group>"; };
+		FA7A098722603D2000B95E07 /* IMutableHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableHash.h; path = ../../../../../shared/rhoruby/api/IMutableHash.h; sourceTree = "<group>"; };
+		FA7A098822603D2000B95E07 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../../../../shared/rhoruby/api/RhoRuby.h; sourceTree = "<group>"; };
+		FA7A098922603D2000B95E07 /* IMutableFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableFloat.h; path = ../../../../../shared/rhoruby/api/IMutableFloat.h; sourceTree = "<group>"; };
+		FA7A098A22603D2000B95E07 /* IFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IFloat.h; path = ../../../../../shared/rhoruby/api/IFloat.h; sourceTree = "<group>"; };
+		FA7A098B22603D2100B95E07 /* IArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IArray.h; path = ../../../../../shared/rhoruby/api/IArray.h; sourceTree = "<group>"; };
+		FA7A098C22603D2100B95E07 /* IInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IInteger.h; path = ../../../../../shared/rhoruby/api/IInteger.h; sourceTree = "<group>"; };
+		FA7A098D22603D2100B95E07 /* IRunnable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRunnable.h; path = ../../../../../shared/rhoruby/api/IRunnable.h; sourceTree = "<group>"; };
+		FA7A098E22603D2100B95E07 /* IMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableInteger.h; path = ../../../../../shared/rhoruby/api/IMutableInteger.h; sourceTree = "<group>"; };
+		FA7A098F22603D2100B95E07 /* IString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IString.h; path = ../../../../../shared/rhoruby/api/IString.h; sourceTree = "<group>"; };
+		FA7A099022603D2100B95E07 /* IMutableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableArray.h; path = ../../../../../shared/rhoruby/api/IMutableArray.h; sourceTree = "<group>"; };
+		FA7A099122603D2100B95E07 /* IHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHash.h; path = ../../../../../shared/rhoruby/api/IHash.h; sourceTree = "<group>"; };
+		FA7A099222603D2100B95E07 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../../../../../shared/rhoruby/api/IRhoRuby.h; sourceTree = "<group>"; };
+		FA7A09AB2260419D00B95E07 /* StubCode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StubCode.m; sourceTree = "<group>"; };
+		FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = ../../RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
+		FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = ../../curl/curl.xcodeproj; sourceTree = "<group>"; };
+		FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = ../../rhosynclib/rhosynclib.xcodeproj; sourceTree = "<group>"; };
+		FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = ../../rhoextlib/rhoextlib.xcodeproj; sourceTree = "<group>"; };
+		FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = ../../RhoAppBaseLib/RhoAppBaseLib.xcodeproj; sourceTree = "<group>"; };
+		FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = ../../rhorubylib/rhorubylib.xcodeproj; sourceTree = "<group>"; };
+		FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Coreapi.xcodeproj; path = ../../../../lib/commonAPI/coreapi/ext/platform/iphone/Coreapi.xcodeproj; sourceTree = "<group>"; };
+		FAD356B92264206E00419673 /* RhoApplication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoApplication.xcodeproj; path = ../RhoApplication/RhoApplication.xcodeproj; sourceTree = "<group>"; };
+		FAD3572F226458D700419673 /* RhodesLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesLib.h; path = ../../../../rhodeslib/api/RhodesLib.h; sourceTree = "<group>"; };
+		FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Decryptstub.xcodeproj; path = ../../../../lib/extensions/decryptstub/ext/platform/iphone/Decryptstub.xcodeproj; sourceTree = "<group>"; };
+		FAED2B452DDE67660050B75E /* Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Empty.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FA7A090422603A0E00B95E07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				<PLACEHOLDER FOR FRAMEWORKS 03>
+				FAE3BEE02265657D00AE0C99 /* librhosynclib.a in Frameworks */,
+				FAE3BEDF2265657A00AE0C99 /* librhorubylib.a in Frameworks */,
+				FAE3BEDE2265657700AE0C99 /* librholib.a in Frameworks */,
+				FAE3BEDD2265657300AE0C99 /* librhoextlib.a in Frameworks */,
+				FAE3BEDC2265656D00AE0C99 /* libRhoApplication.a in Frameworks */,
+				FAE3BEDB2265656800AE0C99 /* libRhoAppBaseStandaloneLib.a in Frameworks */,
+				FAE3BEDA2265656000AE0C99 /* libcurl.a in Frameworks */,
+				FA7A094422603B4C00B95E07 /* Foundation.framework in Frameworks */,
+				FA7A094222603B4500B95E07 /* UIKit.framework in Frameworks */,
+				FA7A094022603B3F00B95E07 /* ImageIO.framework in Frameworks */,
+				FA7A093E22603B3400B95E07 /* CoreImage.framework in Frameworks */,
+				FA7A093C22603B2E00B95E07 /* WebKit.framework in Frameworks */,
+				FA7A093A22603B2500B95E07 /* MediaPlayer.framework in Frameworks */,
+				FA7A093822603B1E00B95E07 /* libiconv.tbd in Frameworks */,
+				FA7A093622603B1600B95E07 /* libsqlite3.0.tbd in Frameworks */,
+				FA7A093422603B0C00B95E07 /* MobileCoreServices.framework in Frameworks */,
+				FA7A093222603B0400B95E07 /* CoreMotion.framework in Frameworks */,
+				FA7A093022603AFB00B95E07 /* CoreMedia.framework in Frameworks */,
+				FA7A092E22603AF400B95E07 /* CoreVideo.framework in Frameworks */,
+				FA7A092C22603AEE00B95E07 /* CoreFoundation.framework in Frameworks */,
+				FA7A092A22603AE500B95E07 /* CoreLocation.framework in Frameworks */,
+				FA7A092822603ADE00B95E07 /* SystemConfiguration.framework in Frameworks */,
+				FA7A092622603AD600B95E07 /* AudioToolbox.framework in Frameworks */,
+				FA7A092422603AD000B95E07 /* AVFoundation.framework in Frameworks */,
+				FA7A092222603AC700B95E07 /* CoreGraphics.framework in Frameworks */,
+				FA7A092022603AC000B95E07 /* libz.tbd in Frameworks */,
+				FA7A091E22603AB900B95E07 /* libc++.tbd in Frameworks */,
+				FA7A091C22603AAE00B95E07 /* MapKit.framework in Frameworks */,
+				FA7A091A22603AA700B95E07 /* CFNetwork.framework in Frameworks */,
+				FA7A091822603AA200B95E07 /* Security.framework in Frameworks */,
+				FA7A091622603A9B00B95E07 /* QuartzCore.framework in Frameworks */,
+				FA7A091422603A9000B95E07 /* EventKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FA7A08FD22603A0E00B95E07 = {
+			isa = PBXGroup;
+			children = (
+				FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */,
+				FAD356B92264206E00419673 /* RhoApplication.xcodeproj */,
+				FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */,
+				FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */,
+				FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */,
+				FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */,
+				FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */,
+				FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */,
+				FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */,
+				<PLACEHOLDER FOR RESOURCES 03>
+				FA7A090922603A0F00B95E07 /* Rhodes */,
+				FA7A090822603A0F00B95E07 /* Products */,
+				FA7A091222603A9000B95E07 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		FA7A090822603A0F00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A090722603A0F00B95E07 /* Rhodes.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A090922603A0F00B95E07 /* Rhodes */ = {
+			isa = PBXGroup;
+			children = (
+				FAD3571D226458A000419673 /* RhodesLib */,
+				FA7A095822603CCC00B95E07 /* RhoRuby.cpp */,
+				FA7A095522603C4700B95E07 /* RhoRuby */,
+				FA7A090A22603A0F00B95E07 /* Rhodes.h */,
+				FA7A090B22603A0F00B95E07 /* Info.plist */,
+				FA7A09AB2260419D00B95E07 /* StubCode.m */,
+				FAED2B452DDE67660050B75E /* Empty.swift */,
+			);
+			path = Rhodes;
+			sourceTree = "<group>";
+		};
+		FA7A091222603A9000B95E07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				<PLACEHOLDER FOR FRAMEWORKS 04>
+				FA7A094322603B4C00B95E07 /* Foundation.framework */,
+				FA7A094122603B4500B95E07 /* UIKit.framework */,
+				FA7A093F22603B3F00B95E07 /* ImageIO.framework */,
+				FA7A093D22603B3400B95E07 /* CoreImage.framework */,
+				FA7A093B22603B2C00B95E07 /* WebKit.framework */,
+				FA7A093922603B2500B95E07 /* MediaPlayer.framework */,
+				FA7A093722603B1E00B95E07 /* libiconv.tbd */,
+				FA7A093522603B1400B95E07 /* libsqlite3.0.tbd */,
+				FA7A093322603B0C00B95E07 /* MobileCoreServices.framework */,
+				FA7A093122603B0400B95E07 /* CoreMotion.framework */,
+				FA7A092F22603AFB00B95E07 /* CoreMedia.framework */,
+				FA7A092D22603AF400B95E07 /* CoreVideo.framework */,
+				FA7A092B22603AED00B95E07 /* CoreFoundation.framework */,
+				FA7A092922603AE500B95E07 /* CoreLocation.framework */,
+				FA7A092722603ADE00B95E07 /* SystemConfiguration.framework */,
+				FA7A092522603AD600B95E07 /* AudioToolbox.framework */,
+				FA7A092322603ACF00B95E07 /* AVFoundation.framework */,
+				FA7A092122603AC700B95E07 /* CoreGraphics.framework */,
+				FA7A091F22603AC000B95E07 /* libz.tbd */,
+				FA7A091D22603AB900B95E07 /* libc++.tbd */,
+				FA7A091B22603AAE00B95E07 /* MapKit.framework */,
+				FA7A091922603AA700B95E07 /* CFNetwork.framework */,
+				FA7A091722603AA200B95E07 /* Security.framework */,
+				FA7A091522603A9B00B95E07 /* QuartzCore.framework */,
+				FA7A091322603A9000B95E07 /* EventKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FA7A095522603C4700B95E07 /* RhoRuby */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A096922603D0200B95E07 /* IRhoRuby.h */,
+				FA7A095D22603D0200B95E07 /* IRhoRubyArray.h */,
+				FA7A095A22603D0200B95E07 /* IRhoRubyBoolean.h */,
+				FA7A096A22603D0300B95E07 /* IRhoRubyFloat.h */,
+				FA7A096022603D0200B95E07 /* IRhoRubyHash.h */,
+				FA7A095F22603D0200B95E07 /* IRhoRubyInteger.h */,
+				FA7A096122603D0200B95E07 /* IRhoRubyMutableArray.h */,
+				FA7A096B22603D0300B95E07 /* IRhoRubyMutableBoolean.h */,
+				FA7A095C22603D0200B95E07 /* IRhoRubyMutableFloat.h */,
+				FA7A096422603D0200B95E07 /* IRhoRubyMutableHash.h */,
+				FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */,
+				FA7A095E22603D0200B95E07 /* IRhoRubyMutableString.h */,
+				FA7A096222603D0200B95E07 /* IRhoRubyNil.h */,
+				FA7A096822603D0200B95E07 /* IRhoRubyObject.h */,
+				FA7A096322603D0200B95E07 /* IRhoRubyRunnable.h */,
+				FA7A096522603D0200B95E07 /* IRhoRubyString.h */,
+				FA7A096622603D0200B95E07 /* RhoRuby.h */,
+				FA7A096722603D0200B95E07 /* RhoRubySingletone.h */,
+			);
+			path = RhoRuby;
+			sourceTree = "<group>";
+		};
+		FA7A095822603CCC00B95E07 /* RhoRuby.cpp */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A098B22603D2100B95E07 /* IArray.h */,
+				FA7A098022603D2000B95E07 /* IBoolean.h */,
+				FA7A098A22603D2000B95E07 /* IFloat.h */,
+				FA7A099122603D2100B95E07 /* IHash.h */,
+				FA7A098C22603D2100B95E07 /* IInteger.h */,
+				FA7A099022603D2100B95E07 /* IMutableArray.h */,
+				FA7A098122603D2000B95E07 /* IMutableBoolean.h */,
+				FA7A098922603D2000B95E07 /* IMutableFloat.h */,
+				FA7A098722603D2000B95E07 /* IMutableHash.h */,
+				FA7A098E22603D2100B95E07 /* IMutableInteger.h */,
+				FA7A098422603D2000B95E07 /* IMutableString.h */,
+				FA7A098322603D2000B95E07 /* INil.h */,
+				FA7A097F22603D2000B95E07 /* IObject.h */,
+				FA7A098622603D2000B95E07 /* IRefCountedObject.h */,
+				FA7A099222603D2100B95E07 /* IRhoRuby.h */,
+				FA7A098D22603D2100B95E07 /* IRunnable.h */,
+				FA7A098F22603D2100B95E07 /* IString.h */,
+				FA7A098822603D2000B95E07 /* RhoRuby.h */,
+				FA7A098222603D2000B95E07 /* RhoRubySingletone.h */,
+				FA7A098522603D2000B95E07 /* SmartPointer.h */,
+			);
+			path = RhoRuby.cpp;
+			sourceTree = "<group>";
+		};
+		FA7A0A9322630F9B00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0A9722630F9B00B95E07 /* librholib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0A9922630F9B00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0A9D22630F9B00B95E07 /* libcurl.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0A9F22630F9C00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0AA322630F9C00B95E07 /* librhosynclib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0AA522630F9C00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0AA922630F9C00B95E07 /* librhoextlib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0AAB22630F9C00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0AB022630F9C00B95E07 /* librhoappbaselib.a */,
+				FA7A0AB222630F9C00B95E07 /* libRhoAppBaseStandaloneLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0AB422630F9C00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0AB922630F9C00B95E07 /* librhorubylib.a */,
+				FA7A0ABB22630F9C00B95E07 /* librubymac.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA7A0AE222631E4E00B95E07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA7A0AE622631E4E00B95E07 /* libCoreAPI.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAD356BA2264206E00419673 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAD356C32264206E00419673 /* libRhoApplication.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAD3571D226458A000419673 /* RhodesLib */ = {
+			isa = PBXGroup;
+			children = (
+				FAD3572F226458D700419673 /* RhodesLib.h */,
+			);
+			path = RhodesLib;
+			sourceTree = "<group>";
+		};
+		FAE3BEEA22656ED500AE0C99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAE3BEEE22656ED500AE0C99 /* libDecryptstub.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FA7A090222603A0E00B95E07 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAD35730226458D700419673 /* RhodesLib.h in Headers */,
+				FA7A097C22603D0300B95E07 /* IRhoRuby.h in Headers */,
+				FA7A097D22603D0300B95E07 /* IRhoRubyFloat.h in Headers */,
+				FA7A097522603D0300B95E07 /* IRhoRubyNil.h in Headers */,
+				FA7A097722603D0300B95E07 /* IRhoRubyMutableHash.h in Headers */,
+				FA7A097322603D0300B95E07 /* IRhoRubyHash.h in Headers */,
+				FA7A097422603D0300B95E07 /* IRhoRubyMutableArray.h in Headers */,
+				FA7A097E22603D0300B95E07 /* IRhoRubyMutableBoolean.h in Headers */,
+				FA7A097122603D0300B95E07 /* IRhoRubyMutableString.h in Headers */,
+				FA7A096E22603D0300B95E07 /* IRhoRubyMutableInteger.h in Headers */,
+				FA7A096F22603D0300B95E07 /* IRhoRubyMutableFloat.h in Headers */,
+				FA7A097922603D0300B95E07 /* RhoRuby.h in Headers */,
+				FA7A096D22603D0300B95E07 /* IRhoRubyBoolean.h in Headers */,
+				FA7A097622603D0300B95E07 /* IRhoRubyRunnable.h in Headers */,
+				FA7A097B22603D0300B95E07 /* IRhoRubyObject.h in Headers */,
+				FA7A097A22603D0300B95E07 /* RhoRubySingletone.h in Headers */,
+				FA7A097822603D0300B95E07 /* IRhoRubyString.h in Headers */,
+				FA7A097022603D0300B95E07 /* IRhoRubyArray.h in Headers */,
+				FA7A097222603D0300B95E07 /* IRhoRubyInteger.h in Headers */,
+				FA7A090C22603A0F00B95E07 /* Rhodes.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FA7A090622603A0E00B95E07 /* Rhodes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA7A090F22603A0F00B95E07 /* Build configuration list for PBXNativeTarget "Rhodes" */;
+			buildPhases = (
+				FA7A090222603A0E00B95E07 /* Headers */,
+				FA7A090322603A0E00B95E07 /* Sources */,
+				FA7A090422603A0E00B95E07 /* Frameworks */,
+				FA7A090522603A0E00B95E07 /* Resources */,
+				FA7A09C222604B1600B95E07 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FAE3BED92265655200AE0C99 /* PBXTargetDependency */,
+				FAE3BED72265654F00AE0C99 /* PBXTargetDependency */,
+				FAE3BED52265654900AE0C99 /* PBXTargetDependency */,
+				FAE3BED32265654300AE0C99 /* PBXTargetDependency */,
+				FAE3BED12265653F00AE0C99 /* PBXTargetDependency */,
+				FAE3BECF2265653B00AE0C99 /* PBXTargetDependency */,
+				FAE3BECD2265653600AE0C99 /* PBXTargetDependency */,
+				FAE3BECB2265652600AE0C99 /* PBXTargetDependency */,
+			);
+			name = Rhodes;
+			productName = Rhodes;
+			productReference = FA7A090722603A0F00B95E07 /* Rhodes.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA7A08FE22603A0E00B95E07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "TAU Technologies";
+				TargetAttributes = {
+					FA7A090622603A0E00B95E07 = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1630;
+					};
+					FA7A09D82260564500B95E07 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = FA7A090122603A0E00B95E07 /* Build configuration list for PBXProject "Rhodes" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FA7A08FD22603A0E00B95E07;
+			productRefGroup = FA7A090822603A0F00B95E07 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = FA7A0AE222631E4E00B95E07 /* Products */;
+					ProjectRef = FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0A9922630F9B00B95E07 /* Products */;
+					ProjectRef = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
+				},
+				{
+					ProductGroup = FAE3BEEA22656ED500AE0C99 /* Products */;
+					ProjectRef = FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0AAB22630F9C00B95E07 /* Products */;
+					ProjectRef = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAD356BA2264206E00419673 /* Products */;
+					ProjectRef = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0AA522630F9C00B95E07 /* Products */;
+					ProjectRef = FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0A9322630F9B00B95E07 /* Products */;
+					ProjectRef = FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0AB422630F9C00B95E07 /* Products */;
+					ProjectRef = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
+				},
+				{
+					ProductGroup = FA7A0A9F22630F9C00B95E07 /* Products */;
+					ProjectRef = FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				FA7A090622603A0E00B95E07 /* Rhodes */,
+				FA7A09D82260564500B95E07 /* Framework */,
+				FAD3576F22646BEF00419673 /* Framework copy */,
+				FA4919062DED599300F3CEF6 /* FrameworkPods */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		FA7A0A9722630F9B00B95E07 /* librholib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librholib.a;
+			remoteRef = FA7A0A9622630F9B00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0A9D22630F9B00B95E07 /* libcurl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcurl.a;
+			remoteRef = FA7A0A9C22630F9B00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AA322630F9C00B95E07 /* librhosynclib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhosynclib.a;
+			remoteRef = FA7A0AA222630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AA922630F9C00B95E07 /* librhoextlib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhoextlib.a;
+			remoteRef = FA7A0AA822630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AB022630F9C00B95E07 /* librhoappbaselib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhoappbaselib.a;
+			remoteRef = FA7A0AAF22630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AB222630F9C00B95E07 /* libRhoAppBaseStandaloneLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRhoAppBaseStandaloneLib.a;
+			remoteRef = FA7A0AB122630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AB922630F9C00B95E07 /* librhorubylib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librhorubylib.a;
+			remoteRef = FA7A0AB822630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0ABB22630F9C00B95E07 /* librubymac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librubymac.a;
+			remoteRef = FA7A0ABA22630F9C00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA7A0AE622631E4E00B95E07 /* libCoreAPI.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libCoreAPI.a;
+			remoteRef = FA7A0AE522631E4E00B95E07 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAD356C32264206E00419673 /* libRhoApplication.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRhoApplication.a;
+			remoteRef = FAD356C22264206E00419673 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAE3BEEE22656ED500AE0C99 /* libDecryptstub.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDecryptstub.a;
+			remoteRef = FAE3BEED22656ED500AE0C99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FA7A090522603A0E00B95E07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				<PLACEHOLDER FOR RESOURCES 04>
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FA4919072DED599300F3CEF6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "source ~/.profile\n\nFRAMEWORK_NAME=\"Rhodes\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\nDERIVED_PATH=\"${BUILD_DIR}/deriveddata\"\n\nOUTPUT_DIR=\"./${FRAMEWORK_NAME}-Aggregated\"\n\nARCHS=\"${TAU_SIM_ARCHS}\"\n\nXcodebuild -workspace ${PROJECT_NAME}.xcworkspace -scheme ${FRAMEWORK_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} -derivedDataPath \"${DERIVED_PATH}\" install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"${TAU_SIM_ARCHS}\" OTHER_CFLAGS=\"-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL\"\n\nARCHS=\"${TAU_DEV_ARCHS}\"\n\nXcodebuild -workspace ${PROJECT_NAME}.xcworkspace -scheme ${FRAMEWORK_NAME} -sdk iphoneos -configuration ${CONFIGURATION} -derivedDataPath \"${DERIVED_PATH}\" install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"${TAU_DEV_ARCHS}\" OTHER_CFLAGS=\"-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL\"\n\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\nrm -rf \"$OUTPUT_DIR\"\nmkdir -p \"$OUTPUT_DIR\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n\nrm -rf \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\ncp -r \"${FRAMEWORK}\" \"$OUTPUT_DIR\"\n\n";
+		};
+		FA7A09DE2260570000B95E07 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "FRAMEWORK_NAME=\"Rhodes\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\nOUTPUT_DIR=\"./${FRAMEWORK_NAME}-Aggregated\"\n\nARCHS=\"${TAU_SIM_ARCHS}\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${FRAMEWORK_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"${TAU_SIM_ARCHS}\" OTHER_CFLAGS=\"-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL\"\n\nARCHS=\"${TAU_DEV_ARCHS}\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${FRAMEWORK_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"${TAU_DEV_ARCHS}\" OTHER_CFLAGS=\"-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL\"\n\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\nrm -rf \"$OUTPUT_DIR\"\nmkdir -p \"$OUTPUT_DIR\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n\nrm -rf \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\ncp -r \"${FRAMEWORK}\" \"$OUTPUT_DIR\"\n\n";
+		};
+		FAD3577022646BEF00419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "FRAMEWORK_NAME=\"Rhodes\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_BCSYMBOLMAP_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\nDEVICE_DSYM_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework.dSYM\"\nSIMULATOR_DSYM_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework.dSYM\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\nOUTPUT_DIR=\"./${FRAMEWORK_NAME}-Aggregated\"\n\nARCHS=\"x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -target ${FRAMEWORK_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"x86_64\" OTHER_CFLAGS=\"-fembed-bitcode\"\n\nARCHS=\"arm64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -target ${FRAMEWORK_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64\" OTHER_CFLAGS=\"-fembed-bitcode\"\n\n\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\nrm -rf \"$OUTPUT_DIR\"\nmkdir -p \"$OUTPUT_DIR\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n\nrm -rf \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\ncp -r \"${FRAMEWORK}\" \"$OUTPUT_DIR\"\n\n\ncp -r \"${DEVICE_DSYM_PATH}\" \"$OUTPUT_DIR\"\nlipo -create -output \"$OUTPUT_DIR/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" \\\n\"${DEVICE_DSYM_PATH}/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" \\\n\"${SIMULATOR_DSYM_PATH}/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" || exit 1\n\n\nUUIDs=$(dwarfdump --uuid \"${DEVICE_DSYM_PATH}\" | cut -d ' ' -f2)\nfor file in `find \"${DEVICE_BCSYMBOLMAP_PATH}\" -name \"*.bcsymbolmap\" -type f`; do\nfileName=$(basename \"$file\" \".bcsymbolmap\")\nfor UUID in $UUIDs; do\nif [[ \"$UUID\" = \"$fileName\" ]]; then\ncp -R \"$file\" \"$OUTPUT_DIR\"\ndsymutil --symbol-map \"$OUTPUT_DIR\"/\"$fileName\".bcsymbolmap \"$OUTPUT_DIR/${FRAMEWORK_NAME}.framework.dSYM\"\nfi\ndone\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA7A090322603A0E00B95E07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA7A09AC2260419D00B95E07 /* StubCode.m in Sources */,
+				FAED2B462DDE67660050B75E /* Empty.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FAE3BECB2265652600AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoApplication;
+			targetProxy = FAE3BECA2265652600AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BECD2265653600AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhoextlib;
+			targetProxy = FAE3BECC2265653600AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BECF2265653B00AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhosynclib;
+			targetProxy = FAE3BECE2265653B00AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED12265653F00AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rhorubylib;
+			targetProxy = FAE3BED02265653F00AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED32265654300AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoLib;
+			targetProxy = FAE3BED22265654300AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED52265654900AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoAppBaseStandaloneLib;
+			targetProxy = FAE3BED42265654900AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED72265654F00AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoAppBaseLib;
+			targetProxy = FAE3BED62265654F00AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED92265655200AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = curl;
+			targetProxy = FAE3BED82265655200AE0C99 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FA4919092DED599300F3CEF6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FA49190A2DED599300F3CEF6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FA7A090D22603A0F00B95E07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		FA7A090E22603A0F00B95E07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		FA7A091022603A0F00B95E07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					../..,
+					../../../shared,
+				);
+				INFOPLIST_FILE = Rhodes/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				/* MACH_O_TYPE = staticlib; */
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tautechnologies.Rhodes;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FA7A091122603A0F00B95E07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					../..,
+					../../../shared,
+				);
+				INFOPLIST_FILE = Rhodes/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				/* MACH_O_TYPE = staticlib; */
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tautechnologies.Rhodes;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FA7A09DA2260564500B95E07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FA7A09DB2260564500B95E07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FAD3577222646BEF00419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				OTHER_CFLAGS = "-fembed-bitcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FAD3577322646BEF00419673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				OTHER_CFLAGS = "-fembed-bitcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FA4919082DED599300F3CEF6 /* Build configuration list for PBXAggregateTarget "FrameworkPods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4919092DED599300F3CEF6 /* Debug */,
+				FA49190A2DED599300F3CEF6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA7A090122603A0E00B95E07 /* Build configuration list for PBXProject "Rhodes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA7A090D22603A0F00B95E07 /* Debug */,
+				FA7A090E22603A0F00B95E07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA7A090F22603A0F00B95E07 /* Build configuration list for PBXNativeTarget "Rhodes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA7A091022603A0F00B95E07 /* Debug */,
+				FA7A091122603A0F00B95E07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA7A09D92260564500B95E07 /* Build configuration list for PBXAggregateTarget "Framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA7A09DA2260564500B95E07 /* Debug */,
+				FA7A09DB2260564500B95E07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD3577122646BEF00419673 /* Build configuration list for PBXAggregateTarget "Framework copy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD3577222646BEF00419673 /* Debug */,
+				FAD3577322646BEF00419673 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FA7A08FE22603A0E00B95E07 /* Project object */;
+}

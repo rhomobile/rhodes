@@ -798,8 +798,13 @@ end
 
 
 
-def update_xcode_project_files_by_extensions
+def update_xcode_project_files_by_extensions(project_filepath=nil, frameworks_folder=nil, resource_folder=nil)
     fname = File.join(generate_correct_xcode_project_path, "project.pbxproj")
+
+    if project_filepath != nil
+        fname = project_filepath
+    end
+
     buf = ""
 
     replaces = {}
@@ -814,9 +819,17 @@ def update_xcode_project_files_by_extensions
     IPhoneBuild.log Logger::DEBUG,  "***** process extensions for iphone frameworks and resources START"
 
     frameworks_target_path = File.join($app_path, 'project', 'iphone', "Frameworks")
-    FileUtils.mkdir_p frameworks_target_path
-    resources_target_path = File.join($app_path, 'project', 'iphone')
 
+    if frameworks_folder != nil
+        frameworks_target_path = frameworks_folder
+    end
+    FileUtils.mkdir_p frameworks_target_path
+
+    resources_target_path = File.join($app_path, 'project', 'iphone')
+    if resource_folder != nil
+        resources_target_path = resource_folder
+    end
+    FileUtils.mkdir_p resources_target_path
 
     $app_extensions_list.each do |extname, extpath|
         IPhoneBuild.log Logger::DEBUG,  "     ** extension ["+extname+"] path ["+extpath+"]"
@@ -826,27 +839,38 @@ def update_xcode_project_files_by_extensions
                 IPhoneBuild.log Logger::DEBUG, "          ** iphone section found"
                 frameworks_file = extconf["iphone"]["frameworks_list"]
                 frameworks_path = extconf["iphone"]["frameworks_path"]
-                if (frameworks_file != nil) && (frameworks_path != nil)
+                if (frameworks_file != nil) || (frameworks_path != nil)
+                    if frameworks_path == nil
+                        frameworks_path = ""
+                    end
+
                     IPhoneBuild.log Logger::DEBUG, "          ** frameworks_file = "+frameworks_file.to_s
                     IPhoneBuild.log Logger::DEBUG, "          ** frameworks_path = "+frameworks_path.to_s
-                    File.new(File.join(extpath, frameworks_file),"r").read.each_line do |line|
-                       item = line.chomp
-                       if item.size > 0
-                           IPhoneBuild.log Logger::DEBUG, "               ** framework item = "+item.to_s
-                           framework_path = File.join(extpath, frameworks_path, item)
-                           IPhoneBuild.log Logger::DEBUG, "                 ** framework path = "+framework_path.to_s
-                           if File.exist?(framework_path)
-                               # custom framework
-                               IPhoneBuild.log Logger::DEBUG, "                 ** custom !"
-                               custom_frameworks_list << item
-                               # copy frameworks to project folder
-                               cp_r framework_path, frameworks_target_path
-                           else
-                               # system framework
-                               IPhoneBuild.log Logger::DEBUG, "                 ** system !"
-                               system_frameworks_list << item
+
+                    frameworks_full_path = File.join(extpath, frameworks_file)
+
+                    if File.exist?(frameworks_full_path)
+                        File.new(frameworks_full_path,"r").read.each_line do |line|
+                           item = line.chomp
+                           if item.size > 0
+                               IPhoneBuild.log Logger::DEBUG, "               ** framework item = "+item.to_s
+                               framework_path = File.join(extpath, frameworks_path, item)
+                               IPhoneBuild.log Logger::DEBUG, "                 ** framework path = "+framework_path.to_s
+                               if File.exist?(framework_path)
+                                   # custom framework
+                                   IPhoneBuild.log Logger::DEBUG, "                 ** custom !"
+                                   custom_frameworks_list << item
+                                   # copy frameworks to project folder
+                                   cp_r framework_path, frameworks_target_path
+                               else
+                                   # system framework
+                                   IPhoneBuild.log Logger::DEBUG, "                 ** system !"
+                                   system_frameworks_list << item
+                               end
                            end
-                       end
+                        end
+                    else
+                        IPhoneBuild.log Logger::DEBUG, "          ** ERROR: ["+frameworks_full_path+"] file not found !"
                     end
                 end
 
@@ -1346,6 +1370,7 @@ namespace "config" do
 
   task :set_iphone_platform do
     $current_platform = "iphone"
+    $rhodeslib_static_framework = false
   end
 
   task :iphone => [:set_iphone_platform, "config:common", "switch_app"] do
@@ -1782,6 +1807,15 @@ namespace "build" do
     end
 
 
+    desc "Build iphone static framework - set target path :  rake build:iphone:rhodeslib_static_framework['/Users/myuser/mypath']"
+    task :rhodeslib_static_framework, [:target_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
+
+        $rhodeslib_static_framework = true
+
+        Rake::Task['build:iphone:rhodeslib_framework'].invoke(args[:target_path])
+
+    end
+
     # [build:iphone:rhodeslib_framework]
     desc "Build iphone framework - set target path :  rake build:iphone:rhodeslib_framework['/Users/myuser/mypath']"
     task :rhodeslib_framework, [:target_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
@@ -1807,7 +1841,8 @@ namespace "build" do
 
         end
 
-
+        lib_build_dir = File.join($startdir, "platform/iphone/Framework/Rhodes/build")
+        rm_rf lib_build_dir if File.exist? lib_build_dir
 
         # prepare tmp folder
         lib_temp_dir = File.join($startdir, "platform/iphone/Framework/LibFactory")
@@ -1917,10 +1952,86 @@ namespace "build" do
         rm_rf framework_build_dir
 
 
+        # generate new Rhodes.xcode_project (copy from template)
+        rhodes_project_file = File.join(framework_dir, "Rhodes.xcodeproj/project.pbxproj")
+        rhodes_project_template_file = File.join(framework_dir, "Rhodes.template/project.pbxproj")
+        rm_rf rhodes_project_file if File.exist? rhodes_project_file
+        cp rhodes_project_template_file, rhodes_project_file
+
+        # process Frameworks, Resources
+        frameworks_folder = File.join(framework_dir, "Frameworks")
+        rm_rf frameworks_folder if File.exist? frameworks_folder
+        FileUtils.mkdir_p frameworks_folder
+
+        resources_folder = File.join(framework_dir, "Rhodes")
+
+        FileUtils.mkdir_p resources_folder
+
+        update_xcode_project_files_by_extensions(rhodes_project_file, frameworks_folder, resources_folder)
+
+        #update for staticlib
+        if $rhodeslib_static_framework
+            buf = ""
+            File.new(rhodes_project_file,"r").read.each_line do |line|
+                line.gsub!("/* MACH_O_TYPE = staticlib; */","MACH_O_TYPE = staticlib;")
+                buf << line
+            end
+            File.open(rhodes_project_file,"w") { |f| f.write(buf) }
+        end
+
+
+        # copy Podfile and call pod install
+
+        workspace_path = File.join(framework_dir, "Rhodes.xcworkspace")
+
+        rm_rf workspace_path if File.exist? workspace_path
+
+        rm_rf File.join(framework_dir, 'Podfile') if File.exist? File.join(framework_dir, 'Podfile')
+        rm_rf File.join(framework_dir, 'Pods') if File.exist? File.join(framework_dir, 'Pods')
+        rm_rf File.join(framework_dir, 'Podfile.lock') if File.exist? File.join(framework_dir, 'Podfile.lock')
+
+        podfile_app_path = File.join($app_path, "Podfile_ZZ")
+        if File.exist?(podfile_app_path)
+            podfile_project_path = File.join(framework_dir, 'Podfile')
+
+
+            cp podfile_app_path,podfile_project_path
+
+             #path Podfile
+             buf = ""
+             File.new(podfile_project_path,"r").read.each_line do |line|
+               line.gsub!("rhorunner", "Rhodes")
+               buf << line
+             end
+
+             #buf << "\n"
+             #buf << "target 'FrameworkPods' do\n"
+             #buf << "end\n"
+
+             File.open(podfile_project_path,"w") { |f| f.write(buf) }
+
+
+            currentdir = Dir.pwd()
+            chdir framework_dir
+
+            puts "We found Podfile in app's root and copy them to iphone project folder. Now we run 'pod install' to generate workspace, etc."
+            Jake.run('pod', ['install'])
+
+            chdir currentdir
+        end
+
+        # build workspace if Podfile was copied and processed (add new target aggregate with workspace use)
+
         ENV["TAU_DEV_ARCHS"] = get_archs_string_device
         ENV["TAU_SIM_ARCHS"] = get_archs_string_simulator
 
         args = ['clean', 'install', '-target', "Framework",'-project', "Rhodes.xcodeproj"]
+
+        if File.exist?(workspace_path)
+            derived_path = File.join(framework_dir, "build", "deriveddata")
+            args = ['clean', 'install', '-scheme', "FrameworkPods",'-workspace', "Rhodes.xcworkspace", '-configuration', $configuration, '-sdk', $sdk, '-quiet', '-derivedDataPath', "\""+derived_path+"\""]
+        end
+
         Dir.chdir framework_dir
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
 
