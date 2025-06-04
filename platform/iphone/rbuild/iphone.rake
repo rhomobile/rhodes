@@ -1990,7 +1990,7 @@ namespace "build" do
         rm_rf File.join(framework_dir, 'Pods') if File.exist? File.join(framework_dir, 'Pods')
         rm_rf File.join(framework_dir, 'Podfile.lock') if File.exist? File.join(framework_dir, 'Podfile.lock')
 
-        podfile_app_path = File.join($app_path, "Podfile_ZZ")
+        podfile_app_path = File.join($app_path, "Podfile")
         if File.exist?(podfile_app_path)
             podfile_project_path = File.join(framework_dir, 'Podfile')
 
