@@ -194,6 +194,13 @@ class Aapt2Helper
             end
         end
 
+        if no_compress_exts
+            no_compress_exts.each do |ext|
+                args_common << '-0'
+                args_common << ext
+            end
+        end
+
         @intermediate_apk = File.join(@intermediate,'output.apk')
         #make a dir to put generated R.java
         rdir = File.join(@intermediate,'rjava')
