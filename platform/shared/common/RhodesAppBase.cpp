@@ -32,13 +32,161 @@
 #include "unzip/gunzip.h"
 #include "sync/RhoconnectClientManager.h"
 #include "net/INetRequest.h"
+#include "common/IRhoClassFactory.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 extern "C" int  rho_ruby_is_started();
 extern "C" const char* rho_rhodesapp_getapprootpath();
 
+extern "C"
+{
+#define RHO_ZIP_FORMAT_ZIP      1
+#define RHO_ZIP_FORMAT_GZIP     2
+#define RHO_ZIP_FORMAT_INVALID  -1
+
+static int rho_get_zip_format(const rho::String& sZipPath)
+{
+  rho::common::CRhoFile f;
+  f.open(sZipPath.c_str(), rho::common::CRhoFile::OpenReadOnly);
+  if ( f.isOpened() )
+  {
+    unsigned char buf[4];
+    f.readData(buf, 0, 4);
+    
+    if (buf[0]=='P' && buf[1]=='K' && buf[2]==3 && buf[3]==4) {
+      return RHO_ZIP_FORMAT_ZIP;
+    } else if ( buf[0]==0x1f && buf[1]==0x8b && buf[2]==0x08 ) {
+      return RHO_ZIP_FORMAT_GZIP;
+    }
+  }
+  return RHO_ZIP_FORMAT_INVALID;
+}
+    
+//TODO: use System.unzip_file
+int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
+{
+    rho::String sZipPath("");
+    rho::String sPsw("");
+    rho::String sOutputFilename("");
+    
+    if ( szZipPath != 0 )
+    {
+        sZipPath = szZipPath;
+    }
+    
+    if ( psw != 0 )
+    {
+        sPsw = psw;
+    }
+    
+    if ( outputFilename != 0 )
+    {
+        sOutputFilename = outputFilename;
+    }
+
+    rho::common::IArchiever* archiever = rho_get_RhoClassFactory()->createArchiever();
+
+    LOG(TRACE) + "Archiever: " + (long)archiever;
+
+    if (archiever==0)
+    {
+        LOG(ERROR) + "Archiever not found";
+        return -1;
+    }
+
+  switch( rho_get_zip_format(sZipPath) )
+  {
+    case RHO_ZIP_FORMAT_ZIP:  
+        return archiever->unzipZipFile(sZipPath, sPsw);
+    case RHO_ZIP_FORMAT_GZIP:
+        return archiever->unzipGZipFile(sZipPath, sPsw);
+  }
+
+  return -1;
+}
+
+static int rho_internal_unzip_zip(const rho::String& sZipPath, const rho::String& sPsw)
+{   
+    rho::common::CFilePath oPath(sZipPath);
+    rho::String strBaseDir = oPath.getFolderName();
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_UWP)
+    rho::StringW strZipPathW;
+    rho::common::convertToStringW(sZipPath.c_str(), strZipPathW);
+    HZIP hz = OpenZipFile((TCHAR*)strZipPathW.c_str(), sPsw.empty()?0:sPsw.c_str());
+    if ( !hz )
+        return -1;
+	// Set base for unziping
+    SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
+#else
+    HZIP hz = OpenZipFile((TCHAR*)sZipPath.c_str(), sPsw.empty()?0:sPsw.c_str());
+    
+    if ( !hz )
+        return -1;
+
+	// Set base for unziping
+    SetUnzipBaseDir(hz,(TCHAR*)strBaseDir.c_str() );
+#endif
+
+	ZIPENTRY ze;
+    ZRESULT res = 0;
+	// Get info about the zip
+	// -1 gives overall information about the zipfile
+	res = GetZipItem(hz,-1,&ze);
+	int numitems = ze.index;
+
+    LOG(INFO) + "Unzip : " + sZipPath + "; Number of items : " + numitems;
+	// Iterate through items and unzip them
+	for (int zi = 0; zi<numitems; zi++)
+	{ 
+		// fetch individual details, e.g. the item's name.
+		res = GetZipItem(hz,zi,&ze); 
+        if ( res == ZR_OK )
+        {
+    		res = UnzipItem(hz, zi, ze.name);
+            if ( res != 0 )
+                LOG(ERROR) + "Unzip item failed: " + res + "; " +
+				#if defined(OS_WP8) || defined(OS_UWP)
+				(char*)
+				#endif
+				ze.name;
+        }
+        else
+            LOG(ERROR) + "Get unzip item failed: " + res + "; " + zi;
+	}
+
+	CloseZip(hz);
+
+    return res;
+}
+
+static int rho_internal_unzip_gzip(const rho::String& inputFilename, const rho::String& outputFilename)
+{
+    return gunzip::UnzipGzip(inputFilename.c_str(), outputFilename.c_str());
+}
+
+} // extern "C"
+
 namespace rho {
 namespace common{
+
+class DefaultArchiver : public IArchiever
+{
+public:
+    DefaultArchiver() {}
+    ~DefaultArchiver() {}
+
+    int unzipZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_zip(strFilePath, strPassword);
+    }
+
+    int unzipGZipFile(const String& strFilePath, const String& strPassword) 
+    {
+        return rho_internal_unzip_gzip(strFilePath, strPassword);
+    }
+};
+
+static DefaultArchiver g_defaultArchiver;
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
@@ -83,6 +231,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
     m_bRubyNodeJSApplication = rubynodejs_app && (strcmp(rubynodejs_app,"true") == 0);
 
     initAppUrls();
+
+    rho_get_RhoClassFactory()->registerArchiever( "default", &g_defaultArchiver, true );
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
+    rho_get_RhoClassFactory()->setDefaultArchiever( "default");
+    LOG(TRACE) + "Registered archiever: default: " + (long)rho_get_RhoClassFactory()->createArchiever() + " default instance: " + (long)&g_defaultArchiver;
 }
 	
 void CRhodesAppBase::initAppUrls() 
@@ -323,103 +476,6 @@ boolean CRhodesAppBase::sendLogInSameThread()
 } //namespace rho
 
 extern "C" {
-
-#define RHO_ZIP_FORMAT_ZIP      1
-#define RHO_ZIP_FORMAT_GZIP     2
-#define RHO_ZIP_FORMAT_INVALID  -1
-
-static int rho_get_zip_format(const char* szZipPath)
-{
-  rho::common::CRhoFile f;
-  f.open(szZipPath, rho::common::CRhoFile::OpenReadOnly);
-  if ( f.isOpened() )
-  {
-    unsigned char buf[4];
-    f.readData(buf, 0, 4);
-    
-    if (buf[0]=='P' && buf[1]=='K' && buf[2]==3 && buf[3]==4) {
-      return RHO_ZIP_FORMAT_ZIP;
-    } else if ( buf[0]==0x1f && buf[1]==0x8b && buf[2]==0x08 ) {
-      return RHO_ZIP_FORMAT_GZIP;
-    }
-  }
-  return RHO_ZIP_FORMAT_INVALID;
-}
-
-static int rho_internal_unzip_zip(const char* szZipPath, const char* psw);
-static int rho_internal_unzip_gzip(const char* szZipPath, const char* outputFilename);
-    
-//TODO: use System.unzip_file
-int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outputFilename )
-{
-  switch( rho_get_zip_format(szZipPath) )
-  {
-  case RHO_ZIP_FORMAT_ZIP:  return rho_internal_unzip_zip(szZipPath, psw); break;
-  case RHO_ZIP_FORMAT_GZIP: return rho_internal_unzip_gzip(szZipPath, outputFilename); break;
-  }
-
-  return -1;
-}
-
-static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
-{
-    rho::common::CFilePath oPath(szZipPath);
-    rho::String strBaseDir = oPath.getFolderName();
-#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_UWP)
-    rho::StringW strZipPathW;
-    rho::common::convertToStringW(szZipPath, strZipPathW);
-    HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
-    if ( !hz )
-        return -1;
-	// Set base for unziping
-    SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
-#else
-    HZIP hz = OpenZipFile((TCHAR*)szZipPath, psw);
-    
-    if ( !hz )
-        return -1;
-
-	// Set base for unziping
-    SetUnzipBaseDir(hz,(TCHAR*)strBaseDir.c_str() );
-#endif
-
-	ZIPENTRY ze;
-    ZRESULT res = 0;
-	// Get info about the zip
-	// -1 gives overall information about the zipfile
-	res = GetZipItem(hz,-1,&ze);
-	int numitems = ze.index;
-
-    LOG(INFO) + "Unzip : " + szZipPath + "; Number of items : " + numitems;
-	// Iterate through items and unzip them
-	for (int zi = 0; zi<numitems; zi++)
-	{ 
-		// fetch individual details, e.g. the item's name.
-		res = GetZipItem(hz,zi,&ze); 
-        if ( res == ZR_OK )
-        {
-    		res = UnzipItem(hz, zi, ze.name);
-            if ( res != 0 )
-                LOG(ERROR) + "Unzip item failed: " + res + "; " +
-				#if defined(OS_WP8) || defined(OS_UWP)
-				(char*)
-				#endif
-				ze.name;
-        }
-        else
-            LOG(ERROR) + "Get unzip item failed: " + res + "; " + zi;
-	}
-
-	CloseZip(hz);
-
-    return res;
-}
-
-static int rho_internal_unzip_gzip(const char* inputFilename, const char* outputFilename)
-{
-    return gunzip::UnzipGzip(inputFilename, outputFilename);
-}
-
 
 //TODO_REMOVE : rho_rhodesapp_getplatform
 #ifdef RHODES_EMULATOR
