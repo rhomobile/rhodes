@@ -1251,6 +1251,7 @@ public class RhodesService extends Service {
      * @throws URISyntaxException, ActivityNotFoundException */
     public static void openExternalUrl(String url) throws URISyntaxException, ActivityNotFoundException
     {
+		Logger.D(TAG, "openExternalUrl: " + url);
             if(url.charAt(0) == '/')
                 url = "file://" + RhoFileApi.absolutePath(url);
 

@@ -33,6 +33,8 @@ import java.io.File;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoFileProvider;
+import android.os.Build;
 
 import android.content.Context;
 import android.content.Intent;
@@ -67,6 +69,7 @@ public class LocalFileHandler implements UriHandler
             return false;
         
         String noAnchorUrl = URLUtil.stripAnchor(url);
+        Logger.D(TAG, "is Html Url: " + isHtmlUrl(noAnchorUrl));
         if (isHtmlUrl(noAnchorUrl)) {
             return false;
         }

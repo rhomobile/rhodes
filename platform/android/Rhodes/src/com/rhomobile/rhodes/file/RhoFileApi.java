@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesService;
@@ -53,6 +54,8 @@ import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.webkit.WebView;
+import android.net.Uri;
+import android.content.Intent;
 
 public class RhoFileApi {
 	
@@ -431,16 +434,22 @@ public class RhoFileApi {
     public static ParcelFileDescriptor openParcelFd(String path)
     {
         try {
-            if(needEmulate(path)) {
-                return null;
-            } else {
-                String absPath = absolutePath(path);
+			if (needEmulate(path)) {
+				Context ctx = RhodesService.getContext();
+				String rel = makeRelativePath(path);
+				try{
+					ensureFileCopied(ctx, rel);
+				} catch (IOException e) {
+					Logger.D(TAG, "Can not copy asset file: " + rel + " - " + e.getMessage());
+					return null;
+				}
+			}
+			String absPath = absolutePath(path);
 
-                Logger.D(TAG, "Opening file from file system: " + absPath);
+			Logger.D(TAG, "Opening file from file system: " + absPath);
     
-                File file = new File(absPath);
-                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-            }
+			File file = new File(absPath);
+			return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
         } catch (FileNotFoundException e) {
             Logger.E(TAG, "Can not open ParcelFileDescriptor" + e.getMessage());
             return null;
@@ -453,15 +462,17 @@ public class RhoFileApi {
                 String relPath = makeRelativePath(path);
 
                 Logger.D(TAG, "Opening file from assets: " + relPath);
-
-                return am.openFd(relPath);
                 
-            } else {
+				return am.openFd(relPath);
+            
+			} else {
                 String absPath = absolutePath(path);
+                
+				Logger.D(TAG, "Opening file from file system: " + absPath);
 
-                Logger.D(TAG, "Opening file from file system: " + absPath);
-
-                return am.openNonAssetFd(absPath);
+				File file = new File(absPath);
+				ParcelFileDescriptor pfd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+				return new AssetFileDescriptor(pfd, 0, file.length());
             }
         } catch (IOException e) {
             Logger.E(TAG, "Can not open AssetFileDescriptor: " + path);
@@ -469,6 +480,25 @@ public class RhoFileApi {
             return null;
         }
     }
+
+	public static File ensureFileCopied(Context ctx, String assetPath) throws IOException {
+		File dest = new File(
+				ctx.getApplicationInfo().dataDir + "/rhodata/apps/public",
+				new File(assetPath).getName()
+		);
+
+		if (!dest.exists()) {
+			dest.getParentFile().mkdirs();
+
+			try (InputStream is = ctx.getAssets().open(assetPath);
+				FileOutputStream os = new FileOutputStream(dest)) {
+				byte[] buf = new byte[8192];
+				int n;
+				while ((n = is.read(buf)) != -1) os.write(buf, 0, n);
+			}
+		}
+		return dest;
+	}
 
 	public static InputStream openInPackage(String path)
 	{
