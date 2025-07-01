@@ -1,500 +1,342 @@
-require 'set'
-require 'uri'
-require 'timeout'
+require "socket"
+require "json/pure"
+require "set"
 
-DEBUGGER_STEP_TYPE = ['STEP', 'STOVER', 'STRET', 'SUSP']
-DEBUGGER_STEP_COMMENT = ['Stepped into', 'Stepped over', 'Stepped return', 'Suspended']
-
-DEBUGGER_LOG_LEVEL_DEBUG = 0
-DEBUGGER_LOG_LEVEL_INFO = 1
-DEBUGGER_LOG_LEVEL_WARN = 2
-DEBUGGER_LOG_LEVEL_ERROR = 3
-
-class BreakPoints
-
-  def initialize
-    @break_points = Hash.new
-    @enabled = true
+class DAPServer
+  def initialize(host, port)
+    @breakpoints = {}  # ключ: путь, значение: Set строк
+    @current_binding = nil
+    @stack_frames = []
+    @frame_bindings = {}
+    @next_var_ref = 1
+    @variables_map = {} # variablesReference => [binding, :local | :instance | :global]
+    @server = TCPServer.new(host, port)
+    puts "DAP server listening on #{host}:#{port}"
   end
 
-  def enabled?
-    @enabled
-  end
-
-  def be_enabled
-    @enabled = true
-  end
-
-  def be_disabled
-    @enabled = false
-  end
-
-
-  def set_on?(file, line)
-    unless @break_points.has_key?(file)
-      return false
-    end
-    @break_points[file].include?(line)
-  end
-
-  def set_break_point_on(file, line)
-    unless @break_points.has_key?(file)
-      @break_points[file] = Set.new
-    end
-    @break_points[file].add(line)
-  end
-
-  def set_break_points_on(file, lines)
-    lines.each do |line|
-      set_break_point_on(file, line)
+  def start
+    loop do
+      @client = @server.accept
+      Thread.new { handle_client() }
     end
   end
 
-  def delete_all_break_points
-    @break_points.clear
-  end
+  def handle_client()
+    loop do
+      header = read_header()
+      break unless header
 
-  def delete_break_point_on(file, line)
-    if @break_points.has_key?(file)
-      @break_points[file].delete(line)
+      content_length = header["Content-Length"].to_i
+      json_data = @client.read(content_length)
+      request = Rho::JSON.parse(json_data)
+      handle_request(request)
     end
+  rescue => e
+    puts "[Error] #{e.message}"
+  ensure
+    @client&.close
   end
 
-  def delete_all_break_points_on(file)
-    if @break_points.has_key?(file)
-      @break_points[file].clear
+  def read_header()
+    header = {}
+    while (line = @client.gets)
+      line = line.strip
+      break if line.empty?
+      key, value = line.split(/:\s*/, 2)
+      header[key] = value
     end
+    header.empty? ? nil : header
   end
 
-  def empty?
-    return @break_points.empty?
+  def send_response(req, body: {}, success: true, message: nil)
+    response = {
+      type: "response",
+      request_seq: req["seq"],
+      success: success,
+      command: req["command"],
+    }
+    response[:body] = body if body.any?
+    response[:message] = message if message
+    write_message(response)
   end
 
-
-end
-
-def debugger_log(level, msg)
-  if (level >= DEBUGGER_LOG_LEVEL_DEBUG) #DEBUGGER_LOG_LEVEL_WARN)
+  def send_event(event_name, body = {})
+    event = {
+      type: "event",
+      event: event_name,
+      body: body,
+    }
+    write_message(event)
   end
-end
 
-def log_command(cmd)
-  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Received command: #{cmd}")
-end
-
-def convert_to_relative_path(path, app_path)
-  if path.include?("./")
-    relative_path = "/" + path[path.index("./") + 2, path.length]
-  elsif path.include?("lib")
-    relative_path = "framework" + path[path.index("lib") + 3, path.length]
-  elsif path.include?("framework")
-    relative_path = path[path.index("framework"), path.length]
-  elsif path.include?("extensions")
-    relative_path = path[path.index("extensions"), path.length]
-  else
-    relative_path = path[app_path.length, path.length - app_path.length]
+  def write_message(message)
+    body = message.to_json
+    header = "Content-Length: #{body.bytesize}\r\n\r\n"
+    puts "app -> vsc: #{body}"
+    @client.write(header + body)
   end
-  return relative_path
-end
 
-def debug_read_cmd(io, wait)
-  begin
-    if wait
-      cmd = io.readpartial(4096)
-      $_cmd << cmd if cmd !~ /^\s*$/
+  def handle_request(req)
+    puts "vsc -> app: #{req}"
+
+    return unless req["type"] == "request"
+
+    case req["command"]
+    when "initialize"
+      handle_initialize(req)
+    when "attach"
+      handle_attach(req)
+    when "threads"
+      handle_threads(req)
+    when "stackTrace"
+      handle_stack_trace(req)
+    when "scopes"
+      handle_scopes(req)
+    when "variables"
+      handle_variables(req)
+    when "disconnect"
+      handle_disconnect(req)
+    when "setBreakpoints"
+      handle_set_breakpoints(req)
+    when "evaluate"
+      handle_evaluate(req)
+    when "continue"
+      handle_continue(req)
     else
-      cmd = io.read_nonblock(4096)
-      $_cmd << cmd if cmd !~ /^\s*$/
+      send_response(req, success: false, message: "Command not implemented")
     end
-  rescue
-    # puts $!.inspect
-  end
-end
-
-def execute_cmd(cmd, advanced)
-  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}, #{advanced}")
-  cmd = URI.unescape(cmd.gsub(/\+/, ' ')) if advanced
-  result = ""
-  error = '0';
-  begin
-    result = eval(cmd.to_s, $_binding).inspect
-  rescue Exception => exc
-    error = '1';
-    result = "#{$!}".inspect
   end
 
-  cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
-  $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':' + (error.to_i != 0 ? 'ERROR: ' : '')) + result + "\n")
-end
+  def trace_callback(event, file, line, method_name, binding, klass)
+    normalized_file = File.expand_path(file)
+    return unless normalized_file.start_with?(@root_path)
 
-def get_variables_obsolete(scope)
-  if (scope =~ /^GVARS/)
-    cmd = "global_variables"
-    prefix = ""
-    vartype = "G"
-  elsif (scope =~ /^LVARS/)
-    cmd = "local_variables"
-    prefix = ""
-    vartype = "L"
-  elsif (scope =~ /^CVARS/)
-    if $_classname =~ /^\s*$/
+    msg = "[#{event}] #{file}:#{line} #{klass} #{method_name}"
+    send_output_event("console", msg)
+
+    return unless event == "line"
+
+    lines = @breakpoints[normalized_file]
+    return unless lines&.include?(line)
+
+    unless @stopped
+      @stopped = true
+      puts "[BREAK] Hit breakpoint at #{normalized_file}:#{line}"
+
+      @current_binding = binding
+      update_stack_frames(binding)
+      handle_breakpoint_hit(normalized_file, line)
+    end
+  end
+
+  # === Command Handlers ===
+
+  def handle_continue(req)
+    @wait_for_continue = false
+    send_response(req, body: { allThreadsContinued: true })
+  end
+
+  def handle_initialize(req)
+    send_response(req, body: { supportsEvaluateForHovers: true })
+    send_event("initialized")
+  end
+
+  def handle_attach(req)
+    args = req["arguments"] || {}
+
+    @root_path = File.expand_path(args["appRoot"] || Dir.pwd)
+    puts "APP ROOT: #{@root_path}"
+
+    set_trace_func method(:trace_callback).to_proc
+    send_response(req)
+  end
+
+  def handle_threads(req)
+    threads = Thread.list.map { |each| { :id => each.object_id, :name => each } }
+    send_response(req, body: { threads: threads })
+  end
+
+  def handle_set_breakpoints(req)
+    source = req.dig("arguments", "source", "path")
+    breakpoints = req.dig("arguments", "breakpoints") || []
+
+    lines = breakpoints.map { |bp| bp["line"] }.to_set
+    @breakpoints[source] = lines
+
+    # Подтверждение установки
+    send_response(req, body: {
+                         breakpoints: lines.map { |line| { verified: true, line: line } },
+                       })
+  end
+
+  def handle_stack_trace(req)
+    thread_id = req.dig("arguments", "threadId")
+
+    #Для MVP: поддержка только главного потока
+    if Thread.main.object_id != thread_id
+      send_response(req, body: { stackFrames: [], totalFrames: 0 })
       return
     end
-    cmd = "class_variables"
-    prefix = "#{$_classname}."
-    vartype = "C"
-  elsif (scope =~ /^IVARS/)
-    if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
-      return
-    end
-    cmd = "instance_variables"
-    prefix = "self."
-    vartype = "I"
+
+    frames = @stack_frames || []
+    send_response(req, body: {
+                         stackFrames: frames,
+                         totalFrames: frames.size,
+                       })
   end
 
-  vars = eval(prefix + cmd, $_binding)
-  variables = vars.map { |eachVar|
-    value = eval(eachVar.to_s, $_binding)
-    {
-        :name => eachVar,
-        :type => value.class.name,
-        :value => value.inspect,
-        :variablesReference => 0
+  def handle_disconnect(req)
+    send_response(req)
+    # Доп. логика: остановить обработку, закрыть соединение и т. д.
+  end
+
+  def handle_evaluate(req)
+    expr = req.dig("arguments", "expression") || ""
+    result = "Echo: #{expr}"
+    send_response(req, body: {
+                         result: result,
+                         variablesReference: 0,
+                       })
+  end
+
+  def send_output_event(category, message)
+    send_event("output", {
+      category: category,
+      output: message + "\n",
+    })
+  end
+
+  def update_stack_frames(binding)
+    locations = caller_locations(1) # skip this method itself
+    @stack_frames = []
+    @frame_bindings = {}
+
+    filtered = []
+
+    # Обрезаем стек выше trace_callback
+    locations.each do |loc|
+      path = File.expand_path(loc.path)
+      next if path.include?(__FILE__) # пропускаем вызовы из этого файла (DAP-сервер)
+      filtered << loc
+    end
+
+    filtered.each_with_index do |loc, i|
+      @stack_frames << {
+        id: i,
+        name: loc.label,
+        source: { name: File.basename(loc.path), path: File.expand_path(loc.path) },
+        line: loc.lineno,
+        column: 1,
+      }
+
+      # пока только верхний frame имеет binding
+      @frame_bindings[i] = binding if i == 0
+    end
+  end
+
+  def handle_scopes(req)
+    frame_id = req.dig("arguments", "frameId")
+    binding = @frame_bindings[frame_id]
+
+    scopes = []
+
+    if binding
+      local_ref = @next_var_ref
+      @next_var_ref += 1
+      @variables_map[local_ref] = [binding, :local]
+
+      scopes << {
+        name: "Local",
+        variablesReference: local_ref,
+        expensive: false,
+      }
+
+      instance_ref = @next_var_ref
+      @next_var_ref += 1
+      @variables_map[instance_ref] = [binding, :instance]
+
+      scopes << {
+        name: "Instance",
+        variablesReference: instance_ref,
+        expensive: false,
+      }
+    end
+
+    global_ref = @next_var_ref
+    @next_var_ref += 1
+    @variables_map[global_ref] = [nil, :global]
+
+    scopes << {
+      name: "Global",
+      variablesReference: global_ref,
+      expensive: true,
     }
-  }
 
-  message = {:event => 'variables', :variables => variables}
-  $_s.write("#{message.to_json}\n")
-
-
-end
-
-def get_local_variables() end
-
-def get_variables(scope)
-  if (scope === 'global')
-    cmd = "global_variables"
-    prefix = ""
-  elsif (scope === 'local')
-    cmd = "local_variables"
-    prefix = ""
-  elsif (scope === 'instance')
-    if $_classname =~ /^\s*$/
-      return
-    end
-    cmd = "class_variables"
-    prefix = "#{$_classname}."
-  elsif (scope === 'classInstance')
-    if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
-      return
-    end
-    cmd = "instance_variables"
-    prefix = "self."
+    send_response(req, body: { scopes: scopes })
   end
 
-  vars = eval(prefix + cmd, $_binding)
-  variables = vars.map { |eachVar|
-    value = eval(eachVar.to_s, $_binding)
-    {
-        :name => eachVar,
-        :type => value.class.name,
-        :value => value.inspect,
-        :variablesReference => 0
-    }
-  }
+  def handle_variables(req)
+    ref = req.dig("arguments", "variablesReference")
+    binding, scope_type = @variables_map[ref]
 
-  {:event => 'variables', :variables => variables}
-end
-
-def get_treads
-  threads = Thread.list.map { |each| {:id => each.object_id, :name => each} }
-  {:event => :threads, :threads => threads}
-end
-
-def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
-  thread = Thread.list.find { |each| each.object_id == thread_id }
-
-  backtrace = thread.backtrace
-  cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
-  frames = cutted_backtrace.map.with_index { |each, idx|
-    parts = each.split(':')
-    if launched_on_rhosim
-      if windows_platform
-        # C:/Users/mva/projects/rhomobile/rhodes/lib/extensions/debugger/debugger.rb:633:
-        file = convert_to_relative_path(parts[0] + ':' + parts[1], $_app_path)
-        line = parts[2].to_i
-        name = parts[3]
+    vars = case scope_type
+      when :local
+        binding.local_variables.map do |name|
+          build_var(name, binding.local_variable_get(name))
+        end
+      when :instance
+        self_obj = binding.eval("self")
+        self_obj.instance_variables.map do |name|
+          build_var(name, self_obj.instance_variable_get(name))
+        end
+      when :global
+        global_variables.map do |name|
+          build_var(name, eval(name.to_s))
+        end
       else
-        file = convert_to_relative_path(parts[0], $_app_path)
-        line = parts[1].to_i
-        name = parts[2]
+        []
       end
-    else
-      file = convert_to_relative_path(parts[0], $_app_path)
-      line = parts[1].to_i
-      name = parts[2]
-    end
 
+    send_response(req, body: { variables: vars })
+  end
+
+  def build_var(name, value)
     {
-        :index => idx,
-        :name => name, #parts[2]
-        :file => file, #launched_on_rhosim ? parts[0] : convert_to_relative_path(parts[0], $_app_path),
-        :line => line, #parts[1].to_i,
-        :column => 0
+      name: name.to_s,
+      value: value.inspect,
+      type: value.class.to_s,
+      variablesReference: 0, # позже можно расширить
     }
-  }
+  rescue => e
+    {
+      name: name.to_s,
+      value: "[error: #{e.message}]",
+      type: "Error",
+      variablesReference: 0,
+    }
+  end
 
-  {:event => :stacktrace, :frames => frames, :count => frames.size}
+  def handle_breakpoint_hit(file, line)
+    send_stopped_event(reason: "breakpoint", thread_id: Thread.current.object_id)
+    @wait_for_continue = true
+    sleep 0.05 while @wait_for_continue
+    @stopped = false
+  end
+
+  def send_stopped_event(reason:, thread_id:)
+    send_event("stopped", {
+      reason: reason,
+      threadId: thread_id,
+      allThreadsStopped: true,
+    })
+  end
 end
 
-def debug_handle_cmd(inline)
-  if ($_cmd.size != 0)
-    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "$_cmd: #{$_cmd}")
-  end
+# === Запуск ===
 
-  cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
-  processed = false
-  wait = inline
+debug_host = ENV["DEBUG_HOST"] || "127.0.0.1"
+debug_port = (ENV["DEBUG_PORT"] || 9000).to_i
 
-  if cmd != ""
-    begin
-      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "incoming command #{cmd}")
-      json = Rho::JSON.parse(cmd)
-      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Command json #{json}")
-      unless json.nil?
-        if json['type'] === 'connected'
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
-          processed = true
-        end
-
-        if json['type'] === 'setBreakPoints'
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Setting BreakPoints command")
-          source = json['source'].gsub('\\', '/')
-          $_breakpoint.set_break_points_on(source, json['lines'])
-          processed = true
-        end
-
-        if json['type'] === 'threads'
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Threads are requested")
-          response = get_treads
-          $_s.write("#{response.to_json}\n")
-          processed = true
-        end
-
-        if json['type'] === 'stacktrace'
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Stacktrace is requested")
-          response = get_stacktrace(json['thread'], $is_rhosim, $is_windows)
-          $_s.write("#{response.to_json}\n")
-          processed = true
-        end
-
-        if inline && (json['type'] === 'variables')
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Variables #{json['scope']} are requested")
-          response = get_variables(json['scope'])
-          $_s.write("#{response.to_json}\n")
-          processed = true
-        end
-
-        if inline && (json['type'] === 'stepIn')
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepIn command")
-          $_step = 1
-          $_step_level = -1
-          $_resumed = true
-          wait = false
-          processed = true
-        end
-
-        if inline && (json['type'] === 'stepOut')
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepOut command")
-          if $_call_stack < 1
-            $_step = 0
-            comment = ' (continue)'
-          else
-            $_step = 3
-            $_step_level = $_call_stack - 1
-            comment = ''
-          end
-          $_resumed = true
-          wait = false
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Step return" + comment)
-          processed = true
-        end
-
-        if inline && (json['type'] === 'stepOver')
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepOver command")
-          $_step = 2
-          $_step_level = $_call_stack
-          $_resumed = true
-          wait = false
-          processed = true
-        end
-
-        if inline && (json['type'] === 'continue')
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Continue command")
-          wait = false
-          $_step = 0
-          $_resumed = true
-          processed = true
-        end
-
-        if json['type'] === 'kill'
-          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Kill command")
-          processed = true
-          $_s.close
-          System.exit
-        end
-      end
-    rescue StandardError => e
-      puts "Rescued: #{e.inspect}"
-    end
-  end
-
-  if processed
-    $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+(.*)|)$/, "\\3")
-    $_wait = wait if inline
-  end
-
-  processed
-end
-
-$_tracefunc = lambda { |event, file, line, id, bind, classname|
-
-  return if eval('::Thread.current != ::Thread.main', bind)
-  $_binding = bind;
-  $_classname = classname;
-  $_methodname = id;
-  file = file.to_s.gsub('\\', '/')
-
-  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))
-
-    if event =~ /^line/
-      unhandled = true
-      step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
-
-      if (step_stop || ($_breakpoint.enabled? && (!($_breakpoint.empty?))))
-        filename = ""
-
-
-        filename = convert_to_relative_path(file, $_app_path)
-
-        if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
-
-          fn = filename.gsub(/:/, '|')
-          cl = classname.to_s.gsub(/:/, '#')
-          thread_id = Thread.current.object_id
-
-          message = {:event => :stopOnBreakpoint, :threadId => Thread.current.object_id}
-          $_s.write("#{message.to_json}\n")
-
-          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step - 1] : "Breakpoint") + " in #{fn} at #{line}")
-          $_step = 0
-          $_step_level = -1
-
-          app_type = ENV["APP_TYPE"]
-          $_wait = true
-          while $_wait
-            while debug_handle_cmd(true) do
-            end
-
-            if app_type.eql? "rhodes"
-              if Rho::System.main_window_closed
-                $_s.write("QUIT\n") if !($_s.nil?)
-                $_wait = false
-              end
-            end
-
-            sleep(0.1) if $_wait
-          end
-
-          unhandled = false
-        end
-      end
-
-      if unhandled
-        debug_handle_cmd(true)
-      end
-
-    elsif event =~ /^call/
-      $_call_stack += 1
-    elsif event =~ /^return/
-      $_call_stack -= 1
-    end
-  end
-
-  if $_resumed
-    $_resumed = false
-    $_s.write("RESUMED\n")
-  end
-}
-
-$_s = nil
-
-begin
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Opening connection")
-  debug_host_env = ENV['RHOHOST']
-  debug_port_env = ENV['rho_debug_port']
-  debug_path_env = ENV['ROOT_PATH']
-
-  debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env
-  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env
-  debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
-
-  $is_rhosim = false
-  $is_windows = (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-
-  if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true
-    debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
-    debug_path = "apps/app/"
-  else
-    $is_rhosim = true
-    debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
-  end
-
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port.to_s)
-  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path.to_s)
-
-  $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
-
-  debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
-
-  message = {:event => :connect, :host => debug_host, :port => debug_port, :debugPath => $_app_path}
-  $_s.write("#{message.to_json}\n")
-
-  $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
-
-  $_breakpoint = BreakPoints.new()
-  $_step = 0
-  $_step_level = -1
-  $_call_stack = 0
-  $_resumed = false
-  $_cmd = ""
-  $_app_path = debug_path
-  $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
-
-  at_exit {
-    begin
-      $_s.write("QUIT\n")
-      $_s.close
-    end if !($_s.nil?)
-
-  }
-
-  set_trace_func $_tracefunc
-
-  Thread.new {
-    while true
-      debug_read_cmd($_s, true)
-      while debug_handle_cmd(false) do
-      end
-      if ($_cmd !~ /^\s*$/) && (Thread.main.stop?)
-        $_wait = true
-        Thread.main.wakeup
-      end
-    end
-  }
-
-rescue
-  debugger_log(DEBUGGER_LOG_LEVEL_ERROR, "Unable to open connection to debugger: " + $!.inspect)
-  $_s = nil
+Thread.new do
+  DAPServer.new(debug_host, debug_port).start
 end
