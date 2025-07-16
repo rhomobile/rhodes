@@ -152,6 +152,7 @@ begin
     puts "RHOSTUDIO_REMOTE_HOST="  + remote_host.to_s
     puts "RHOSTUDIO_REMOTE_PATH="  + remote_host.to_s
     
+    puts "remote_debug=#{remote_debug}, remote_host=#{remote_host}, remote_path=#{remote_path}, Rho::System.isRhoSimulator=#{Rho::System.isRhoSimulator}"
     if remote_debug == true || Rho::System.isRhoSimulator
       require 'debugger'
     end

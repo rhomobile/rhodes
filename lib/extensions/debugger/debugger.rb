@@ -10,6 +10,7 @@ class DAPServer
     @frame_bindings = {}
     @next_var_ref = 1
     @variables_map = {} # variablesReference => [binding, :local | :instance | :global]
+    @step_mode = nil
     @server = TCPServer.new(host, port)
     puts "DAP server listening on #{host}:#{port}"
   end
@@ -102,6 +103,8 @@ class DAPServer
       handle_evaluate(req)
     when "continue"
       handle_continue(req)
+    when "next"
+      handle_next(req)
     else
       send_response(req, success: false, message: "Command not implemented")
     end
@@ -116,16 +119,23 @@ class DAPServer
 
     return unless event == "line"
 
-    lines = @breakpoints[normalized_file]
-    return unless lines&.include?(line)
+    stop_reason = nil
+    if @step_mode == :next
+      stop_reason = "step"
+      @step_mode = nil
+    elsif @breakpoints[normalized_file]&.include?(line)
+      stop_reason = "breakpoint"
+    end
+
+    return unless stop_reason
 
     unless @stopped
       @stopped = true
-      puts "[BREAK] Hit breakpoint at #{normalized_file}:#{line}"
+      puts "[BREAK] Hit #{stop_reason} at #{normalized_file}:#{line}"
 
       @current_binding = binding
       update_stack_frames(binding)
-      handle_breakpoint_hit(normalized_file, line)
+      handle_stop(stop_reason, normalized_file, line)
     end
   end
 
@@ -134,6 +144,12 @@ class DAPServer
   def handle_continue(req)
     @wait_for_continue = false
     send_response(req, body: { allThreadsContinued: true })
+  end
+
+  def handle_next(req)
+    @step_mode = :next
+    @wait_for_continue = false
+    send_response(req)
   end
 
   def handle_initialize(req)
@@ -316,8 +332,8 @@ class DAPServer
     }
   end
 
-  def handle_breakpoint_hit(file, line)
-    send_stopped_event(reason: "breakpoint", thread_id: Thread.current.object_id)
+  def handle_stop(reason, file, line)
+    send_stopped_event(reason: reason, thread_id: Thread.current.object_id)
     @wait_for_continue = true
     sleep 0.05 while @wait_for_continue
     @stopped = false
