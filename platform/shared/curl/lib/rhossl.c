@@ -86,7 +86,7 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 {
     curl_socket_t sockfd = conn->sock[sockindex];
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    struct ssl_config_data *config = &conn->ssl_config;
+    struct ssl_primary_config *config = &conn->ssl_config;
     CURLcode retcode;
 	char host[255];
 
@@ -97,9 +97,9 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     
     connssl->storage = rho_ssl_create_storage();
 
-	sprintf(host,"%s:%d\0", conn->host.name, conn->port); 
+	sprintf(host,"%s:%d\0", conn->host.name, (int)conn->port); 
 
-	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->primary.verifypeer, connssl->storage, host);
+	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage, host);
     if (retcode)
         return retcode;
     
@@ -158,8 +158,7 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
     return 0;
 }
 
-#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) || defined(ANDROID)
-
+#if defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) || defined(ANDROID) || defined(OS_LINUX)
 ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len, CURLcode *err)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];

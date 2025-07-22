@@ -72,8 +72,10 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 }
 
 !win32 {
-  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-parentheses
+  QMAKE_CFLAGS_RELEASE -= -Werror=format-security
+  QMAKE_CXXFLAGS_RELEASE -= -Werror=format-security
   QMAKE_CFLAGS_DEBUG -= -O2
   QMAKE_CXXFLAGS_DEBUG -= -O2
 }

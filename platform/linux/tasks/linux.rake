@@ -420,7 +420,7 @@ namespace "device" do
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
 				#$create_buildroot = true
-				$architecture = "noarch"
+				$architecture = "x86_64"
                 #$additional_args = "%global _nonzero_exit_pkgcheck_terminate_build 0"
                 $linter_exceptions = ["W: no-binary", "E: arch-independent-package-contains-binary-or-object", "E: dir-or-file-in-opt", "E: non-standard-dir-perm", "W: desktopfile-without-binary", "W: dir-or-file-in-opt", "E: non-standard-executable-perm", "E: explicit-lib-dependency", "W: no-documentation", "E: invalid-desktopfile", "W: script-without-shebang", "E: non-standard-group", "W: no-url-tag","E: world-writable", "E: wrong-script-end-of-line-encoding"]
 				$deps = ["lib64qt5webenginecore5", "lib64qt5webenginewidgets5" , "lib64qt5webengine5" , "lib64qt5multimedia5", "lib64qt5gui5", "lib64gmp10"]

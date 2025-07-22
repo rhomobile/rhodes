@@ -61,8 +61,10 @@ unix:!macx {
 
 
 !win32 {
-  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-parentheses
+  QMAKE_CFLAGS_RELEASE -= -Werror=format-security
+  QMAKE_CXXFLAGS_RELEASE -= -Werror=format-security
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden 
 }

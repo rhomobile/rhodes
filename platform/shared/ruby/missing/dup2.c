@@ -21,6 +21,11 @@
 # include <errno.h>
 #endif
 
+//TAU for close definition
+#if defined(HAVE_UNISTD_H)
+# include <unistd.h>
+#endif
+
 #define BADEXIT -1
 
 int
