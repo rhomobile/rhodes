@@ -2,10 +2,15 @@
 #define GUITHREADFUNCHELPER_H
 
 #include <QObject>
-#include <QCameraInfo>
 #include <QDebug>
+#include <QStringList>
 #include <QMetaObject>
-
+#if QT_VERSION >= 0x060000
+#include <QMediaDevices>
+#include <QCameraDevice>
+#else
+#include <QCameraInfo>
+#endif
 class GuiThreadFuncHelper : public QObject
 {
     Q_OBJECT
@@ -21,8 +26,19 @@ signals:
 
 public slots:
     void availableCameras(QObject * getter){
-        QMetaObject::invokeMethod(getter, "availableCameras", Qt::QueuedConnection,
-        Q_ARG(QList<QCameraInfo>, QCameraInfo::availableCameras()));
+                QStringList names;
+    #if QT_VERSION >= 0x060000
+        const auto devices = QMediaDevices::videoInputs();
+        for (const QCameraDevice &d : devices)
+            names << d.description();
+    #else
+        const auto infos = QCameraInfo::availableCameras();
+        for (const QCameraInfo &i : infos)
+            names << i.description();
+    #endif
+        QMetaObject::invokeMethod(getter, "availableCameraNames",
+                                  Qt::QueuedConnection,
+                                  Q_ARG(QStringList, names));
     }
 };
 

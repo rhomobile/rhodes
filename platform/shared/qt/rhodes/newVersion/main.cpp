@@ -117,7 +117,9 @@ int main(int argc, char *argv[])
 #ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
 #endif
+#if QT_VERSION < 0x060000
     QtWebEngine::initialize();
+#endif
     qRegisterMetaType<QTextCursor>("QTextCursor");
     qRegisterMetaType<QString>("QString");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

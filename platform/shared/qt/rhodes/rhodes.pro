@@ -1,6 +1,22 @@
 !contains(DEFINES, RHODES_VERSION_LIBRARY)  {
 QT += core gui network
 message(Qt version: $$[QT_VERSION])
+isEqual(QT_MAJOR_VERSION, 6):{
+    QT += core gui network multimedia widgets
+    CONFIG += c++17
+    message(Qt6: Multimedia enabled)
+    DEFINES += RHODES_VERSION_2
+
+    qtHaveModule(webenginewidgets) {
+        QT += webenginewidgets
+        message(Qt6: WebEngineWidgets enabled)
+    }
+    qtHaveModule(webenginecore) {
+        QT += webenginecore
+        message(Qt6: WebEngineCore enabled)
+    }
+}
+
 isEqual(QT_MAJOR_VERSION, 5):{
     lessThan(QT_MINOR_VERSION, 6): {
         QT += webkit widgets webkitwidgets multimedia multimediawidgets

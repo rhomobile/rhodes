@@ -40,6 +40,12 @@
 #else
 #include <QSound>
 #endif
+#if QT_VERSION >= 0x060000
+#include <QObject>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QDebug>
+#endif
 #endif //RHODES_VERSION_LIBRARY
 
 using namespace rho;
@@ -208,6 +214,26 @@ void alert_play_file(char* file_name, char *media_type)
 #if QT_VERSION >= 0x050000
     QMediaPlayer* player = new QMediaPlayer;
     QUrl url = QUrl::fromLocalFile(QString::fromStdString(path));
+#if QT_VERSION >= 0x060000
+    player->setSource(url);
+
+    QAudioOutput* audioOutput = new QAudioOutput(player);
+    audioOutput->setVolume(1.0);
+    player->setAudioOutput(audioOutput);
+
+    player->play();
+
+    QObject::connect(player, &QMediaPlayer::mediaStatusChanged, player,
+    [player](QMediaPlayer::MediaStatus status) {
+        if (status == QMediaPlayer::NoMedia || status == QMediaPlayer::InvalidMedia) {
+            qWarning() << "Error: No media or invalid media";
+            player->deleteLater();
+        } else if (status == QMediaPlayer::EndOfMedia) {
+            player->deleteLater();
+        }
+    });
+
+#else
     player->setMedia(url);
     player->setVolume(100);
     player->play();
@@ -215,6 +241,7 @@ void alert_play_file(char* file_name, char *media_type)
 
     }
     player->deleteLater();
+#endif
 #else
     RAWLOGC_INFO("AlertImpl",path.c_str());
     if (QSound::isAvailable()) {

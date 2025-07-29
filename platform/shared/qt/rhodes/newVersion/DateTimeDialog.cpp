@@ -26,6 +26,9 @@
 
 #include "DateTimeDialog.h"
 #include <QDateTimeEdit>
+#if QT_VERSION >= 0x060000
+#include <QDateTime>
+#endif
 
 DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) : QDialog(parent){
 
@@ -37,32 +40,68 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) : QDialog
     case CDateTimeMessage::FORMAT_DATE:
         m_dte = new QDateEdit(this);
         if (msg->m_min_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMinimumDate(QDateTime::fromSecsSinceEpoch(qint64(msg->m_min_time)).date());
+#else
             m_dte->setMinimumDate(QDateTime::fromTime_t(msg->m_min_time).date());
+#endif
         if (msg->m_max_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMaximumDate(QDateTime::fromSecsSinceEpoch(qint64(msg->m_max_time)).date());
+#else
             m_dte->setMaximumDate(QDateTime::fromTime_t(msg->m_max_time).date());
+#endif
         if (msg->m_initialTime)
+#if QT_VERSION >= 0x060000
+            m_dte->setDate(QDateTime::fromSecsSinceEpoch(qint64(msg->m_initialTime)).date());
+#else
             m_dte->setDate(QDateTime::fromTime_t(msg->m_initialTime).date());
+#endif
         m_dte->setCalendarPopup(true);
         //m_dte->setDisplayFormat(QLocale::system().dateFormat(QLocale::ShortFormat));
         break;
     case CDateTimeMessage::FORMAT_TIME:
         m_dte = new QTimeEdit(this);
         if (msg->m_min_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMinimumTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_min_time)).time());
+#else
             m_dte->setMinimumTime(QDateTime::fromTime_t(msg->m_min_time).time());
+#endif
         if (msg->m_max_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMaximumTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_max_time)).time());
+#else
             m_dte->setMaximumTime(QDateTime::fromTime_t(msg->m_max_time).time());
+#endif
         if (msg->m_initialTime)
+#if QT_VERSION >= 0x060000
+            m_dte->setTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_initialTime)).time());
+#else
             m_dte->setTime(QDateTime::fromTime_t(msg->m_initialTime).time());
+#endif
         //m_dte->setDisplayFormat(QLocale::system().timeFormat(QLocale::ShortFormat));
         break;
     default: //case CDateTimeMessage::FORMAT_DATE_TIME:
         m_dte = new QDateTimeEdit(this);
         if (msg->m_min_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMinimumDateTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_min_time), Qt::LocalTime));
+#else
             m_dte->setMinimumDateTime(QDateTime::fromTime_t(msg->m_min_time));
+#endif
         if (msg->m_max_time)
+#if QT_VERSION >= 0x060000
+            m_dte->setMaximumDateTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_max_time), Qt::LocalTime));
+#else
             m_dte->setMaximumDateTime(QDateTime::fromTime_t(msg->m_max_time));
+#endif
         if (msg->m_initialTime)
+#if QT_VERSION >= 0x060000
+            m_dte->setDateTime(QDateTime::fromSecsSinceEpoch(qint64(msg->m_initialTime), Qt::LocalTime));
+#else
             m_dte->setDateTime(QDateTime::fromTime_t(msg->m_initialTime));
+#endif
         m_dte->setCalendarPopup(true);
         //m_dte->setDisplayFormat(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
     }
@@ -87,10 +126,24 @@ time_t DateTimeDialog::getUnixTime(void)
     QDateTimeEdit* m_dte = (QDateTimeEdit*)mv_dte;
     switch (m_type) {
     case CDateTimeMessage::FORMAT_DATE:
+#if QT_VERSION >= 0x060000
+        return static_cast<long>(
+            QDateTime(m_dte->date(), QTime(0, 0), Qt::LocalTime).toSecsSinceEpoch()
+        );
+#else
         return QDateTime(m_dte->date()).toTime_t();
+#endif
     case CDateTimeMessage::FORMAT_TIME:
+#if QT_VERSION >= 0x060000
+        return static_cast<long>(m_dte->dateTime().toSecsSinceEpoch());
+#else
         return QDateTime(QDateTime::fromTime_t(0).date(),m_dte->time()).toTime_t();
+#endif
     default: //case CDateTimeMessage::FORMAT_DATE_TIME:
+#if QT_VERSION >= 0x060000
+        return static_cast<long>(m_dte->dateTime().toSecsSinceEpoch());
+#else
         return m_dte->dateTime().toTime_t();
+#endif
     }
 }

@@ -47,7 +47,11 @@ private:
     QTimer timer;
     QMutex mutex;
 public:
+#if QT_VERSION >= 0x060000
+    explicit QtLogView(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags()): QWidget(parent, f)
+#else
     explicit QtLogView(QWidget *parent = 0, Qt::WindowFlags f = 0): QWidget(parent, f)
+#endif
     {
         setWindowTitle("Log");
         logText = new QTextEdit();

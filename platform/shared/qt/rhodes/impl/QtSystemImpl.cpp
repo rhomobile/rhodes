@@ -42,7 +42,9 @@
 #include "MainWindowImpl.h"
 #include <QUrl>
 #ifdef RHODES_VERSION_2
+#if QT_VERSION < 0x060000
 #include <QtWebEngineVersion>
+#endif
 #endif
 #ifdef RHODES_VERSION_1
 #include <QWebPage>
@@ -75,8 +77,10 @@ const char* rho_sys_qt_getWebviewFramework()
         const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
         #endif
 
-        #if defined(RHODES_VERSION_2)
+        #if defined(RHODES_VERSION_2) && QT_VERSION < 0x060000
         const QByteArray ver = QString("WEBENGINE/").append(QTWEBENGINE_VERSION_STR).toLatin1();
+        #else
+        const QByteArray ver = "NONE";
         #endif
         
         if (ver.length() < 32) {

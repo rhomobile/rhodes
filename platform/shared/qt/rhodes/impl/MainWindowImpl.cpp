@@ -36,7 +36,9 @@
 #ifndef RHODES_VERSION_LIBRARY
 #include <QString>
 #ifndef OS_SAILFISH
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x060000
+#include <QAction>
+#elif QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
 #include <QtWidgets/QAction>
 #else
 #include <QtGui/QAction>

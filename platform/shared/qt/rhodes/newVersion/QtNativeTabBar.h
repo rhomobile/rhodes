@@ -26,8 +26,12 @@
 
 #include <QTabBar>
 #include <QStylePainter>
+#if QT_VERSION >= 0x060000
+#include <QStyleOptionTab>
+typedef QStyleOptionTab QStyleOptionTabV3;
+#else 
 #include <QStyleOptionTabV3>
-
+#endif
 
 class QtNativeTabBar : public QTabBar
 {

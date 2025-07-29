@@ -5,47 +5,72 @@
 #include <QPointer>
 #include <QBuffer>
 #include <QtMath>
-#include <QSound>
 #include <QEventLoop>
 #include <QTimer>
+#endif
+
+#if QT_VERSION >= 0x060000
+#include <QAudioSink>
+#include <QMediaDevices>
+#else
+#include <QAudioOutput>
+#include <QSound>
 #endif
 
 void NotificationSound::playSound()
 {
 #ifndef RHODES_VERSION_LIBRARY
-    //QSound::play(":/sound/notification_sound.wav");
-    //return;
-    qreal frequency = ((sFrequency <= 0)?2000:sFrequency);
-    qreal mseconds = ((sDuration <= 0)?1000:sDuration);
-    quint8 volume = ((sVolume <= 0)?1:sVolume);
-    qreal sampleRate = 2.0 * M_PI / (192000./frequency);
+    qreal frequency = (sFrequency <= 0 ? 2000 : sFrequency);
+    qreal mseconds  = (sDuration  <= 0 ? 1000 : sDuration);
+    quint8 volume   = (sVolume    <= 0 ? 1    : sVolume);
+
+    const qreal sampleRateHz = 192000.0;
+    const qreal w = 2.0 * M_PI / (sampleRateHz / frequency);
 
     QByteArray bytebuf;
-    bytebuf.resize(mseconds * 192);
+    bytebuf.resize(static_cast<int>(mseconds * (sampleRateHz / 1000.0)));
 
-    for (int i=0; i < bytebuf.size(); i++) {
-        bytebuf[i] = (quint8)(qreal(255) * qSin(qreal(i) * sampleRate));
-    }
+    for (int i = 0; i < bytebuf.size(); ++i)
+        bytebuf[i] = static_cast<char>(255.0 * qSin(qreal(i) * w));
 
-
-    QDataStream stream(&bytebuf, QIODevice::ReadWrite);
+    QBuffer *buffer = new QBuffer(this);
+    buffer->setData(bytebuf);
+    buffer->open(QIODevice::ReadOnly);
 
     QAudioFormat format;
-    format.setSampleRate(192000);
+    format.setSampleRate(static_cast<int>(sampleRateHz));
     format.setChannelCount(1);
+
+#if QT_VERSION >= 0x060000
+    format.setSampleFormat(QAudioFormat::UInt8);
+
+    QAudioDevice device = QMediaDevices::defaultAudioOutput();
+    QAudioSink *audio = new QAudioSink(device, format, this);
+    audio->setVolume(qreal(volume + 1) / 4.0);    // 0.0–1.0
+    audio->start(buffer);
+
+#else
     format.setSampleSize(8);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
 
-    QAudioOutput * audio = new QAudioOutput(format, this);
-    audio->setVolume(1.0 * (qreal(volume + 1)/4));
+    QAudioOutput *audio = new QAudioOutput(format, this);
+    audio->setVolume(qreal(volume + 1) / 4.0);    // 0.0–1.0
     audio->setBufferSize(bytebuf.size());
-    audio->start(stream.device());
+    audio->start(buffer);
+#endif
 
     QEventLoop loop;
-    QTimer::singleShot(mseconds*2, &loop, SLOT(quit()));
+    QTimer::singleShot(static_cast<int>(mseconds * 2), &loop, SLOT(quit()));
     loop.exec();
+
+#if QT_VERSION >= 0x060000
+    audio->stop();
+#endif
+    buffer->close();
+    buffer->deleteLater();
+    audio->deleteLater();
 #endif
 }
 

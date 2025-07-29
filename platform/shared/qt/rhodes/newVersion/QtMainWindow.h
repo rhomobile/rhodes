@@ -29,7 +29,9 @@
 #include <QMainWindow>
 #include <QUrl>
 #include <qtwebenginewidgetsglobal.h>
+#if QT_VERSION < 0x060000
 #include <QtWebEngine>
+#endif
 #include <QtWebEngineWidgets>
 
 #include <QWebEnginePage>

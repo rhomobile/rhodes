@@ -48,13 +48,26 @@
 #include <QtNetwork/QNetworkCookie>
 #include <QFileDialog>
 #include <QDesktopServices>
+#if QT_VERSION >= 0x060000
+#include <QDesktopServices>
+#include <QCoreApplication>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QWebEngineScript>
+#include <QWebEngineProfile>
+#include <QWebEnginePage>
+#else
 #include <QDesktopWidget>
+#endif
 #include <QScroller>
 #include <QScrollArea>
 #include <QWebEngineSettings>
 #include <QApplication>
 #include "../guithreadfunchelper.h"
 #include "WebUrlRequestInterceptor.h"
+#if QT_VERSION >= 0x060000
+#  include <QtWebEngineCore/qtwebenginecoreversion.h>
+#endif
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -150,13 +163,19 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
             QWebEngineProfile::defaultProfile()->scripts()->insert(script);
 
     }
+#if QT_VERSION >= 0x060000
+    QWebEngineProfile::defaultProfile()->setUrlRequestInterceptor(wuri);
+#elif
     QWebEngineProfile::defaultProfile()->setRequestInterceptor(wuri);
-
+#endif
     QApplication::setStyle(new QtCustomStyle());
     setCentralWidget(new QWidget(this));
     verticalLayout = new QVBoxLayout(centralWidget());
-
+#if QT_VERSION >= 0x060000
+    verticalLayout->setContentsMargins(0, 0, 0, 0);
+#else
     verticalLayout->setMargin(0);
+#endif
     verticalLayout->setSpacing(0);
 
     tabBar = new QtNativeTabBar(this);
@@ -434,7 +453,12 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
         externalWebView->activateWindow();
     } else if (webView) {
         if (!internalUrlProcessing(url)) {
+#if QT_VERSION >= 0x060000
+            #include <QRegularExpression>
+            sUrl.remove(QRegularExpression(QStringLiteral("#+$")));
+#else
             sUrl.remove(QRegExp("#+$"));
+#endif
             if (sUrl.compare(webView->url().toString())!=0) {
                 if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive)) {
                     const QByteArray asc_url = sUrl.toLatin1();
@@ -1128,7 +1152,11 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
             m_alertDialog = new QMessageBox(icon, //new DateTimeDialog(params, 0);
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
+#if QT_VERSION >= 0x060000
+            m_alertDialog->setStandardButtons(QMessageBox::NoButton);
+#else
             m_alertDialog->setStandardButtons(0);
+#endif
             for (int i = 0; i < (int)params->m_buttons.size(); i++) {
 
             m_alertDialog->addButton(QString::fromWCharArray(
