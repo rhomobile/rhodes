@@ -128,6 +128,12 @@ public class LocalFileProvider extends ContentProvider
         final String filePath = new File(f,"apps").getPath();
         return fileName.startsWith(filePath) || fileName.startsWith("file://" + filePath);
     }
+
+    public static boolean isDbDir(Context ctx, String fileName){
+        final File f = new File( ctx.getApplicationInfo().dataDir, "rhodata" );        
+        final String filePath = new File(f,"db").getPath();
+        return fileName.startsWith(filePath) || fileName.startsWith("file://" + filePath);
+    }
     
     
     public static void revokeUriPermissions( Context ctx ) {

@@ -30,6 +30,7 @@ import java.lang.Exception;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 import java.io.File;
+import java.util.List;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -41,6 +42,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.webkit.URLUtil;
 import android.webkit.MimeTypeMap;
+import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 public class LocalFileHandler implements UriHandler
 {
@@ -75,6 +80,10 @@ public class LocalFileHandler implements UriHandler
         }
 
         boolean isHomeDir = LocalFileProvider.isHomeDir(ctx, url);
+        Logger.D(TAG, "isHomeDir is : " + isHomeDir);
+
+        boolean isDbDir = LocalFileProvider.isDbDir(ctx, url);
+        Logger.D(TAG, "isDbDir is : " + isDbDir);
 
         Logger.D(TAG, "Handle URI externally: " + url);
 
@@ -85,7 +94,31 @@ public class LocalFileHandler implements UriHandler
             url = Uri.decode(newUri.toString());
         }
 
-        Intent intent = Intent.parseUri(url, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Intent intent = null;
+
+        if (isDbDir) {
+            Uri uri = Uri.parse(url);
+            String mime = getMime(ctx, uri);
+            intent = new Intent()
+                .setDataAndType(newUri, mime)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                
+            intent.setClipData(ClipData.newUri(ctx.getContentResolver(), mime, uri));
+
+            PackageManager pm = ctx.getPackageManager();
+            List<ResolveInfo> targets = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo ri : targets) {
+                ctx.grantUriPermission(
+                    ri.activityInfo.packageName,
+                    newUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                );
+            }
+        } else {
+            intent = Intent.parseUri(url, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
         intent.setAction(Intent.ACTION_VIEW);
 
         if (newUri != null && isHomeDir){
@@ -116,9 +149,29 @@ public class LocalFileHandler implements UriHandler
     	
    	    }
         //ctx.startActivity(Intent.createChooser(intent, "Open in..."));
-        ctx.startActivity(intent);
 
+        if (isDbDir){
+            ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+        } else {
+            ctx.startActivity(intent);
+        }
         return true;
     }
     
+    private String getMime(Context ctx, Uri uri) {
+        String mime = null;
+
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            mime = ctx.getContentResolver().getType(uri);
+        } else {
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            if (extension != null) {
+                mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+            }
+        }
+        if (mime == null) {
+            mime = "application/octet-stream";
+        }
+        return mime;
+    }
 }
