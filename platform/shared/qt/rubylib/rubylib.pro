@@ -217,6 +217,7 @@ SOURCES += \
 ../../ruby/ext/rho/rhoruby.c \
 ../../ruby/ext/rho/rhosupport.c \
 ../../ruby/ext/rhoconf/rhoconf_wrap.c \
+../../ruby/ext/system/system_wrap.c \
 ../../ruby/ext/ringtones/ringtones_wrap.c \
 ../../ruby/ext/date/date_parse.c \
 ../../ruby/ext/date/date_strptime.c \

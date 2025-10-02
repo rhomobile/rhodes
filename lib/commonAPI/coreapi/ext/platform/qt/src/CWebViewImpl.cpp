@@ -155,6 +155,7 @@ public:
 
     virtual void navigate( const rho::String& url,  int tabIndex, rho::apiGenerator::CMethodResult& oResult)
     {
+        RAWLOG_INFO1("WebView", rho::String("navigate request url=").append(url).c_str());
         rho_webview_navigate(url.c_str(), tabIndex);
     }
 

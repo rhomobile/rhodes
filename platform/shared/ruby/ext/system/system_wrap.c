@@ -2383,9 +2383,9 @@ _wrap_set_push_notification(int argc, VALUE *argv, VALUE self) {
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   int res2 ;
+  int res3 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
-  int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
   
@@ -2433,6 +2433,7 @@ _wrap_set_screen_rotation_notification(int argc, VALUE *argv, VALUE self) {
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   int res2 ;
+  int res3 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   
@@ -2480,16 +2481,20 @@ _wrap_unzip_file(int argc, VALUE *argv, VALUE self) {
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   int res2 ;
+  int res3 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   int result;
   VALUE vresult = Qnil;
   
   {
     arg2 = 0;
   }
-  if ((argc < 1) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1..3)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
@@ -2503,14 +2508,23 @@ _wrap_unzip_file(int argc, VALUE *argv, VALUE self) {
     }
     arg2 = (char *)(buf2);
   }
-  result = (int)unzip_file((char const *)arg1,(char const *)arg2);
+  if (argc > 2) {
+    res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","unzip_file", 3, argv[2] ));
+    }
+    arg3 = (char *)(buf3);
+  }
+  result = (int)unzip_file((char const *)arg1,(char const *)arg2,(char const *)arg3);
   vresult = SWIG_From_int((int)(result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
@@ -3423,6 +3437,8 @@ extern "C"
 #endif
 SWIGEXPORT void Init_System(void) {
   size_t i;
+  printf("[System] Init_System called\n");
+  fflush(stdout);
   
   SWIG_InitRuntime();
   mSystem = rb_define_module("System");
@@ -3471,4 +3487,3 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "update_blob_attribs", _wrap_update_blob_attribs, -1);
 
 }
-

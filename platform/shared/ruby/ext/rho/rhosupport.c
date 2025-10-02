@@ -61,6 +61,7 @@ VALUE rb_str_chop_bang(VALUE str);
 
 extern /*RHO static*/ VALUE eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 static VALUE loadISeqFromFile(VALUE path);
+static VALUE rho_ruby_iseq_eval(VALUE seq);
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
 //VALUE rb_iseq_eval(VALUE iseqval);
@@ -142,17 +143,25 @@ static VALUE loadISeqFromFile(VALUE path)
     struct timeval  end;
 #endif    
 
+    const char* filepath = getStringFromValue(path);
+    fprintf(stderr, "loadISeqFromFile: %s\n", filepath ? filepath : "(null)");
+    fflush(stderr);
+    if (filepath)
+        printf("[RhoSupport] loadISeqFromFile path=%s\n", filepath);
+    else
+        printf("[RhoSupport] loadISeqFromFile path=(null)\n");
+    fflush(stdout);
+
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
-    
-    
+    printf("[RhoSupport] binread finished for %s\n", filepath ? filepath : "(null)");
+    fflush(stdout);
+
         // fiseq is string
     //char* getStringFromValue(VALUE val);
     //int getStringLenFromValue(VALUE val);
     // VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
 
     char* decrypted_buf = NULL;
-    
-    const char* filepath = getStringFromValue(path);
     char* founded = strstr(filepath, ".encrypted");
 	VALUE arr;
 
@@ -251,6 +260,10 @@ rb_require_compiled(VALUE obj, VALUE fname)
 {
     VALUE result;
     VALUE res;
+    if (TYPE(fname) == T_STRING) {
+        fprintf(stderr, "rb_require_compiled: %s\n", RSTRING_PTR(fname));
+        fflush(stderr);
+    }
     result = require_compiled(fname, &res, 0);
     if (NIL_P(result)) {
         rb_raise(rb_eLoadError, "no such file to load -- %s",
@@ -364,6 +377,8 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
 	char * fileName = RSTRING_PTR(dir);
 	int maxLenOfFileNamePart = 0;
     RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
+    printf("[RhoSupport] check_dir=%s\n", RSTRING_PTR(dir));
+    fflush(stdout);
 
     #ifdef __SYMBIAN32__
         if(*RSTRING_PTR(res) == '/')
@@ -396,6 +411,8 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
     rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
 	resStr = RSTRING_PTR(res);
     RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
+    printf("[RhoSupport] check_file=%s\n", RSTRING_PTR(res));
+    fflush(stdout);
 
     if (eaccess(RSTRING_PTR(res), R_OK) == 0) {
         return res;
@@ -513,6 +530,8 @@ static VALUE find_file(VALUE fname)
     int nOK = 0;
 	char * filename = RSTRING_PTR(fname);
     RAWLOG_INFO1("find_file: fname: %s", filename);
+    printf("[RhoSupport] find_file fname=%s\n", filename ? filename : "(null)");
+    fflush(stdout);
 
 #ifdef RHODES_EMULATOR
     if ( strncmp(RSTRING_PTR(fname), rho_simconf_getRhodesPath(), strlen(rho_simconf_getRhodesPath())) == 0 )
@@ -527,14 +546,21 @@ static VALUE find_file(VALUE fname)
 		return res;
 	else
 #endif
-    if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
+    const char* rho_path = rho_native_rhopath();
+    const char* runtime_path = rho_native_reruntimepath();
+
+    if (rho_path && *rho_path && strncmp(RSTRING_PTR(fname), rho_path, strlen(rho_path)) == 0 ){
+        res = rb_str_dup(fname);
+        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+    RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
+    printf("[RhoSupport] find_file immediate res=%s\n", RSTRING_PTR(res));
+    fflush(stdout);
+    } else if (runtime_path && *runtime_path && strncmp(RSTRING_PTR(fname), runtime_path, strlen(runtime_path)) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
         RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
-    } else if ( strncmp(RSTRING_PTR(fname), rho_native_reruntimepath(), strlen(rho_native_reruntimepath())) == 0 ){
-        res = rb_str_dup(fname);
-        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
-        RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
+        printf("[RhoSupport] find_file reruntime res=%s\n", RSTRING_PTR(res));
+        fflush(stdout);
     } else {
 		res = find_file_in_load_paths(fname);
 
@@ -575,6 +601,8 @@ static VALUE find_file(VALUE fname)
     if ( res != 0 ) {
         res = RhoPreparePath(res);
         RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
+        printf("[RhoSupport] find_file final path=%s\n", RSTRING_PTR(res));
+        fflush(stdout);
     }
 
     if ( !nOK )
@@ -619,6 +647,11 @@ static int String_endsWith(const char* str, const char* szSuffix)
     return strcmp(str+nOff, szSuffix) == 0;
 }
 
+static VALUE rho_ruby_iseq_eval(VALUE seq)
+{
+    return rb_funcall(seq, rb_intern("eval"), 0);
+}
+
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 {
     VALUE path;
@@ -656,6 +689,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
         VALUE seq;
 
         RAWLOG_INFO2("require_compiled: %s, full path: %s", szName1, RSTRING_PTR(path));
+        printf("[RhoSupport] require_compiled name=%s full_path=%s\n", szName1, RSTRING_PTR(path));
+        fflush(stdout);
 
         //optimize require
         //rb_ary_push(GET_VM()->loaded_features, path);
@@ -690,7 +725,19 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
         seq = loadISeqFromFile(path);
 
         RAWLOG_INFO1("require_compiled: Loaded file encoded in %s", encodingIndexToString(rb_enc_get_index(seq)));
-        *result = rb_funcall(seq, rb_intern("eval"), 0 );
+        printf("[RhoSupport] require_compiled loaded encoding=%s\n", encodingIndexToString(rb_enc_get_index(seq)));
+        fflush(stdout);
+        int eval_status = 0;
+        VALUE eval_res = rb_protect(rho_ruby_iseq_eval, seq, &eval_status);
+        if (eval_status != 0) {
+            VALUE err = rb_errinfo();
+            VALUE err_str = rb_funcall(err, rb_intern("to_s"), 0);
+            printf("[RhoSupport] eval raised: %s\n", StringValueCStr(err_str));
+            fflush(stdout);
+            rb_set_errinfo(Qnil);
+            rb_jump_tag(eval_status);
+        }
+        *result = eval_res;
         //*result = rb_iseq_eval(seq);
         
         //rb_gc_enable();
@@ -699,6 +746,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     }
 
     RAWLOG_ERROR1("require_compiled: error: can not find %s", RSTRING_PTR(fname));
+    printf("[RhoSupport] require_compiled error missing=%s\n", RSTRING_PTR(fname));
+    fflush(stdout);
     retval = Qnil;
 
 RCompExit:

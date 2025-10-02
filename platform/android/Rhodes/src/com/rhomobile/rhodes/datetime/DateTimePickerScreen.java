@@ -35,6 +35,7 @@ import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.datetime.DateTimePickerScreen.DateTimePickerScreenViewState;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -44,7 +45,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-public class DateTimePickerScreen extends BaseActivity {
+public class DateTimePickerScreen extends BaseActivity implements DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
 	
 	private static final String TAG = "DateTimePicker";
 	
@@ -158,8 +159,8 @@ public class DateTimePickerScreen extends BaseActivity {
 	private OnClickListener mOkListener = new OnClickListener() {
 		public void onClick(View arg0) {
 			//These force values from internal edit fields being parsed.
-			_datePicker.clearFocus();
-			_timePicker.clearFocus();
+			// _datePicker.clearFocus();
+			// _timePicker.clearFocus();
 			
 			_init.set(Calendar.YEAR, _datePicker.getYear());
 			_init.set(Calendar.MONTH, _datePicker.getMonth());
@@ -215,6 +216,7 @@ public class DateTimePickerScreen extends BaseActivity {
 		_init = new GregorianCalendar();
 
 		_init.setTimeInMillis(_saved_time);
+		Logger.D(TAG, "initialize date time picker");
 		
 		if (_min_time != 0) {
 			_min_Date = new GregorianCalendar();
@@ -244,73 +246,12 @@ public class DateTimePickerScreen extends BaseActivity {
 		_okButton.setOnClickListener(mOkListener);
 		_cancelButton.setOnClickListener(mCancelListener);
 		
-		_datePicker.init(_init.get(Calendar.YEAR), _init.get(Calendar.MONTH), _init.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
-
-				public void	onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-					//Logger.D(TAG, "onDateChanged( year="+String.valueOf(year)+", month="+String.valueOf(monthOfYear)+", day="+dayOfMonth);
-					Calendar new_date = new GregorianCalendar();
-					Calendar set_to = null;
-
-					new_date.set(Calendar.YEAR, year);
-					new_date.set(Calendar.MONTH, monthOfYear);
-					new_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-					new_date.set(Calendar.HOUR_OF_DAY, 0);
-					new_date.set(Calendar.MINUTE, 0);
-					new_date.set(Calendar.SECOND, 0);
-					new_date.set(Calendar.MILLISECOND, 0);
-
-					//Logger.D(TAG, "            new_date: year="+String.valueOf(new_date.getYear())+", month="+String.valueOf(new_date.getMonth())+", day="+new_date.getDay());
-					
-					if (_min_time != 0) {
-						//Logger.D(TAG, "            min_date: year="+String.valueOf(_min_Date.getYear())+", month="+String.valueOf(_min_Date.getMonth())+", day="+_min_Date.getDay());
-						if (new_date.before(_min_Date)) {
-							set_to = _min_Date;
-						}
-					}
-					if (_max_time != 0) {
-						//Logger.D(TAG, "            max_date: year="+String.valueOf(_max_Date.getYear())+", month="+String.valueOf(_max_Date.getMonth())+", day="+_max_Date.getDay());
-						if (new_date.after(_max_Date)) {
-							set_to = _max_Date;
-						}
-					}
-					if (set_to != null) {
-						view.updateDate(set_to.get(Calendar.YEAR), set_to.get(Calendar.MONTH), set_to.get(Calendar.DAY_OF_MONTH));
-					}
-					{
-						Calendar s_date = new GregorianCalendar();
-						s_date.setTimeInMillis(_saved_time);
-						if (set_to != null) {
-							s_date.set(Calendar.YEAR, set_to.get(Calendar.YEAR));
-							s_date.set(Calendar.MONTH, set_to.get(Calendar.MONTH));
-							s_date.set(Calendar.DAY_OF_MONTH, set_to.get(Calendar.DAY_OF_MONTH));
-						}
-						else {
-							s_date.set(Calendar.YEAR, year);
-							s_date.set(Calendar.MONTH, monthOfYear);
-							s_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-						}
-						_saved_time = s_date.getTimeInMillis();
-					}
-				}
-			}
-		);
+		Logger.D(TAG, "_init: year="+String.valueOf(_init.get(Calendar.YEAR))+", month="+String.valueOf(_init.get(Calendar.MONTH))+", day="+_init.get(Calendar.DAY_OF_MONTH));
+		_datePicker.init(_init.get(Calendar.YEAR), _init.get(Calendar.MONTH), _init.get(Calendar.DAY_OF_MONTH), this);
 		
 		_timePicker.setCurrentHour(_init.get(Calendar.HOUR_OF_DAY));
 		_timePicker.setCurrentMinute(_init.get(Calendar.MINUTE));
-		_timePicker.setOnTimeChangedListener( new TimePicker.OnTimeChangedListener() {
-				public void onTimeChanged (TimePicker view, int hourOfDay, int minute) {
-					{
-						Calendar s_date = new GregorianCalendar();
-						s_date.setTimeInMillis(_saved_time);
-						s_date.set(Calendar.HOUR_OF_DAY, hourOfDay);
-						s_date.set(Calendar.MINUTE, minute);
-						s_date.set(Calendar.SECOND, 0);
-						s_date.set(Calendar.MILLISECOND, 0);
-						_saved_time = s_date.getTimeInMillis();
-					}
-				}
-			}
-		);
+		_timePicker.setOnTimeChangedListener( this );
 
 		switch (_fmt) {
 		case FORMAT_DATE:
@@ -324,7 +265,70 @@ public class DateTimePickerScreen extends BaseActivity {
 		}
 		
 	}
+
+	@Override
+	public void	onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+		//Logger.D(TAG, "onDateChanged( year="+String.valueOf(year)+", month="+String.valueOf(monthOfYear)+", day="+dayOfMonth);
+		Calendar new_date = new GregorianCalendar();
+		Calendar set_to = null;
+
+		new_date.set(Calendar.YEAR, year);
+		new_date.set(Calendar.MONTH, monthOfYear);
+		new_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+		new_date.set(Calendar.HOUR_OF_DAY, 0);
+		new_date.set(Calendar.MINUTE, 0);
+		new_date.set(Calendar.SECOND, 0);
+		new_date.set(Calendar.MILLISECOND, 0);
+
+		//Logger.D(TAG, "            new_date: year="+String.valueOf(new_date.getYear())+", month="+String.valueOf(new_date.getMonth())+", day="+new_date.getDay());
+		
+		if (_min_time != 0) {
+			//Logger.D(TAG, "            min_date: year="+String.valueOf(_min_Date.getYear())+", month="+String.valueOf(_min_Date.getMonth())+", day="+_min_Date.getDay());
+			if (new_date.before(_min_Date)) {
+				set_to = _min_Date;
+			}
+		}
+		if (_max_time != 0) {
+			//Logger.D(TAG, "            max_date: year="+String.valueOf(_max_Date.getYear())+", month="+String.valueOf(_max_Date.getMonth())+", day="+_max_Date.getDay());
+			if (new_date.after(_max_Date)) {
+				set_to = _max_Date;
+			}
+		}
+		if (set_to != null) {
+			view.updateDate(set_to.get(Calendar.YEAR), set_to.get(Calendar.MONTH), set_to.get(Calendar.DAY_OF_MONTH));
+		}
+		{
+			Calendar s_date = new GregorianCalendar();
+			s_date.setTimeInMillis(_saved_time);
+			if (set_to != null) {
+				s_date.set(Calendar.YEAR, set_to.get(Calendar.YEAR));
+				s_date.set(Calendar.MONTH, set_to.get(Calendar.MONTH));
+				s_date.set(Calendar.DAY_OF_MONTH, set_to.get(Calendar.DAY_OF_MONTH));
+			}
+			else {
+				s_date.set(Calendar.YEAR, year);
+				s_date.set(Calendar.MONTH, monthOfYear);
+				s_date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			}
+			_saved_time = s_date.getTimeInMillis();
+		}
+
+		Logger.D(TAG, "_saved_time: " + _saved_time);
+	}
 	
+	@Override
+	public void onTimeChanged (TimePicker view, int hourOfDay, int minute) {
+		{
+			Calendar s_date = new GregorianCalendar();
+			s_date.setTimeInMillis(_saved_time);
+			s_date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			s_date.set(Calendar.MINUTE, minute);
+			s_date.set(Calendar.SECOND, 0);
+			s_date.set(Calendar.MILLISECOND, 0);
+			_saved_time = s_date.getTimeInMillis();
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);

@@ -2134,6 +2134,12 @@ _wrap_execute_js(int argc, VALUE *argv, VALUE self) {
     } 
     arg2 = (int)(val2);
   }
+  if (arg1) {
+    fprintf(stderr, "[RubyWebView] call rho_webview_execute_js index=%d len=%zu\n", arg2, strlen(arg1));
+  } else {
+    fprintf(stderr, "[RubyWebView] call rho_webview_execute_js index=%d with null script\n", arg2);
+  }
+  fflush(stderr);
   result = (char *)execute_js((char const *)arg1,arg2);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
@@ -2638,4 +2644,3 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "save", _wrap_save, -1);
   rb_define_module_function(mWebView, "get_current_url", _wrap_get_current_url, -1);
 }
-

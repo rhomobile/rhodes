@@ -439,9 +439,16 @@ void CAppCallbacksQueue::processUiCreated()
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
-    if ( m_pInstance != NULL) return (CRhodesApp*)m_pInstance;
+    LOG(INFO) + "CRhodesApp::Create enter";
+    LOG(INFO) + "  root=" + strRootPath + " user=" + strUserPath + " runtime=" + strRuntimePath;
+    if ( m_pInstance != NULL) {
+        LOG(INFO) + "  instance already exists";
+        return (CRhodesApp*)m_pInstance;
+    }
 
     m_pInstance = new CRhodesApp(strRootPath, strUserPath, strRuntimePath);
+    LOG(INFO) + "  instance created";
+    LOG(INFO) + "CRhodesApp::Create leave";
 
     return (CRhodesApp*)m_pInstance;
 }
@@ -2882,7 +2889,10 @@ void rho_rhodesapp_create(const char* szRootPath)
 
 void rho_rhodesapp_create_with_separate_user_path(const char* szRootPath, const char* szUserPath)
 {
+    LOG(INFO) + "rho_rhodesapp_create_with_separate_user_path enter";
+    LOG(INFO) + "  root=" + (szRootPath ? szRootPath : "(null)") + " user=" + (szUserPath ? szUserPath : "(null)");
     rho::common::CRhodesApp::Create(szRootPath, szUserPath, szRootPath);
+    LOG(INFO) + "rho_rhodesapp_create_with_separate_user_path leave";
 }
 
 void rho_rhodesapp_create_with_separate_runtime(const char* szRootPath, const char* szRuntimePath)
@@ -2893,7 +2903,9 @@ void rho_rhodesapp_create_with_separate_runtime(const char* szRootPath, const ch
     
 void rho_rhodesapp_start()
 {
+    LOG(INFO) + "rho_rhodesapp_start enter";
     RHODESAPP().startApp();
+    LOG(INFO) + "rho_rhodesapp_start leave";
 }
     
 void rho_rhodesapp_destroy()

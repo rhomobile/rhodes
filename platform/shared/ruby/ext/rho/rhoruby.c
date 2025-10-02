@@ -26,6 +26,7 @@
 
 #undef RUBY_EXPORT
 #include "ruby.h"
+#include "ruby/version.h"
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -219,6 +220,12 @@ void RhoRubyStart()
 #endif
 
     ruby_init();
+    RAWLOG_INFO1("Ruby runtime description: %s", ruby_description);
+    printf("[RhoRuby] ruby_description=%s\n", ruby_description);
+    fflush(stdout);
+    ruby_show_version();
+    printf("[RhoRuby] ruby_show_version() invoked\n");
+    fflush(stdout);
 
     Init_IO();
 #ifndef WINCE
@@ -278,6 +285,8 @@ void RhoRubyStart()
     #ifndef WINCE
     Init_date_core();
     #endif
+    printf("[RhoRuby] Init_Extensions()\n");
+    fflush(stdout);
     Init_Extensions();
 
 #else // OS_WP8 is set
@@ -328,12 +337,16 @@ void RhoRubyStart()
 #endif
 
 #ifdef RHODES_EMULATOR
+    printf("[RhoRuby] require_compiled(rhoframework)\n");
+    fflush(stdout);
     require_compiled(rb_str_new2("rhoframework"), &framework );
     framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
 #else
     {
 		VALUE res = rho_ruby_disable_gc();
 
+        printf("[RhoRuby] require_compiled(rhoframework)\n");
+        fflush(stdout);
         require_compiled(rb_str_new2("rhoframework"), &framework );
         rho_ruby_enable_gc(res);
     }
@@ -342,6 +355,8 @@ void RhoRubyStart()
     if ( framework == 0 || framework == Qnil )
     {
         RAWLOG_FATAL("RHO framework creating failed. Application will exit.");
+        printf("[RhoRuby] framework is nil, exiting\n");
+        fflush(stdout);
     }
 
 #ifdef ENABLE_RUBY_VM_STAT
@@ -399,6 +414,7 @@ void RhoModifyRubyLoadPath( const char* szRoot ) {
 #endif
 
         rb_ary_push(load_path, rb_str_new2(app_path) );
+        fprintf(stderr, "load_path push: %s\n", app_path);
 
 #if defined(APP_BUILD_CAPABILITY_SYMBOL)
         strcpy(app_path, rho_native_reruntimepath());
@@ -410,11 +426,23 @@ void RhoModifyRubyLoadPath( const char* szRoot ) {
 		strcpy(app_path, szRoot);
 		strcat(app_path, "lib");
 #else
-        strcpy(app_path, rho_simconf_getRhodesPath());
-        strcat(app_path, "/lib/framework");
+        {
+            const char* sim_rhodes_path = rho_simconf_getRhodesPath();
+            if (!sim_rhodes_path || !*sim_rhodes_path) {
+                sim_rhodes_path = szRoot;
+            }
+            strcpy(app_path, sim_rhodes_path);
+            size_t len = strlen(app_path);
+            if (len > 0 && app_path[len-1] != '/' && app_path[len-1] != '\\') {
+                app_path[len] = '/';
+                app_path[len+1] = '\0';
+            }
+            strcat(app_path, "lib/framework");
+        }
 #endif
 
         rb_ary_push(load_path, rb_str_new2(app_path) );
+        fprintf(stderr, "load_path push: %s\n", app_path);
 
 /*
 #ifdef RHODES_EMULATOR
@@ -437,15 +465,28 @@ void RhoModifyRubyLoadPath( const char* szRoot ) {
             strncpy(app_path,p0,len);
             app_path[len]=0;
             rb_ary_push(load_path, rb_str_new2(app_path) );
+            fprintf(stderr, "load_path push: %s\n", app_path);
 
             ++p1;
             p0=p1;
         }
 
 
-        strcpy(app_path, rho_simconf_getRhodesPath());
-        strcat(app_path, "/lib/framework");
-        rb_ary_push(load_path, rb_str_new2(app_path) );
+        {
+            const char* sim_rhodes_path = rho_simconf_getRhodesPath();
+            if (!sim_rhodes_path || !*sim_rhodes_path) {
+                sim_rhodes_path = szRoot;
+            }
+            strcpy(app_path, sim_rhodes_path);
+            size_t len2 = strlen(app_path);
+            if (len2 > 0 && app_path[len2-1] != '/' && app_path[len2-1] != '\\') {
+                app_path[len2] = '/';
+                app_path[len2+1] = '\0';
+            }
+            strcat(app_path, "lib/framework");
+            rb_ary_push(load_path, rb_str_new2(app_path) );
+            fprintf(stderr, "load_path push: %s\n", app_path);
+        }
 
 #endif
 */

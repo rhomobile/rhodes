@@ -172,6 +172,8 @@ public:
     {
         if ( String_startsWith(relativePath, "file://") )
             oResult.set(relativePath);
+        else if ( relativePath.find("://") != String::npos )
+            oResult.set(relativePath);
         else
         {
             String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);

@@ -286,20 +286,34 @@ void rho_conf_Init(const char* szRootPath)
     
 void  rho_conf_Init_with_separate_user_path(const char* szRootPath, const char* szUserPath)
 {
-	rho::common::CFilePath oRhoPath( szRootPath );
-	rho::common::CFilePath oUserPath( szUserPath );
-    
-    RHOCONF().setAppConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
-    RHOCONF().setAppConfUserFilePath(oUserPath.makeFullPath(CONF_FILENAME).c_str());
+    printf("rho_conf_Init_with_separate_user_path(%s, %s) enter\n", szRootPath, szUserPath);
+    fflush(stdout);
+    rho::common::CFilePath oRhoPath( szRootPath );
+    rho::common::CFilePath oUserPath( szUserPath );
+
+    rho::String appConfPath = oRhoPath.makeFullPath(CONF_FILENAME);
+    rho::String appConfUserPath = oUserPath.makeFullPath(CONF_FILENAME);
+    printf("  app conf path: %s\n", appConfPath.c_str());
+    printf("  app user conf path: %s\n", appConfUserPath.c_str());
+    fflush(stdout);
+
+    RHOCONF().setAppConfFilePath(appConfPath.c_str());
+    RHOCONF().setAppConfUserFilePath(appConfUserPath.c_str());
 #ifdef RHODES_EMULATOR
     rho::String strPath = rho::common::CFilePath::join( szRootPath, RHO_EMULATOR_DIR);
     strPath = rho::common::CFilePath::join( strPath, CONF_FILENAME);
+    printf("  emulator conf path: %s\n", strPath.c_str());
     RHOCONF().setConfFilePath(strPath.c_str());
 #else
-    RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+    rho::String confPath = oRhoPath.makeFullPath(CONF_FILENAME);
+    printf("  conf path: %s\n", confPath.c_str());
+    RHOCONF().setConfFilePath(confPath.c_str());
 #endif
-    
+    printf("  loading configuration file...\n");
+    fflush(stdout);
     RHOCONF().loadFromFile();
+    printf("rho_conf_Init_with_separate_user_path leave\n");
+    fflush(stdout);
 }
 
 void rho_conf_Init_from_shared_path(const char* szSharedRootPath)
