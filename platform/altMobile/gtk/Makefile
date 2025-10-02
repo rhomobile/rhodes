@@ -57,7 +57,7 @@ ifeq ($(ENABLE_CORE),1)
                -L$(RHO_ROOT)/platform/linux/bin/syncengine \
                -L$(RHO_ROOT)/platform/linux/bin/curl \
                -L$(RHO_ROOT)/platform/linux/bin/extensions \
-               -Wl,--start-group -lrholib -lrubylib -lsqlite3 -lsyncengine -lcurl -lcoreapi -lrhoconnect-client $(EXTRA_LIBS) -Wl,--end-group \
+               -Wl,--start-group -lrholib -lrubylib -lsqlite3 -lsyncengine -lcurl -lcoreapi $(EXTRA_LIBS) -Wl,--end-group \
                -lstdc++ -lgmp -ldl -lpthread -lm
   endif
 endif
