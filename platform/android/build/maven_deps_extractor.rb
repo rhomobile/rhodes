@@ -34,7 +34,7 @@ class MavenDepsExtractor
       @mvnbin += '.cmd'
     end
 
-    @repos_ = 
+    @repos_ =
     [
       "file://#{File.join($androidsdkpath,'extras','google','m2repository')}",
       "file://#{File.join($androidsdkpath,'extras','android','m2repository')}",
@@ -85,8 +85,8 @@ class MavenDepsExtractor
           else
             @logger.info "Existing dependency version is higher or equal than new one: #{depVersion} <= #{version}"
             haveExistingDependencyWithNonLessVersion = true
-          end          
-        end        
+          end
+        end
       end
     end
     return haveExistingDependencyWithNonLessVersion
@@ -151,7 +151,7 @@ class MavenDepsExtractor
     #rm_rf com_cache_dir if File.directory?(com_cache_dir)
 
     copy_dir = File.join( @temp_dir, '.tmp')
-    mkdir_p copy_dir    
+    mkdir_p copy_dir
     get_art_poms(copy_dir)
     copy_dependencies copy_dir
     extract_from_files(copy_dir)
@@ -165,7 +165,7 @@ class MavenDepsExtractor
     Dir[File.join(src,'*')].each do |f|
 
 
-      if File.extname(f) == '.aar'        
+      if File.extname(f) == '.aar'
         target = File.join(dst,File.basename(f,'.aar'))
 
         if !File.exist?( target )
@@ -195,10 +195,10 @@ class MavenDepsExtractor
       elsif File.extname(f) == '.jar'
         target = File.join(dst,File.basename(f))
         if !File.exist?(target)
-          mv(f,target) 
+          mv(f,target)
           @jars << target
         end
-      end        
+      end
     end
 
   end
@@ -215,13 +215,13 @@ class MavenDepsExtractor
     argv << "\"-Dmaven.repo.local=#{File.join(@m2home,'m2')}\""
     argv << '-e' if Rake.application.options.trace
     argv << '-X' if Rake.application.options.trace
-  
+
     argv.join(' ')
   end
 
   def get_art_poms(path)
     dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
-    
+
     remoteRepositories = ""
 
     @repos_.each_with_index do |repo, i|
@@ -263,7 +263,7 @@ class MavenDepsExtractor
     argv.join(' ')
   end
 
-  def copy_dependencies( path )    
+  def copy_dependencies( path )
     pom = File.join( path, 'pom.xml')
     generate_pom(pom, path)
 
@@ -347,7 +347,7 @@ class MavenDepsExtractor
 
   def aapt_args
     args = []
-=begin    
+=begin
     @jars.each do |j|
       args << '-I'
       args << j
@@ -371,7 +371,7 @@ class MavenDepsExtractor
   def jni_libs
     @jni_libs
   end
-  
+
   def extract_packages
      require 'nokogiri'
      packages = []
@@ -380,7 +380,7 @@ class MavenDepsExtractor
 	   attr = doc.xpath("//manifest").attr("package")
 	   packages << attr.to_s
      end
-	 return packages 
+	 return packages
   end
 
   def classpath(separator)

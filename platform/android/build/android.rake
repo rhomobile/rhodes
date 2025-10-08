@@ -49,6 +49,38 @@ include FileUtils
 USE_OWN_STLPORT = false
 $rhodes_as_lib = false
 
+OPENSSL_CUSTOM_ROOT = File.expand_path('builded_libs', __dir__)
+OPENSSL_CUSTOM_INCLUDE_DIR = File.join(OPENSSL_CUSTOM_ROOT, 'include')
+OPENSSL_CUSTOM_LIB_ROOT = File.join(OPENSSL_CUSTOM_ROOT, 'lib')
+CUSTOM_JAVA_LIB_ROOT = File.join(OPENSSL_CUSTOM_ROOT, 'java')
+OPENSSL_CUSTOM_ABI_DIRS = {
+  'arm' => 'armeabi-v7a',
+  'armeabi' => 'armeabi',
+  'armeabi-v7a' => 'armeabi-v7a',
+  'aarch64' => 'arm64-v8a',
+  'arm64-v8a' => 'arm64-v8a',
+  'x86' => 'x86',
+  'x86_64' => 'x86_64'
+}.freeze
+CUSTOM_NATIVE_SHARED_LIB_PREFIXES = %w[libcrypto.so libssl.so libconscrypt_jni.so].freeze
+
+def openssl_custom_lib_dir_for(abi)
+  mapped = OPENSSL_CUSTOM_ABI_DIRS.fetch(abi, abi)
+  File.join(OPENSSL_CUSTOM_LIB_ROOT, mapped)
+end
+
+def custom_native_shared_lib?(filename)
+  CUSTOM_NATIVE_SHARED_LIB_PREFIXES.any? { |prefix| filename.start_with?(prefix) }
+end
+
+def custom_java_jars(required: false)
+  jars = Dir.glob(File.join(CUSTOM_JAVA_LIB_ROOT, '*.jar')).sort
+  if required && jars.empty?
+    raise "Custom Conscrypt classes jar not found. Place your conscrypt build (e.g. conscrypt-android.jar) into #{CUSTOM_JAVA_LIB_ROOT}."
+  end
+  jars
+end
+
 def get_market_version(apilevel)
   AndroidTools.get_market_version(apilevel)
 end
@@ -1251,7 +1283,7 @@ namespace "config" do
               Jake.copyIfNeeded lib, targetpath
             end
             libdirpath = nil
-            Dir.glob(File.join(prebuiltpath, '**', 'lib*.so')).each do |lib|
+            Dir.glob(File.join(prebuiltpath, '**', 'lib*.so*')).each do |lib|
               next if lib =~ /adds/
               arch = File.basename(File.dirname(lib))
 
@@ -1925,12 +1957,10 @@ namespace "build" do
         next
       end
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
-      openssl_include = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "crypto", "include"
-
-      # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
-      openssl_crypto_lib = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "crypto", "libs"
-      openssl_ssl_lib = File.join AndroidTools::MavenDepsExtractor.instance.prefab_dirs[0], "modules", "ssl", "libs"
-      abi_prefab_target_dirs = { "arm" => "android.armeabi-v7a", "aarch64" => "android.arm64-v8a", "x86" => "android.x86", "armeabi-v7a" => "android.armeabi-v7a", "x86_64" => "android.x86_64" }
+      openssl_include = OPENSSL_CUSTOM_INCLUDE_DIR
+      unless Dir.exist?(openssl_include)
+        raise "OpenSSL include directory not found at #{openssl_include}. Place headers in builded_libs/include."
+      end
 
       args = []
       args << "-I\"#{$appincdir}\""
@@ -1943,7 +1973,6 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
       args << "-I\"#{openssl_include}\""
       args << "-I\"#{$coreapidir}\""
       args << "-I\"#{File.join($tmpdir,"include")}\""
@@ -1970,7 +1999,7 @@ namespace "build" do
         rlibs << "z"
         rlibs << "stdc++"
 
-        # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
+        # link against custom OpenSSL shared libraries shipped with the project
         rlibs << "crypto"
         rlibs << "ssl"
 
@@ -1979,15 +2008,17 @@ namespace "build" do
         realabi = abi
         realabi = 'armeabi' if abi == 'arm'
 
-        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")       
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so*")       
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
 
-        # maven dependency com.android.ndk.thirdparty:openssl:1.1.1
-        args << "-L\"#{File.join(openssl_crypto_lib, abi_prefab_target_dirs[abi])}\""
-        args << "-L\"#{File.join(openssl_ssl_lib, abi_prefab_target_dirs[abi])}\""
+        openssl_lib_dir = openssl_custom_lib_dir_for(abi)
+        unless Dir.exist?(openssl_lib_dir)
+          raise "OpenSSL library directory not found for ABI '#{abi}' at #{openssl_lib_dir}. Place binaries in builded_libs/lib/#{OPENSSL_CUSTOM_ABI_DIRS.fetch(abi, abi)}."
+        end
+        args << "-L\"#{openssl_lib_dir}\""
        
         deps = []
         libs = []
@@ -2250,7 +2281,7 @@ namespace "build" do
       mkdir_p File.join($applibs,'arm64-v8a')
 
       # Add .so libraries
-      Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
+      Dir.glob($app_builddir + "/**/lib*.so*").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
 
@@ -2274,7 +2305,8 @@ namespace "build" do
       abi_prefab_target_dirs = { "android.armeabi-v7a" => "armeabi", "android.arm64-v8a" => "arm64-v8a", "android.x86" => "x86", "armeabi-v7a" => "armeabi", "android.x86_64" => "x86_64" }
       android_prefab_dir = AndroidTools::MavenDepsExtractor.instance.prefab_dirs
       android_prefab_dir.each do |dir|
-        Dir.glob(dir + "/**/lib*.so").each do |lib|
+        Dir.glob(dir + "/**/lib*.so*").each do |lib|
+          next if custom_native_shared_lib?(File.basename(lib))
           arch = File.basename(File.dirname(lib))
           if !$abis.include?(abi_prefab_alter_names[arch])
             next
@@ -2284,6 +2316,19 @@ namespace "build" do
           if Dir.exist? File.join($applibs,arch)
             cp_r lib, File.join($applibs,arch,file)
           end
+        end
+      end
+
+      $abis.each do |abi|
+        openssl_lib_dir = openssl_custom_lib_dir_for(abi)
+        next unless Dir.exist?(openssl_lib_dir)
+
+        target_arch = File.basename(openssl_lib_dir)
+        next unless Dir.exist?(File.join($applibs, target_arch))
+
+        Dir.glob(File.join(openssl_lib_dir, 'lib*.so*')).each do |lib|
+          next unless custom_native_shared_lib?(File.basename(lib))
+          cp_r lib, File.join($applibs, target_arch, File.basename(lib))
         end
       end
 
@@ -2369,22 +2414,40 @@ namespace "build" do
       mkdir_p File.dirname $app_native_libs_java
       f = StringIO.new("", "w+")
       #File.open($app_native_libs_java, "w") do |f|
+      libs_paths = []
+      libs_paths.concat Dir.glob($app_builddir + "/**/lib*.so*")
+      libs_paths.concat Dir.glob(File.join(OPENSSL_CUSTOM_LIB_ROOT, '**', 'lib*.so*'))
+
+      libs_seen = {}
+      libs_in_order = []
+
+      libs_paths.reverse.each do |lib|
+        next if lib =~ /noautoload/
+        libname = File.basename(lib).sub(/^lib/, '').sub(/\.so(\..*)?$/, '')
+        next if libname.nil? || libname.empty?
+        next if libs_seen[libname]
+        libs_seen[libname] = true
+        libs_in_order << libname
+      end
+
+      preferred_prefix = %w[crypto ssl conscrypt_jni c++_shared]
+      libs_in_order = libs_in_order.sort_by do |name|
+        [preferred_prefix.index(name) || preferred_prefix.length, name]
+      end
+      libs_in_order.delete('rhodes')
+      libs_in_order << 'rhodes'
+
       f.puts "package #{JAVA_PACKAGE_NAME};"
       f.puts "import android.util.Log;"
       f.puts "public class NativeLibraries {"
       f.puts "  private static final String TAG = NativeLibraries.class.getSimpleName();"
       f.puts "  public static void load() {"
       f.puts "    // Load native .so libraries"
-      Dir.glob($app_builddir + "/**/lib*.so").reverse.each do |lib|
-        next if lib =~ /noautoload/
-
-        libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
+      libs_in_order.each do |libname|
         f.puts "    Log.d(TAG, \"Loading lib #{libname}\");"
         f.puts "    System.loadLibrary(\"#{libname}\");"
         f.puts "    Log.d(TAG, \"Lib #{libname} loaded\");"
       end
-      #f.puts "    // Load native implementation of rhodes"
-      #f.puts "    System.loadLibrary(\"rhodes\");"
       f.puts "  }"
       f.puts "};"
       #end
@@ -2569,10 +2632,15 @@ namespace "build" do
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
+      custom_jars = custom_java_jars(required: true)
+
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
+      custom_jars.each do |jar_path|
+        classpath += $path_separator + jar_path
+      end
 
       javalibsdir = Jake.get_absolute("platform/android/lib")
 
@@ -2593,6 +2661,9 @@ namespace "build" do
       java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists, $java_version)
 
       $android_jars = [jar]
+      custom_jars.each do |jar_path|
+        $android_jars << jar_path unless $android_jars.include?(jar_path)
+      end
       print_timestamp('build:android:rhodes FINISH')
     end
 
@@ -2608,6 +2679,9 @@ namespace "build" do
 
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
+      custom_java_jars.each do |jar_path|
+        classpath += $path_separator + jar_path
+      end
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
         classpath += $path_separator + jar
       end
@@ -2647,6 +2721,9 @@ namespace "build" do
 
       print_timestamp('build:android:extensions_java FINISH')
       $android_jars += AndroidTools::MavenDepsExtractor.instance.jars
+      custom_java_jars.each do |jar_path|
+        $android_jars << jar_path unless $android_jars.include?(jar_path)
+      end
     end
 
     task :upgrade_package => ["config:set_android_platform", "config:common"] do
@@ -2838,6 +2915,7 @@ end
 
 def prepare_aar_package
   alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+  alljars += custom_java_jars
   #alljars += AndroidTools::MavenDepsExtractor.instance.jars
 
   require 'set'
@@ -2897,16 +2975,16 @@ def prepare_aar_package
 
   mkdir_p File.join($tmpdir, 'jni')
 
-  Dir.glob(File.join($tmpdir, 'lib', '*')).each do |lib|
-    cp_r lib, File.join($tmpdir, 'jni')
-  end
+    Dir.glob(File.join($tmpdir, 'lib', '*')).each do |lib|
+      cp_r lib, File.join($tmpdir, 'jni')
+    end
 
-  args = ["uf", resourcepkg]
-  Dir.glob(File.join(File.join($tmpdir, 'jni'),'**','lib*.so')).each do |jni|
-    arch = File.basename(File.dirname(jni))
-    args << "jni/#{arch}/#{File.basename(jni)}"
-  end
-  Jake.run($jarbin, args, $tmpdir)
+    args = ["uf", resourcepkg]
+    Dir.glob(File.join(File.join($tmpdir, 'jni'),'**','lib*.so*')).each do |jni|
+      arch = File.basename(File.dirname(jni))
+      args << "jni/#{arch}/#{File.basename(jni)}"
+    end
+    Jake.run($jarbin, args, $tmpdir)
   unless $?.success?
     raise "Error packaging native libraries"
   end
@@ -2970,6 +3048,7 @@ namespace "package" do
 
     alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
     alljars += AndroidTools::MavenDepsExtractor.instance.jars
+    alljars += custom_java_jars
 
     jarsForDX = []
 
@@ -3048,7 +3127,7 @@ namespace "package" do
     puts "Packaging Native Libs"
 
     args = ["uf", resourcepkg]
-    Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
+    Dir.glob(File.join($applibs,'**','lib*.so*')).each do |lib|
       arch = File.basename(File.dirname(lib))
       args << "lib/#{arch}/#{File.basename(lib)}"
 
