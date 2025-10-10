@@ -52,6 +52,7 @@ $rhodes_as_lib = false
 OPENSSL_CUSTOM_ROOT = File.expand_path('builded_libs', __dir__)
 OPENSSL_CUSTOM_INCLUDE_DIR = File.join(OPENSSL_CUSTOM_ROOT, 'include')
 OPENSSL_CUSTOM_LIB_ROOT = File.join(OPENSSL_CUSTOM_ROOT, 'lib')
+CUSTOM_JAVA_LIB_ROOT = File.join(OPENSSL_CUSTOM_ROOT, 'java')
 OPENSSL_CUSTOM_ABI_DIRS = {
   'arm' => 'armeabi-v7a',
   'armeabi' => 'armeabi',
@@ -61,15 +62,23 @@ OPENSSL_CUSTOM_ABI_DIRS = {
   'x86' => 'x86',
   'x86_64' => 'x86_64'
 }.freeze
-OPENSSL_CUSTOM_SHARED_LIB_PREFIXES = %w[libcrypto.so libssl.so].freeze
+CUSTOM_NATIVE_SHARED_LIB_PREFIXES = %w[libcrypto.so libssl.so libconscrypt_jni.so].freeze
 
 def openssl_custom_lib_dir_for(abi)
   mapped = OPENSSL_CUSTOM_ABI_DIRS.fetch(abi, abi)
   File.join(OPENSSL_CUSTOM_LIB_ROOT, mapped)
 end
 
-def openssl_custom_shared_lib?(filename)
-  OPENSSL_CUSTOM_SHARED_LIB_PREFIXES.any? { |prefix| filename.start_with?(prefix) }
+def custom_native_shared_lib?(filename)
+  CUSTOM_NATIVE_SHARED_LIB_PREFIXES.any? { |prefix| filename.start_with?(prefix) }
+end
+
+def custom_java_jars(required: false)
+  jars = Dir.glob(File.join(CUSTOM_JAVA_LIB_ROOT, '*.jar')).sort
+  if required && jars.empty?
+    raise "Custom Conscrypt classes jar not found. Place your conscrypt build (e.g. conscrypt-android.jar) into #{CUSTOM_JAVA_LIB_ROOT}."
+  end
+  jars
 end
 
 def get_market_version(apilevel)
@@ -2297,7 +2306,7 @@ namespace "build" do
       android_prefab_dir = AndroidTools::MavenDepsExtractor.instance.prefab_dirs
       android_prefab_dir.each do |dir|
         Dir.glob(dir + "/**/lib*.so*").each do |lib|
-          next if openssl_custom_shared_lib?(File.basename(lib))
+          next if custom_native_shared_lib?(File.basename(lib))
           arch = File.basename(File.dirname(lib))
           if !$abis.include?(abi_prefab_alter_names[arch])
             next
@@ -2318,7 +2327,7 @@ namespace "build" do
         next unless Dir.exist?(File.join($applibs, target_arch))
 
         Dir.glob(File.join(openssl_lib_dir, 'lib*.so*')).each do |lib|
-          next unless openssl_custom_shared_lib?(File.basename(lib))
+          next unless custom_native_shared_lib?(File.basename(lib))
           cp_r lib, File.join($applibs, target_arch, File.basename(lib))
         end
       end
@@ -2623,10 +2632,15 @@ namespace "build" do
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
+      custom_jars = custom_java_jars(required: true)
+
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
+      custom_jars.each do |jar_path|
+        classpath += $path_separator + jar_path
+      end
 
       javalibsdir = Jake.get_absolute("platform/android/lib")
 
@@ -2647,6 +2661,9 @@ namespace "build" do
       java_build(jar, File.join($tmpdir, 'Rhodes'), classpath, javafilelists, $java_version)
 
       $android_jars = [jar]
+      custom_jars.each do |jar_path|
+        $android_jars << jar_path unless $android_jars.include?(jar_path)
+      end
       print_timestamp('build:android:rhodes FINISH')
     end
 
@@ -2662,6 +2679,9 @@ namespace "build" do
 
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
+      custom_java_jars.each do |jar_path|
+        classpath += $path_separator + jar_path
+      end
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
         classpath += $path_separator + jar
       end
@@ -2701,6 +2721,9 @@ namespace "build" do
 
       print_timestamp('build:android:extensions_java FINISH')
       $android_jars += AndroidTools::MavenDepsExtractor.instance.jars
+      custom_java_jars.each do |jar_path|
+        $android_jars << jar_path unless $android_jars.include?(jar_path)
+      end
     end
 
     task :upgrade_package => ["config:set_android_platform", "config:common"] do
@@ -2892,6 +2915,7 @@ end
 
 def prepare_aar_package
   alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+  alljars += custom_java_jars
   #alljars += AndroidTools::MavenDepsExtractor.instance.jars
 
   require 'set'
@@ -3024,6 +3048,7 @@ namespace "package" do
 
     alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
     alljars += AndroidTools::MavenDepsExtractor.instance.jars
+    alljars += custom_java_jars
 
     jarsForDX = []
 
