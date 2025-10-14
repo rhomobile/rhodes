@@ -62,7 +62,7 @@ OPENSSL_CUSTOM_ABI_DIRS = {
   'x86' => 'x86',
   'x86_64' => 'x86_64'
 }.freeze
-CUSTOM_NATIVE_SHARED_LIB_PREFIXES = %w[libcrypto.so libssl.so libconscrypt_jni.so].freeze
+CUSTOM_NATIVE_SHARED_LIB_FILENAMES = %w[libcrypto.so libssl.so libconscrypt_jni.so].freeze
 
 def openssl_custom_lib_dir_for(abi)
   mapped = OPENSSL_CUSTOM_ABI_DIRS.fetch(abi, abi)
@@ -70,7 +70,7 @@ def openssl_custom_lib_dir_for(abi)
 end
 
 def custom_native_shared_lib?(filename)
-  CUSTOM_NATIVE_SHARED_LIB_PREFIXES.any? { |prefix| filename.start_with?(prefix) }
+  CUSTOM_NATIVE_SHARED_LIB_FILENAMES.include?(filename)
 end
 
 def custom_java_jars(required: false)
@@ -2415,8 +2415,8 @@ namespace "build" do
       f = StringIO.new("", "w+")
       #File.open($app_native_libs_java, "w") do |f|
       libs_paths = []
-      libs_paths.concat Dir.glob($app_builddir + "/**/lib*.so*")
-      libs_paths.concat Dir.glob(File.join(OPENSSL_CUSTOM_LIB_ROOT, '**', 'lib*.so*'))
+      libs_paths.concat Dir.glob(File.join($app_builddir, '**', 'lib*.so'))
+      libs_paths.concat Dir.glob(File.join(OPENSSL_CUSTOM_LIB_ROOT, '**', 'lib*.so'))
 
       libs_seen = {}
       libs_in_order = []
