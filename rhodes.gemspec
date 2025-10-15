@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rubyzip', '1.3.0')
   s.add_dependency('rdoc', '4.2.2')
   s.add_dependency('deep_merge','1.1.1')
-  s.add_dependency('nokogiri', '1.11.7')
+  s.add_dependency('nokogiri', '1.13')
   s.add_dependency('webrick', '1.7.0')
 
   s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-platform.com" if s.respond_to? :post_install_message=
