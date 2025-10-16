@@ -144,6 +144,7 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void *pKey, int nKey)
         pRhoCtx->m_szPartition = sqlite3Malloc(nKey);
         memcpy(pRhoCtx->m_szPartition, pKey, nKey);
         pRhoCtx->m_nPartLen = nKey;
+        RAWTRACE2("INITKEY %s %d", (const char *) pKey, nKey);
         pRhoCtx->m_pPageBuffer = sqlite3Malloc(SQLITE_DEFAULT_PAGE_SIZE);
 
         sqlite3PagerSetCodec( pPager, sqlite3Codec, NULL, sqlite3FreeCodecArg, (void *)pRhoCtx );

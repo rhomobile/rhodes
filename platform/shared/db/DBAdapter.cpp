@@ -216,13 +216,79 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
     return false;
 }
 
+int CDBAdapter::checkoutRealPageSize(String &strDbPath, bool isExist, bool isEncrypted){
+    uint16_t pageSize = 0;
+    if (isExist){
+        FILE * fp = fopen(strDbPath.c_str(), "rb");
+        if (fp != NULL){
+            const int offset = 16;
+            fseek(fp, 0, SEEK_END);
+            int fileSize = ftell(fp);
+            
+            static const int bufferSize = 32; //AES 256 key size in bytes
+
+            if (fileSize > (bufferSize + offset)){
+                unsigned char* originFileBuff = new unsigned char[bufferSize];
+                fseek(fp, offset, SEEK_SET);
+                fread(originFileBuff, 1, bufferSize, fp);
+                if (isEncrypted){
+                    if ( getCrypt() ){
+                        if (getCrypt()->db_decrypt(m_strDbPartition.c_str(), bufferSize, originFileBuff) == 0){
+                            return 0;
+                        }
+                    } else{
+                        return 0;
+                    }                                                     
+                    pageSize = ((originFileBuff[0] << 8) | originFileBuff[1]);
+                }else{
+                    pageSize = ((originFileBuff[0] << 8) | originFileBuff[1]);
+                }
+                
+                RAWTRACE2("FOUND PAGE SIZE: %d (%s)", pageSize, strDbPath.c_str());
+                delete[] originFileBuff;
+                
+            }else{
+                RAWTRACE1("ERROR: CDBAdapter::checkoutPageSize file size is %d", fileSize);
+            }
+
+            fclose(fp);
+
+        }else{
+            RAWTRACE1("ERROR: CDBAdapter::checkoutPageSize can't open file %s", strDbPath.c_str());
+        }
+        
+    }
+    return pageSize;
+}
+
 void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState)
 {
-    if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 && m_dbHandle )
+    if ( strcasecmp(strDbPath.c_str(), m_strDbPath.c_str() ) == 0 && m_dbHandle )
         return;
 
     LOG(INFO) + "Open DB: " + strDbPath;
     //close();
+
+    const char* szEncrypt = get_app_build_config_item("encrypt_database");
+    bool isEncrypted = false;
+    if ( szEncrypt && strcmp(szEncrypt, "1") == 0 )
+    {
+        isEncrypted = true;
+        m_ptrCrypt = rho_get_RhoClassFactory()->createRhoCrypt();
+        if ( m_strCryptKey.length() > 0 ){
+            m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str(), !bTemp );
+        }
+    }
+
+    boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
+
+    int pageSize = checkoutRealPageSize(strDbPath, bExist, isEncrypted);
+    switch(pageSize){
+        case 0: break;
+        case 1024: rhoInitSQLitePageSize(1024); break;
+        case 4096: rhoInitSQLitePageSize(4096); break;
+        default: RAWTRACE1("CDBAdapter | found strange page size %d", pageSize);
+    }
 
     m_mxRuby.create();
 	
@@ -231,7 +297,6 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
     {
         m_strDbVerPath = strDbPath+".version";
         m_strDbVer = strVer;
-
         checkDBVersion(strVer);
     }	
 	
@@ -244,25 +309,22 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
 		}
 	}
 
-    boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
+    
+
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
     if ( !checkDbError(nRes) )
         return;
     //TODO: raise exception if error
 
     //if (RHOCONF().getBool("encrypt_database"))
-    const char* szEncrypt = get_app_build_config_item("encrypt_database");
-    if ( szEncrypt && strcmp(szEncrypt, "1") == 0 )
-    {
-        m_ptrCrypt = rho_get_RhoClassFactory()->createRhoCrypt();
-        if ( m_strCryptKey.length() > 0 )
-            m_ptrCrypt->set_db_CryptKey( m_strDbPartition.c_str(), m_strCryptKey.c_str(), !bTemp );
-
+    if (isEncrypted){
         CDBError dbError;
         String strKey = "PRAGMA key = \"";
         strKey += m_strDbPartition + "\";";
-	    executeBatch(strKey.c_str(), dbError);
+	    executeBatch(strKey.c_str(), dbError);        
     }
+
+    
 
     if ( !bExist )
         createSchema();
@@ -309,6 +371,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean c
         CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
         CRhoFile::deleteFile( (m_strDbPath+"_oldver-journal").c_str());
     }
+
 
 }
 
@@ -431,6 +494,8 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 		
 	CDBVersion dbVer;  
 	dbVer.fromFile(m_strDbVerPath);
+
+    RAWTRACE2("CHECKING VERSION v1: %s, :v2: %s", dbVer.m_strRhoVer.c_str(), dbVer.m_strAppVer.c_str());
 
 	if (dbVer.m_strRhoVer.length() == 0)
 	{
@@ -1559,7 +1624,9 @@ void rho_db_encrypt( const char* szPartition, int nPartLen, int size, unsigned c
 
 void rho_db_decrypt( const char* szPartition, int nPartLen, int size, unsigned char* data )
 {
+
     String strPartition(szPartition, nPartLen);
+    RAWTRACE1("szPartition = %s", strPartition.c_str());
     rho::db::CDBAdapter& db = rho::db::CDBAdapter::getDB( strPartition.c_str() );
     if ( db.getCrypt() )
         db.getCrypt()->db_decrypt(strPartition.c_str(), size, data);
