@@ -29,6 +29,7 @@
 
 #include <dirent.h>
 #include <dlfcn.h>
+#include <android/fdsan.h>
 #include <android/log.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -636,6 +637,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midReloadStatTable) return;
     midDeleteRecursively = getJNIClassStaticMethod(env, clsFileApi, "deleteRecursively", "(Ljava/lang/String;)I");
     if (!midDeleteRecursively) return;
+    // Disable fdsan to prevent crashes.
+    if (android_fdsan_set_error_level) {
+        android_fdsan_set_error_level(ANDROID_FDSAN_ERROR_LEVEL_WARN_ONCE);
+    }
+    // End disabling fdsan
 
 #if  defined(__aarch64__)
     const char *libc = "/system/lib64/libc.so";
