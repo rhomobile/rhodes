@@ -207,7 +207,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);
-    webView->setPage(new QtWebEnginePage(this));
+    webView->setPage(new QtWebEnginePage(webView));
     webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
     this->main_webView = webView;
 
@@ -532,6 +532,7 @@ void QtMainWindow::slotNavigate(QString url, int index)
             wv->page()->runJavaScript(url);
 
         } else if (!internalUrlProcessing(url)) {
+            wv->stop();
             if (mainWindowCallback) {
                 const QByteArray asc_url = url.toLatin1();
                 mainWindowCallback->onWebViewUrlChanged(std::string(asc_url.constData(),
@@ -550,19 +551,24 @@ void QtMainWindow::slotNavigate(QString url, int index)
 void QtMainWindow::GoBack(int index)
 {
     QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
+    wv->stop();
     if (wv)
         wv->back();
 }
 
 void QtMainWindow::GoForward(void)
 {
-    if (webView) webView->forward();
+    if (webView) {
+        webView->stop();
+        webView->forward();
+    }
 }
 
 void QtMainWindow::Refresh(int index)
 {
     QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
     if (wv) {
+        wv->stop();
         if (mainWindowCallback) {
             const QByteArray asc_url = wv->url().toString().toLatin1();
             mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
@@ -642,7 +648,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setParent(centralWidget());
         wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         verticalLayout->addWidget(wv);
-        wv->setPage(new QtWebEnginePage(this));
+        wv->setPage(new QtWebEnginePage(wv));
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() +
