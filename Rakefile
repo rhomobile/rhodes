@@ -132,6 +132,7 @@ end
 load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
+load File.join(pwd, 'platform/redmobile/build/redmobile.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/win32/build/win32.rake')
