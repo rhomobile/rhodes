@@ -1423,6 +1423,17 @@ namespace "config" do
     end
 
 
+    if $devroot.nil?
+        begin
+            puts "detect XCode dev root by command line tools"
+            args = ['xcode-select', '--print-path']
+            Jake.run2("xcrun",args,{:rootdir => $startdir, :hide_output => true}) do |line|
+                puts 'LINE = '+line.to_s
+                $devroot = line.chomp
+            end
+        rescue Exception => e
+        end
+    end
 
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_51') if $iphonesim.nil?
