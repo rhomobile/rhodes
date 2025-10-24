@@ -143,6 +143,18 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private AlertDialog mPermissionsDialog = null;
 	private static boolean mIsUseOverlay = false;
 
+	public interface IKeyEventListener {
+		void onKeyDown(int keyCode, KeyEvent event);
+	}
+
+	private IKeyEventListener mKeyEventListener = null;
+
+	public void setKeyEventListener(IKeyEventListener listener) {
+		mKeyEventListener = listener;
+	}
+
+
+
     private KisokModeDeviceOwner kisokModeDeviceOwner;
 
 	private class AdditionalContentView {
@@ -685,6 +697,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		//Logger.E(TAG, "RhodesActivity.onKeyDown()");
+		//if (mKeyEventListener != null) {
+		//	mKeyEventListener.onKeyDown(keyCode, event);
+		//}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			RhodesService r = RhodesService.getInstance();
@@ -942,6 +958,13 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event)
 	{
+		//Logger.E(TAG, "RhodesActivity.dispatchKeyEvent()");
+		if (mKeyEventListener != null) {
+			if ( event.getAction() == KeyEvent.ACTION_DOWN ) {
+				mKeyEventListener.onKeyDown(event.getKeyCode(), event);
+			}
+		}
+
 		 IRhoExtManager extManager = RhoExtManager.getInstance();
 		 if(extManager.onKey(event.getKeyCode(), event))
 		 {
