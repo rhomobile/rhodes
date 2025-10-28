@@ -671,6 +671,20 @@ space_size(size_t stack_size)
     }
 }
 
+/**
+ * Workaround: fixed `reserve_stack` to handle Android 16 KB page size alignment.
+ *
+ * Ruby’s original `reserve_stack` forced eager stack mapping to avoid an old
+ * Linux kernel bug where heap pages could be placed in the stack growth region,
+ * preventing the stack from expanding properly.
+ *
+ * That kernel bug was fixed in Linux 4.13 (2017), and the eager reservation
+ * itself could cause side effects (e.g., excessive memory usage with large
+ * RLIMIT_STACK). As a result, `reserve_stack` was completely removed from Ruby
+ * (see change dcf3add96bd6…, Bug #20804).
+ *
+ * Reference: https://bugs.ruby-lang.org/issues/20804
+ */
 #ifdef __linux__
 static __attribute__((noinline)) void
 reserve_stack(volatile char *limit, size_t size)
@@ -680,7 +694,50 @@ reserve_stack(volatile char *limit, size_t size)
 # endif
     struct rlimit rl;
     volatile char buf[0x100];
-    enum {stack_check_margin = 0x1000}; /* for -fstack-check */
+    size_t stack_check_margin = 0x1000; /* Default guard size used by -fstack-check (4 KB minimum) */
+
+# if defined(HAVE_PTHREAD_GETATTR_NP) && defined(HAVE_PTHREAD_ATTR_GETGUARDSIZE)
+    /**
+     * this block works only on linux/glibc where pthread_getattr_np is available
+     * it gets real parameters of the current thread stack
+     * if the guard size is larger than the default value (for example 16 KB instead of 4 KB)
+     * we update margin to match real guard size
+    */
+    {
+        pthread_attr_t attr;
+        size_t guard = 0;
+
+        // get current thread stack attributes
+        if (pthread_getattr_np(pthread_self(), &attr) == 0) {
+            // get guard page size, 
+            // if guard is bigger than default margin, update it
+            if (pthread_attr_getguardsize(&attr, &guard) == 0 && guard > stack_check_margin) {
+                stack_check_margin = guard;
+            }
+            pthread_attr_destroy(&attr); // destroy attribute object
+        }
+    }
+# endif
+
+# ifdef HAVE_UNISTD_H
+    /**
+     * this block checks real system memory page size
+     * uses sysconf (available only if unistd.h is present)
+     * if page size is larger than current margin, we update it
+     */
+    {
+        long page_size = -1;
+#  if defined(_SC_PAGESIZE)
+        page_size = sysconf(_SC_PAGESIZE);
+#  elif defined(_SC_PAGE_SIZE)
+        page_size = sysconf(_SC_PAGE_SIZE);
+#  endif
+    // if system returns valid page size and it is greater than margin, use the page size
+        if (page_size > 0 && (size_t)page_size > stack_check_margin) {
+            stack_check_margin = (size_t)page_size;
+        }
+    }
+# endif
 
     STACK_GROW_DIR_DETECTION;
 
