@@ -694,6 +694,8 @@ reserve_stack(volatile char *limit, size_t size)
 # endif
     struct rlimit rl;
     volatile char buf[0x100];
+
+    // TAU start
     size_t stack_check_margin = 0x1000; /* Default guard size used by -fstack-check (4 KB minimum) */
 
 # if defined(HAVE_PTHREAD_GETATTR_NP) && defined(HAVE_PTHREAD_ATTR_GETGUARDSIZE)
@@ -738,6 +740,8 @@ reserve_stack(volatile char *limit, size_t size)
         }
     }
 # endif
+
+    // TAU end
 
     STACK_GROW_DIR_DETECTION;
 
