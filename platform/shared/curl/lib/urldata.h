@@ -25,6 +25,7 @@
 /* This file is for lib internal stuff */
 
 #include "curl_setup.h"
+#include "curl_threads.h"
 
 #define PORT_FTP 21
 #define PORT_FTPS 990
@@ -1176,6 +1177,9 @@ struct connectdata {
   struct http_connect_state *connect_state; /* for HTTP CONNECT */
   struct connectbundle *bundle; /* The bundle we are member of */
   int negnpn; /* APLN or NPN TLS negotiated protocol, CURL_HTTP_VERSION* */
+
+  curl_mutex_t socket_mutex; /* mutex protecting the sockets */
+  unsigned long tempsock_owner[2];  // Thread IDs for tempsock ownership
 
 #ifdef USE_UNIX_SOCKETS
   char *unix_domain_socket;

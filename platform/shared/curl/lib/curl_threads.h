@@ -23,7 +23,10 @@
  ***************************************************************************/
 #include "curl_setup.h"
 
-#if defined(USE_THREADS_POSIX)
+#if defined(USE_THREADS_POSIX) || defined(HAVE_PTHREAD_H)
+#  ifdef HAVE_PTHREAD_H
+#    include <pthread.h>
+#  endif
 #  define CURL_STDCALL
 #  define curl_mutex_t           pthread_mutex_t
 #  define curl_thread_t          pthread_t *

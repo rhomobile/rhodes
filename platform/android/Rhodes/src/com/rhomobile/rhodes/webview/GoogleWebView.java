@@ -1003,6 +1003,10 @@ public class GoogleWebView implements IRhoWebView {
         // lost foreground - restore keyboard settings !
         restoreKeyboardSettings();
 
+        mWebView.onPause();
+        mWebView.pauseTimers();
+        mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
+
 
         //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
     }
@@ -1010,6 +1014,10 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void onResume() {
         setupOurTauKeyboard();
+
+        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        mWebView.resumeTimers();
+        mWebView.onResume();
 
         //AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
     }
