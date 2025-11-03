@@ -74,6 +74,12 @@
 #include "multihandle.h"
 #include "system_win32.h"
 
+#include <logging/RhoLog.h>
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Curl"
+
+#include "curl_threads.h"
+
 /* The last 3 #include files should be in this order */
 #include "curl_printf.h"
 #include "curl_memory.h"
@@ -102,6 +108,17 @@ struct tcp_keepalive {
   u_long keepaliveinterval;
 };
 #endif
+
+unsigned long Curl_thread_id(void)
+{
+#ifdef WIN32
+  return (unsigned long)GetCurrentThreadId();
+#elif defined(HAVE_PTHREAD_H)
+  return (unsigned long)pthread_self();
+#else
+  return 1; // Single-threaded fallback
+#endif
+}
 
 static void
 tcpkeepalive(struct Curl_easy *data,
@@ -552,8 +569,11 @@ static CURLcode trynextip(struct connectdata *conn,
      Don't close it yet to ensure that the next IP's socket gets a different
      file descriptor, which can prevent bugs when the curl_multi_socket_action
      interface is used with certain select() replacements such as kqueue. */
+  Curl_mutex_acquire(&conn->socket_mutex);
   curl_socket_t fd_to_close = conn->tempsock[tempindex];
   conn->tempsock[tempindex] = CURL_SOCKET_BAD;
+  conn->tempsock_owner[tempindex] = 0;
+  Curl_mutex_release(&conn->socket_mutex);
 
   if(sockindex == FIRSTSOCKET) {
     Curl_addrinfo *ai = NULL;
@@ -582,12 +602,23 @@ static CURLcode trynextip(struct connectdata *conn,
 
       if(ai) {
         result = singleipconnect(conn, ai, &conn->tempsock[tempindex]);
+        Curl_mutex_acquire(&conn->socket_mutex);
         if(result == CURLE_COULDNT_CONNECT) {
+          conn->tempsock[tempindex] = CURL_SOCKET_BAD;
+          conn->tempsock_owner[tempindex] = 0;  // Clear owner
+
+          Curl_mutex_release(&conn->socket_mutex);
           ai = ai->ai_next;
           continue;
         }
 
         conn->tempaddr[tempindex] = ai;
+        if(conn->tempsock[tempindex] != CURL_SOCKET_BAD) {
+          conn->tempsock_owner[tempindex] = Curl_thread_id();  // Record owner
+        }
+
+        Curl_mutex_release(&conn->socket_mutex);
+
       }
       break;
     }
@@ -754,18 +785,24 @@ CURLcode Curl_is_connected(struct connectdata *conn,
 
   for(i=0; i<2; i++) {
     const int other = i ^ 1;
-    if(conn->tempsock[i] == CURL_SOCKET_BAD)
+    Curl_mutex_acquire(&conn->socket_mutex);
+
+    if(conn->tempsock[i] == CURL_SOCKET_BAD) {
+      Curl_mutex_release(&conn->socket_mutex);
       continue;
+    }
+    curl_socket_t current_sock = conn->tempsock[i];
+    Curl_mutex_release(&conn->socket_mutex);
 
 #ifdef mpeix
     /* Call this function once now, and ignore the results. We do this to
        "clear" the error state on the socket so that we can later read it
        reliably. This is reported necessary on the MPE/iX operating system. */
-    (void)verifyconnect(conn->tempsock[i], NULL);
+    (void)verifyconnect(current_sock, NULL);
 #endif
 
     /* check socket for connect */
-    rc = SOCKET_WRITABLE(conn->tempsock[i], 0);
+    rc = SOCKET_WRITABLE(current_sock, 0);
 
     if(rc == 0) { /* no connection yet */
       error = 0;
@@ -782,18 +819,27 @@ CURLcode Curl_is_connected(struct connectdata *conn,
       }
     }
     else if(rc == CURL_CSELECT_OUT || conn->bits.tcp_fastopen) {
-      if(verifyconnect(conn->tempsock[i], &error)) {
+      if(verifyconnect(current_sock, &error)) {
         /* we are connected with TCP, awesome! */
+        Curl_mutex_acquire(&conn->socket_mutex);
 
         /* use this socket from now on */
-        conn->sock[sockindex] = conn->tempsock[i];
+        conn->sock[sockindex] = current_sock;
         conn->ip_addr = conn->tempaddr[i];
         conn->tempsock[i] = CURL_SOCKET_BAD;
-
+        conn->tempsock_owner[i] = 0;  // CLEAR OWNER - socket transferred
         /* close the other socket, if open */
-        if(conn->tempsock[other] != CURL_SOCKET_BAD) {
-          Curl_closesocket(conn, conn->tempsock[other]);
+        curl_socket_t other_sock = conn->tempsock[other];
+
+        if(other_sock != CURL_SOCKET_BAD) {
           conn->tempsock[other] = CURL_SOCKET_BAD;
+          conn->tempsock_owner[other] = 0;  // CLEAR OWNER
+        }
+
+        Curl_mutex_release(&conn->socket_mutex);
+
+        if(other_sock != CURL_SOCKET_BAD) {
+          Curl_closesocket(conn, other_sock);
         }
 
         /* see if we need to do any proxy magic first once we connected */
@@ -814,7 +860,7 @@ CURLcode Curl_is_connected(struct connectdata *conn,
       infof(data, "Connection failed\n");
     }
     else if(rc & CURL_CSELECT_ERR)
-      (void)verifyconnect(conn->tempsock[i], &error);
+      (void)verifyconnect(current_sock, &error);
 
     /*
      * The connection failed here, we should attempt to connect to the "next
@@ -823,21 +869,26 @@ CURLcode Curl_is_connected(struct connectdata *conn,
     if(error) {
       data->state.os_errno = error;
       SET_SOCKERRNO(error);
-      if(conn->tempaddr[i]) {
+      if(current_sock) {
         CURLcode status;
         char ipaddress[MAX_IPADR_LEN];
-        Curl_printable_address(conn->tempaddr[i], ipaddress, MAX_IPADR_LEN);
+        Curl_printable_address(current_sock, ipaddress, MAX_IPADR_LEN);
         infof(data, "connect to %s port %ld failed: %s\n",
               ipaddress, conn->port, Curl_strerror(conn, error));
 
         conn->timeoutms_per_addr = conn->tempaddr[i]->ai_next == NULL ?
                                    allow : allow / 2;
 
-        status = trynextip(conn, sockindex, i);
-        if(status != CURLE_COULDNT_CONNECT
-            || conn->tempsock[other] == CURL_SOCKET_BAD)
-          /* the last attempt failed and no other sockets remain open */
-          result = status;
+        Curl_mutex_acquire(&conn->socket_mutex);
+        bool should_try_next = (current_sock != CURL_SOCKET_BAD);
+        Curl_mutex_release(&conn->socket_mutex);
+        if(should_try_next) {
+          status = trynextip(conn, sockindex, i);
+          if(status != CURLE_COULDNT_CONNECT
+              || conn->tempsock[other] == CURL_SOCKET_BAD)
+            /* the last attempt failed and no other sockets remain open */
+            result = status;
+        }
       }
     }
   }
@@ -991,6 +1042,8 @@ static CURLcode singleipconnect(struct connectdata *conn,
        lack of socket as well. This allows the parent function to keep looping
        over alternative addresses/socket families etc. */
     return CURLE_OK;
+  // lock the socket mutex to prevent other threads from accessing the socket
+  Curl_mutex_acquire(&conn->socket_mutex);
 
   /* store remote address and port used in this connection attempt */
   if(!getaddressinfo((struct sockaddr*)&addr.sa_addr,
@@ -999,6 +1052,7 @@ static CURLcode singleipconnect(struct connectdata *conn,
     failf(data, "sa_addr inet_ntop() failed with errno %d: %s",
           errno, Curl_strerror(conn, errno));
     Curl_closesocket(conn, sockfd);
+    Curl_mutex_release(&conn->socket_mutex);
     return CURLE_OK;
   }
   infof(data, "  Trying %s...\n", ipaddress);
@@ -1029,6 +1083,7 @@ static CURLcode singleipconnect(struct connectdata *conn,
       isconnected = TRUE;
     else if(error) {
       Curl_closesocket(conn, sockfd); /* close the socket and bail out */
+      Curl_mutex_release(&conn->socket_mutex);
       return CURLE_ABORTED_BY_CALLBACK;
     }
   }
@@ -1043,6 +1098,8 @@ static CURLcode singleipconnect(struct connectdata *conn,
                        Curl_ipv6_scope((struct sockaddr*)&addr.sa_addr));
     if(result) {
       Curl_closesocket(conn, sockfd); /* close socket and bail out */
+      Curl_mutex_release(&conn->socket_mutex);
+
       if(result == CURLE_UNSUPPORTED_PROTOCOL) {
         /* The address family is not supported on this interface.
            We can continue trying addresses */
@@ -1089,6 +1146,7 @@ static CURLcode singleipconnect(struct connectdata *conn,
   }
   else {
     *sockp = sockfd;
+    Curl_mutex_release(&conn->socket_mutex);
     return CURLE_OK;
   }
 
@@ -1126,7 +1184,8 @@ static CURLcode singleipconnect(struct connectdata *conn,
 
   if(!result)
     *sockp = sockfd;
-
+  
+    Curl_mutex_release(&conn->socket_mutex);
   return result;
 }
 
@@ -1165,6 +1224,12 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
   /* start connecting to first IP */
   while(conn->tempaddr[0]) {
     result = singleipconnect(conn, conn->tempaddr[0], &(conn->tempsock[0]));
+
+    Curl_mutex_acquire(&conn->socket_mutex);
+    if(conn->tempsock[0] != CURL_SOCKET_BAD) {
+      conn->tempsock_owner[0] = Curl_thread_id();  // Record current thread
+    }
+    Curl_mutex_release(&conn->socket_mutex);
     if(!result)
       break;
     conn->tempaddr[0] = conn->tempaddr[0]->ai_next;
@@ -1275,6 +1340,31 @@ bool Curl_connalive(struct connectdata *conn)
 int Curl_closesocket(struct connectdata *conn,
                       curl_socket_t sock)
 {
+  if(conn) {
+    unsigned long current_thread = Curl_thread_id();
+
+    Curl_mutex_acquire(&conn->socket_mutex);
+    for(int i = 0; i < 2; i++) {
+      if(conn->tempsock[i] == sock) {
+        if(conn->tempsock_owner[i] != 0 && 
+           conn->tempsock_owner[i] != current_thread) {
+          // WRONG THREAD trying to close this socket!
+          Curl_mutex_release(&conn->socket_mutex);
+          
+          RAWLOGC_INFO3("CURL", 
+                "Warning: Thread %lu trying to close socket %d owned by thread %lu\n",
+                current_thread, (int)sock, conn->tempsock_owner[i]);
+          
+          return -1;
+        }
+        
+        // Clear ownership on close
+        conn->tempsock_owner[i] = 0;
+      }
+    }
+    Curl_mutex_release(&conn->socket_mutex);
+  }
+
   if(conn && conn->fclosesocket) {
     if((sock == conn->sock[SECONDARYSOCKET]) &&
        conn->sock_accepted[SECONDARYSOCKET])
