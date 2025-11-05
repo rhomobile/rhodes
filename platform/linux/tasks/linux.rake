@@ -24,6 +24,289 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 require 'erb'
+require 'shellwords'
+
+def target_subdir_name
+	subdir = $target_subdir
+	if (subdir.nil? || subdir.empty?) && ENV['RHO_TARGET_SUBDIR'] && !ENV['RHO_TARGET_SUBDIR'].empty?
+		subdir = ENV['RHO_TARGET_SUBDIR']
+	end
+	subdir = "linux" if subdir.nil? || subdir.empty?
+	subdir
+end
+
+def astra_linux_log(message)
+	puts "[astraMobile] #{message}"
+end
+
+def load_astra_linux_chroot_path(force: false)
+	return $astra_linux_chroot_path if !force && defined?($astra_linux_chroot_loaded) && $astra_linux_chroot_loaded
+
+	chroot_value = nil
+	if $config && $config["build"].is_a?(Hash)
+		chroot_value = $config["build"]["astraMobileChroot"]
+	end
+
+	if chroot_value.nil?
+		begin
+			rhodes_build = File.join($startdir, "rhobuild.yml")
+			if File.file?(rhodes_build)
+				raw_config = Jake.config(File.open(rhodes_build))
+				if raw_config.is_a?(Hash) && raw_config["build"].is_a?(Hash)
+					chroot_value = raw_config["build"]["astraMobileChroot"]
+				end
+			end
+		rescue => e
+			astra_linux_log("Could not read rhobuild.yml: #{e}")
+		end
+	end
+
+	astra_linux_log("config build.astraMobileChroot: #{chroot_value.inspect}")
+	$astra_linux_chroot_path = normalize_chroot_path(chroot_value)
+
+	if $astra_linux_chroot_path.nil?
+		unless $astra_linux_warned_missing_chroot
+			astra_linux_log("The build.astraMobileChroot parameter is not set; the run:astraMobile and device:astraMobile:production tasks will require chroot.")
+			$astra_linux_warned_missing_chroot = true
+		end
+	else
+		if !File.directory?($astra_linux_chroot_path)
+			astra_linux_log("Specified chroot '#{$astra_linux_chroot_path}' does not exist on the host.")
+		else
+			astra_linux_log("Using chroot: #{$astra_linux_chroot_path}")
+		end
+	end
+
+	$astra_linux_chroot_loaded = true
+	$astra_linux_chroot_path
+end
+
+def ensure_chroot_configured!
+	load_astra_linux_chroot_path unless defined?($astra_linux_chroot_loaded) && $astra_linux_chroot_loaded
+	return if astra_linux_chroot_configured?
+
+	astra_linux_log("The task requires a configured chroot. Specify the build.astraMobileChroot parameter in rhobuild.yml.")
+	raise "Chroot path is not configured"
+end
+
+def normalize_chroot_path(raw_path)
+	return nil if raw_path.nil?
+
+	path = raw_path.to_s.strip
+	return nil if path.empty?
+
+	base_dir = defined?($startdir) && $startdir ? $startdir : Dir.pwd
+	File.expand_path(path, base_dir)
+end
+
+def astra_linux_chroot_path
+	load_astra_linux_chroot_path unless defined?($astra_linux_chroot_loaded) && $astra_linux_chroot_loaded
+	$astra_linux_chroot_path
+end
+
+def astra_linux_chroot_configured?
+	load_astra_linux_chroot_path unless defined?($astra_linux_chroot_loaded) && $astra_linux_chroot_loaded
+	!astra_linux_chroot_path.nil?
+end
+
+def host_workspace_root
+	$host_workspace_root ||= File.expand_path("..", $startdir)
+end
+
+def host_app_path_for_chroot
+	return $app_path if defined?($app_path) && $app_path && !$app_path.to_s.empty?
+
+	env_path = ENV["RHO_APP_PATH"]
+	return File.expand_path(env_path, host_workspace_root) if env_path && !env_path.empty?
+
+	if $config && $config["env"].is_a?(Hash) && $config["env"]["app"] && !$config["env"]["app"].to_s.empty?
+		return File.expand_path($config["env"]["app"], host_workspace_root)
+	end
+
+	nil
+end
+
+def normalize_deb_architecture(arch_string)
+	return nil if arch_string.nil? || arch_string.to_s.empty?
+
+	arch = arch_string.to_s.downcase
+	return 'arm64' if arch.include?('aarch64') || arch.include?('arm64')
+	return 'amd64' if arch.include?('x86_64') || arch.include?('amd64')
+	return 'armhf' if arch.include?('armv7') || arch.include?('armhf')
+
+	arch.match?(/\A[a-z0-9]+\z/) ? arch : nil
+end
+
+def resolve_package_architecture
+	env_arch = ENV['RHO_PACKAGE_ARCH']
+	mapped_env = normalize_deb_architecture(env_arch)
+	return mapped_env if mapped_env
+
+	host_arch = defined?($architecture) ? $architecture : nil
+	mapped_host = normalize_deb_architecture(host_arch)
+	return mapped_host if mapped_host
+
+	subdir = nil
+	begin
+		subdir = target_subdir_name
+	rescue StandardError
+		subdir = nil
+	end
+
+	if subdir
+		sd = subdir.downcase
+		return 'arm64' if sd.include?('astra') || sd.include?('arm64')
+	end
+
+	'amd64'
+end
+
+def package_architecture
+	$package_architecture ||= resolve_package_architecture
+end
+
+def chroot_absolute_path(path)
+	ensure_chroot_configured!
+
+	File.join(astra_linux_chroot_path, path.sub(/\A\//, ''))
+end
+
+def run_with_sudo(command)
+	Jake.run3("sudo #{command}", host_workspace_root)
+end
+
+def run_with_sudo_allow_fail(command)
+	Jake.run3_dont_fail("sudo #{command}", host_workspace_root)
+end
+
+def ensure_chroot_path_exists(path)
+	run_with_sudo("mkdir -p #{Shellwords.escape(path)}")
+end
+
+def ensure_bind_mount(host_path, target_path, options = "--bind", make_slave: false)
+	ensure_chroot_path_exists(target_path)
+	unless Jake.run3_dont_fail("sudo mountpoint -q #{Shellwords.escape(target_path)}")
+		astra_linux_log("Mount #{host_path} → #{target_path} (#{options})")
+		run_with_sudo("mount #{options} #{Shellwords.escape(host_path)} #{Shellwords.escape(target_path)}")
+		if make_slave
+			astra_linux_log("Install rslave for #{target_path}")
+			run_with_sudo("mount --make-rslave #{Shellwords.escape(target_path)}")
+		end
+	end
+end
+
+def unmount_if_mounted(target_path)
+	return unless Jake.run3_dont_fail("sudo mountpoint -q #{Shellwords.escape(target_path)}")
+
+	astra_linux_log("Unmount #{target_path}")
+	return if run_with_sudo_allow_fail("umount #{Shellwords.escape(target_path)}")
+
+	astra_linux_log("Standard unmount failed, performing lazy umount #{target_path}")
+	run_with_sudo_allow_fail("umount -l #{Shellwords.escape(target_path)}")
+end
+
+def with_ast_linux_chroot_mounts
+	ensure_chroot_configured!
+
+	host_root = host_workspace_root
+	mounts = [
+		{ host: "/proc", target: chroot_absolute_path("/proc"), options: "--bind" },
+		{ host: "/sys", target: chroot_absolute_path("/sys"), options: "--rbind", make_slave: true },
+		{ host: "/dev", target: chroot_absolute_path("/dev"), options: "--rbind", make_slave: true },
+		{ host: host_root, target: chroot_absolute_path(host_root), options: "--bind" }
+	]
+
+	begin
+		mounts.each do |mount|
+			ensure_bind_mount(mount[:host], mount[:target], mount[:options], make_slave: mount[:make_slave])
+		end
+		yield
+	ensure
+		mounts.reverse_each do |mount|
+			unmount_if_mounted(mount[:target])
+		end
+	end
+end
+
+def run_in_ast_linux_chroot(command, chdir: host_workspace_root, env: {})
+	ensure_chroot_configured!
+
+	trace_suffix = ""
+	if defined?(ARGV) && ARGV.include?("--trace")
+		trace_suffix = " --trace"
+	end
+
+	exports = env.map { |key, value| "export #{key}=#{Shellwords.escape(value.to_s)}" }
+	commands = exports + ["cd #{Shellwords.escape(chdir)}", command + trace_suffix]
+	chroot_command = commands.join(" && ")
+	astra_linux_log("Выполняем внутри chroot: #{command} (каталог #{chdir})")
+	Jake.run3("sudo chroot #{Shellwords.escape(astra_linux_chroot_path)} /bin/bash -lc #{Shellwords.escape(chroot_command)}", host_workspace_root)
+end
+
+def with_target_subdir(subdir)
+	previous_subdir = $target_subdir
+	begin
+		$target_subdir = subdir
+		yield
+	ensure
+		$target_subdir = previous_subdir
+	end
+end
+
+def reenable_linux_tasks_for_target
+	%w[
+		config:linux
+		config:linux:application
+		config:sys_recognize
+		build:linux
+		build:linux:rhobundle
+		build:linux:extensions
+		device:linux:production
+		device:linux:production:deb
+		device:linux:production:rpm
+		run:linux
+		clean:linux
+		clean:linux:rhosimulator
+	].each do |task_name|
+		Rake::Task[task_name].reenable if Rake::Task.task_defined?(task_name)
+	end
+end
+
+def invoke_run_task_for(subdir)
+	with_target_subdir(subdir) do
+		reenable_linux_tasks_for_target
+		Rake::Task["build:linux"].invoke
+		Jake.run3(File.join($target_path, $appname) + ' --remote-debugging-port=9090')
+	end
+end
+
+def invoke_run_task_for_ast_linux
+	ensure_chroot_configured!
+
+	with_ast_linux_chroot_mounts do
+		env = { 'RHO_TARGET_SUBDIR' => 'astraMobile' }
+		if (app_path = host_app_path_for_chroot)
+			env['RHO_APP_PATH'] = app_path
+		else
+			astra_linux_log("Unable to determine the application path; check env.app in rhobuild.yml or the RHO_APP_PATH environment variable..")
+		end
+		run_in_ast_linux_chroot("rake run:linux", chdir: $startdir, env: env)
+	end
+end
+
+def invoke_device_production_for_astra_linux
+	ensure_chroot_configured!
+
+	with_ast_linux_chroot_mounts do
+		env = { 'RHO_TARGET_SUBDIR' => 'astraMobile' }
+		if (app_path = host_app_path_for_chroot)
+			env['RHO_APP_PATH'] = app_path
+		else
+			astra_linux_log("Unable to determine the application path; check env.app in rhobuild.yml or the RHO_APP_PATH environment variable.")
+		end
+		run_in_ast_linux_chroot("rake device:linux:production", chdir: $startdir, env: env)
+	end
+end
 
 namespace "config" do
 	task :set_current_platform_linux do
@@ -60,22 +343,41 @@ namespace "config" do
 			puts "Linux section is not found!"
 		end
 
-		if !$app_config["version"].nil?
-			$version_app = $app_config["version"]
-		else
-			$version_app = "1.0"
-		end
+			if !$app_config["version"].nil?
+				$version_app = $app_config["version"]
+			else
+				$version_app = "1.0"
+			end
 
 		$excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 		$rho_path =  File.join($app_path, "data", "rho")
 		$project_path = File.join($app_path, "project", "qt")
 		$app_project_path = File.join($project_path, $appname.downcase)
 
-		$target_path = File.join($app_path, "bin", "target", "linux")
+		$target_path = File.join($app_path, "bin", "target", target_subdir_name)
 		mkdir_p $target_path
-	end
+
+	load_astra_linux_chroot_path(force: true)
+		end
 
 	task :sys_recognize do
+		env_subdir = ENV['RHO_TARGET_SUBDIR']
+		if env_subdir && env_subdir.downcase.start_with?('astra')
+			$architecture = Jake.run("uname", ["-m"])
+			$astra = true
+			astra_linux_log("Skip autodetect: force Astra mode (env RHO_TARGET_SUBDIR=#{env_subdir})") if defined?(astra_linux_log)
+			$package_architecture = resolve_package_architecture
+			next
+		end
+
+		forced_subdir = target_subdir_name
+		if %w[astraMobile].include?(forced_subdir)
+			$architecture = Jake.run("uname", ["-m"])
+			$astra = true
+			astra_linux_log("Skip autodetect: force Astra mode (subdir: #{forced_subdir})") if defined?(astra_linux_log)
+			next
+		end
+
 		$architecture = Jake.run("uname", ["-m"])
 		name_out = Jake.run('hostnamectl', [])
 		if name_out.downcase().include? "ubuntu"
@@ -98,6 +400,8 @@ namespace "config" do
 			puts "Fail! Current system has not been recognized while cunfiguration."
 			exit 1
 		end
+
+		$package_architecture = resolve_package_architecture
 	end
 
 
@@ -255,10 +559,10 @@ namespace "build" do
 		target_app_name = File.join($target_path, $appname)
 		if !File.exist?(target_app_name)
 			if $qmake_addition_args != nil and $qmake_addition_args != ''
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + 
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' +
 					$qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
 			else
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', 
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro',
 					$qt_project_dir)
 			end
 			Jake.run3('make clean', $qt_project_dir)
@@ -348,20 +652,23 @@ namespace "device" do
 				end
 				File.open(File.join(debian_dir, "control"), 'w' ) { |f| f.write erb.result binding }
 
-				Jake.run3('fakeroot dpkg-deb --build linux', File.join($app_path, "bin", "target"))
+				Jake.run3("fakeroot dpkg-deb --build #{target_subdir_name}", File.join($app_path, "bin", "target"))
 				rm_rf $target_path
 				FileUtils.mkdir_p $target_path
-				FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
+				FileUtils.mv(
+					File.join($app_path, "bin", "target", "#{target_subdir_name}.deb"),
+					File.join($target_path, "#{$appname}_#{$version_app}_#{package_architecture}.deb")
+				)
 			end
 
 			task :rpm => ["build:linux"] do
 				createFolders()
 				target_folder = File.join($app_path, "bin", "target")
-				$linuxroot = File.join(target_folder, "linux")
+				$linuxroot = File.join(target_folder, target_subdir_name)
 				$buildroot = File.join($linuxroot, "rpmbuildroot")
 
 
-				$bin_file = "linux.tar"
+				$bin_file = "#{target_subdir_name}.tar"
 				$bin_archive = File.join(target_folder, $bin_file)
 
 				rm $bin_archive if File.exist? $bin_archive
@@ -383,11 +690,11 @@ namespace "device" do
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
-                
+
                 lint_exceptions_template = File.read File.join( $startdir, "platform", "linux", "tasks", "linter_exceptions.erb")
 				erb = ERB.new lint_exceptions_template
 				File.open(File.join($buildroot, "SOURCES", "#{$appname}.rpmlintrc"), 'w' ) { |f| f.write erb.result binding }
-                
+
 
 				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb rpm.spec", $buildroot)
 
@@ -411,11 +718,11 @@ namespace "device" do
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif $altlinux
 				$create_buildroot = true
-				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui",
 				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $redos
-				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine",
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
@@ -432,11 +739,21 @@ namespace "device" do
 			puts "Finished"
 		end
 	end
+
+	namespace "astraMobile" do
+		task :production do
+			invoke_device_production_for_astra_linux
+		end
+	end
 end
 
 namespace "run" do
-	task :linux => ["build:linux"] do
-		Jake.run3(File.join($target_path, $appname) + ' --remote-debugging-port=9090')
+	task :linux do
+		invoke_run_task_for("linux")
+	end
+
+	task :astraMobile do
+		invoke_run_task_for_ast_linux
 	end
 
 	namespace "linux" do
