@@ -126,6 +126,17 @@ def host_app_path_for_chroot
 	nil
 end
 
+def config_truthy?(value)
+	return false if value.nil?
+	return value if value == true || value == false
+
+	str = value.to_s.strip.downcase
+	return true if %w[1 true yes on].include?(str)
+	return false if str.empty?
+
+	false
+end
+
 def normalize_deb_architecture(arch_string)
 	return nil if arch_string.nil? || arch_string.to_s.empty?
 
@@ -276,7 +287,10 @@ def invoke_run_task_for(subdir)
 	with_target_subdir(subdir) do
 		reenable_linux_tasks_for_target
 		Rake::Task["build:linux"].invoke
-		Jake.run3(File.join($target_path, $appname) + ' --remote-debugging-port=9090')
+		command = File.join($target_path, $appname) + ' --remote-debugging-port=9090'
+		run_env = {}
+		run_env['QT_IM_MODULE'] = 'qtvirtualkeyboard' if $use_qt_virtual_keyboard
+		Jake.run3(command, nil, run_env)
 	end
 end
 
@@ -357,8 +371,13 @@ namespace "config" do
 		$target_path = File.join($app_path, "bin", "target", target_subdir_name)
 		mkdir_p $target_path
 
-	load_astra_linux_chroot_path(force: true)
+		$use_qt_virtual_keyboard = false
+		if $app_config && $app_config["astraMobile"].is_a?(Hash)
+			$use_qt_virtual_keyboard = config_truthy?($app_config["astraMobile"]["useQtKeyboard"])
 		end
+
+		load_astra_linux_chroot_path(force: true)
+	end
 
 	task :sys_recognize do
 		env_subdir = ENV['RHO_TARGET_SUBDIR']
@@ -610,12 +629,14 @@ namespace "device" do
 				end
 
 				File.open(File.join(desktop_path, "#{$appname}.desktop"), 'w') { |file|
+					exec_line = "/opt/#{$appname}/#{$appname}"
+					exec_line = "env QT_IM_MODULE=qtvirtualkeyboard #{exec_line}" if $use_qt_virtual_keyboard
 					file.write("[Desktop Entry]\n")
 					file.write("Type=Application\n")
 					file.write("Version=#{$version_app}\n")
 					file.write("Name=#{$appname}\n")
 					file.write("GenericName=\"Web Browser\"\n")
-					file.write("Exec=/opt/#{$appname}/#{$appname}\n")
+					file.write("Exec=#{exec_line}\n")
 					file.write("Icon=/opt/#{$appname}/icon.ico\n")
 				}
 			end
