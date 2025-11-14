@@ -133,16 +133,16 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
         File.open(props, 'r') do |f|
           while line = f.gets
             line.strip!
-            
+
             if namepattern =~ line
               puts "Parsing add-on: #{$1}" if Rake.application.options.trace
               cur_name = $1
               break unless addonnamepattern =~ $1
               next
             end
-            
+
             next unless cur_name
-            
+
             if line =~ /^api=([0-9]+)$/
               cur_apilevel = $1.to_i
 
@@ -154,26 +154,26 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
               found_name = cur_name
               found_apilevel = cur_apilevel
               found_libpatterns = nil
-              
+
               next
             end
 
-            if found_libpatterns.nil? 
+            if found_libpatterns.nil?
               if libspattern =~ line
                 found_libpatterns = []
                 libnames = $1.split(';')
                 libnames.each do |name|
 
-                  
+
                   found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
                 end
-                
+
                 puts "Library patterns: #{found_libpatterns.inspect}" if Rake.application.options.trace
-                
+
               end
               next
             end
-            
+
             found_libpatterns.each do |pat|
               if(pat =~ line)
                 libs[$1] = $2
@@ -254,7 +254,7 @@ end
 module_function :avd_path
 
 def patch_avd_config( avdname )
-  config_path = File.join( avd_path( avdname ), 'config.ini' ) 
+  config_path = File.join( avd_path( avdname ), 'config.ini' )
 
   patch = ["disk.dataPartition.size=200M",
           "hw.accelerometer=yes",
@@ -290,25 +290,44 @@ module_function :patch_avd_config
 def create_avd( avdname, apilevel, abi, use_google_apis )
   @@logger.info "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
   @@logger.info "Emulator params: #{$androidtargets[apilevel].inspect}"
+  s_apis = use_google_apis ? "google_apis_playstore" : "default"
 
-  s_apis = use_google_apis ? "google_apis" : "default"
-  avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
+  @@logger.info "------------------------------------------"
+  @@logger.info "Trying to make an emulator in a modern way"
+  path_to_avdmanager = File.join($androidsdkpath, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
+  @@logger.debug "path to avdmanager: #{path_to_avdmanager}"
 
-  target = $androidtargets[apilevel]
-  targetid = target[:id] if target
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"    
-  @@logger.info "Creating AVD image old style: #{createavd}"
+  if apilevel > 30 && abi == "x86"
+    abi = "x86_64"
+  end
 
-  out, err, wait_thr = Jake.run_with_output(createavd)
+  command = "#{path_to_avdmanager} create avd -n #{avdname} -k \"system-images;android-#{apilevel};#{s_apis};#{abi}\" -d pixel"
+  @@logger.debug "Run command: #{command}"
 
+  out, err, wait_thr = Jake.run_with_output(command)
   @@logger.info "AVD create output:\n#{out}"
   @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
 
   unless ( err.strip.empty? and wait_thr.value.success? )
-    createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
-    @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
-    %x[#{createavd}]
-    raise "Can't create AVD" unless $?.success?
+    s_apis = use_google_apis ? "google_apis" : "default"
+    avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
+
+    target = $androidtargets[apilevel]
+    targetid = target[:id] if target
+    createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"
+    @@logger.info "Creating AVD image old style: #{createavd}"
+
+    out, err, wait_thr = Jake.run_with_output(createavd)
+
+    @@logger.info "AVD create output:\n#{out}"
+    @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
+
+    unless ( err.strip.empty? and wait_thr.value.success? )
+      createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
+      @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
+      %x[#{createavd}]
+      raise "Can't create AVD" unless $?.success?
+    end
   end
   patch_avd_config( avdname )
 end
@@ -316,7 +335,7 @@ module_function :create_avd
 
 def get_installed_images_apilevels
   levels = []
-  Dir.glob( File.join( $androidsdkpath, 'system-images', '*' ) ) { |d| 
+  Dir.glob( File.join( $androidsdkpath, 'system-images', '*' ) ) { |d|
     l = File.basename(d).match(/android-(\d+)/)[1].to_i
     levels << l
   }
@@ -327,7 +346,8 @@ module_function :get_installed_images_apilevels
 def get_avd_image_real_abi( apilevel, abi, use_google_apis)
   @@logger.debug "get_avd_image_real_abi: #{apilevel}, #{abi}, #{use_google_apis}"
 
-  s_apis = use_google_apis ? "google_apis" : "default"
+  # s_apis = use_google_apis ? "google_apis" : "default" <= TODO: нужно добавить проверку на директорию
+  s_apis = use_google_apis ? "google_apis_playstore" : "default"
   Dir.glob( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", s_apis, '*' ) ) { |dir|
     @@logger.debug "looking at: #{dir}"
     targetabi = File.basename(dir)
@@ -339,6 +359,7 @@ module_function :get_avd_image_real_abi
 
 def get_avd_image( apilevel, abis, use_google_apis )
   @@logger.debug "get_avd_image: #{apilevel}, #{abis.inspect}, #{use_google_apis}"
+  @@logger.debug "---------------------------------------------------------------"
   i = abis.index('x86')
   (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
   abis.each do |abi|
@@ -346,7 +367,7 @@ def get_avd_image( apilevel, abis, use_google_apis )
     return realabi, use_google_apis if realabi
     realabi = get_avd_image_real_abi(apilevel,abi,true) unless use_google_apis
     return realabi, true if realabi
-  end  
+  end
   nil
 end
 module_function :get_avd_image
@@ -414,7 +435,7 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
     unless File.directory?( avd_path(avdname) )
       create_avd(avdname,apilevel,abi,use_google_apis)
     end
-  end      
+  end
 
   avdname
 end
@@ -441,6 +462,9 @@ def run_emulator(options = {})
 
     avdname = prepare_avd( $appavdname, $emuversion, $abis, $use_google_addon_api )
 
+    unless File.exist?($emulator)
+        $emulator = File.join($androidsdkpath, "emulator", "emulator")
+    end
     # Start the emulator, check on it every 5 seconds until it's running
     cmd = "\"#{$emulator}\""
     cmd << " -no-window" if options[:hidden]
@@ -595,7 +619,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
       done = true
       break
     end
-    
+
     @@logger.error "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
@@ -816,7 +840,7 @@ module_function :read_manifest_package
     args << outputApk
     args << inputApk
     args << storealias if storealias
-=end    
+=end
     args << 'sign'
     args << '--ks'
     args << keystore
@@ -838,7 +862,7 @@ module_function :read_manifest_package
     args << '--out'
     args << outputApk
     args << inputApk
-    
+
 #    Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
     Jake.run2(@@apksigner, args, :hide_output => !Rake.application.options.trace )
 
@@ -886,8 +910,8 @@ module_function :read_manifest_package
     args << "-signedjar"
     args << outputAab
     args << inputAab
-    args << storealias if storealias 
-    
+    args << storealias if storealias
+
     Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
 
     unless $?.success?
@@ -935,7 +959,7 @@ module_function :read_manifest_package
 
   def generateKeystore( keystore, storealias, storepass, keypass )
     @@logger.info "Generating private keystore..."
-    
+
     mkdir_p File.dirname(keystore) unless File.directory? File.dirname(keystore)
 
     args = []
@@ -975,7 +999,7 @@ module_function :read_manifest_package
 
       m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
       next unless m
-      
+
       version = m.captures
 
       $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"
@@ -1000,7 +1024,7 @@ module_function :read_manifest_package
 
   def apk_build(sdk, apk_name, res_name, dex_name, debug)
     puts "Building APK file..."
-    
+
     #just put dex file to a copy of already prepared intermediate APK
     cp res_name, apk_name
     dex_files = []
@@ -1017,7 +1041,7 @@ module_function :read_manifest_package
     unless $?.success?
         raise 'Error building APK file'
     end
-    
+
   end
   module_function :apk_build
 
