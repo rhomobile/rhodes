@@ -145,6 +145,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 	public interface IKeyEventListener {
 		void onKeyDown(int keyCode, KeyEvent event);
+		void onKeyUp(int keyCode, KeyEvent event);
 	}
 
 	private IKeyEventListener mKeyEventListener = null;
@@ -962,6 +963,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		if (mKeyEventListener != null) {
 			if ( event.getAction() == KeyEvent.ACTION_DOWN ) {
 				mKeyEventListener.onKeyDown(event.getKeyCode(), event);
+			}
+			if ( event.getAction() == KeyEvent.ACTION_UP ) {
+				mKeyEventListener.onKeyUp(event.getKeyCode(), event);
 			}
 		}
 
