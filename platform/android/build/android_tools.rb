@@ -297,7 +297,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
   path_to_avdmanager = File.join($androidsdkpath, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
   @@logger.debug "path to avdmanager: #{path_to_avdmanager}"
 
-  if apilevel > 30 && abi == "x86"
+  if apilevel >= 30 && abi == "x86"
     abi = "x86_64"
   end
 
@@ -339,7 +339,7 @@ def get_installed_images_apilevels
     l = File.basename(d).match(/android-(\d+)/)[1].to_i
     levels << l
   }
-  levels
+  levels.sort.reverse
 end
 module_function :get_installed_images_apilevels
 
@@ -376,14 +376,14 @@ def find_suitable_avd_image( apilevel, abis, use_google_apis )
   @@logger.debug "Android targets:\n#{pp $androidtargets}"
 
   if apilevel
-    realabi = get_avd_image( apilevel, abis, use_google_apis )
+    realabi, use_google = get_avd_image( apilevel, abis, use_google_apis )
     return apilevel, realabi if realabi
   end
 
   @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
 
   $androidtargets.keys().reverse_each do |apilevel|
-    realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
+    realabi, use_google = get_avd_image( apilevel, abis, use_google_apis )
     return apilevel, realabi, use_google if realabi
   end
 
@@ -396,13 +396,21 @@ def find_suitable_avd_image( apilevel, abis, use_google_apis )
   @@logger.debug "will iterate through platforms: #{pp platforms}"
 
   platforms.each do |apilevel|
-    realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
+    realabi, use_google = get_avd_image( apilevel, abis, use_google_apis)
     return apilevel, realabi, use_google if realabi
   end
 
   return nil,nil
 end
 module_function :find_suitable_avd_image
+
+def is_emulator_version_set_in_config?
+  return true if $app_config['android'] and $app_config['android']['android_version_in_emulator']
+  return true if $app_config['android'] and $app_config['android']['version']
+  return false
+end
+module_function :is_emulator_version_set_in_config?
+
 
 #return path to effective AVD - existion or newly created
 def prepare_avd(avdname, emuversion, abis, use_google_apis)
@@ -421,21 +429,56 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
 
   @@logger.debug "Will try to find AVD: #{avdname}"
 
-  unless File.directory?( avd_path(avdname) )
+  if !File.directory? (avd_path(avdname))
 
-    @@logger.debug "AVD #{avdname} is not found, will try to find image and create a new one"
+    sdkEmulatorVersion = AndroidTools.get_api_level emuversion
+    unless sdkEmulatorVersion.nil?
+      avdname = "rhoAndroid" + sdkEmulatorVersion.to_s
+      @@logger.debug "Will try to find AVD: #{avdname}"
+      if !File.directory? (avd_path(avdname))
+        if is_emulator_version_set_in_config?
 
-    apilevel, abi, use_google_apis = find_suitable_avd_image( apilevel, abis, use_google_apis)
+          @@logger.debug "AVD #{avdname} is not found, try to create AVD with requested version: #{sdkEmulatorVersion}"
+          apilevel, abi, use_google_apis = find_suitable_avd_image( sdkEmulatorVersion, abis, use_google_apis)
 
-    raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
+          raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
 
-    avdname = "rhoAndroid#{apilevel}"
-    avdname += "google" if $use_google_addon_api
+          avdname = "rhoAndroid#{apilevel}"
+          avdname += "google" if $use_google_addon_api
 
-    unless File.directory?( avd_path(avdname) )
-      create_avd(avdname,apilevel,abi,use_google_apis)
+          unless File.directory?( avd_path(avdname) )
+            create_avd(avdname, apilevel, abi, use_google_apis)
+          end
+
+        else
+          target_sdk_level = $target_sdk_level.to_s
+          avd_name_sdk = "rhoAndroid" + target_sdk_level.gsub(/[^0-9]/, "")
+          avd_name_sdk += "google" if $use_google_addon_api
+          @@logger.debug "AVD #{avdname} is not found, try find and start AVD: #{avd_name_sdk}"
+
+          avdname = avd_name_sdk
+
+          unless File.directory?( avd_path(avdname) )
+
+            @@logger.debug "AVD #{avdname} is not found, will try to find image and create a new one"
+
+            apilevel, abi, use_google_apis = find_suitable_avd_image( apilevel, abis, use_google_apis)
+            raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
+
+            avdname = "rhoAndroid#{apilevel}"
+            avdname += "google" if $use_google_addon_api
+
+            unless File.directory?( avd_path(avdname) )
+              create_avd(avdname, apilevel, abi, use_google_apis)
+            end
+          end
+        end
+
+      end
+
     end
   end
+
 
   avdname
 end
