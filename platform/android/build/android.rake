@@ -748,13 +748,7 @@ namespace "config" do
       version = nil
 
       if $app_config["android"]["version"]
-        warningMsg =  "\n==========================================================\n" +
-                      "= Param \"version\" is deprecated                        =\n" +
-                      "= Please, use \"compileSdk\" for select compile sdk      =\n" +
-                      "= or use \"AndroidVersionInEmulator\" for select android =\n" +
-                      "= version in emulator                                    =\n" +
-                      "=========================================================="
-        $logger.warn warningMsg
+        BuildOutput.warning('Please, use "compileSDK" for select compile sdk or use "android_version_in_emulator" for select android version in emulator','Param "version" is deprecated')
 
         version = $app_config["android"]["version"]
       elsif $app_config["android"]["compileSdk"] or $app_config["android"]["compileSDK"]
@@ -1362,29 +1356,14 @@ namespace "config" do
     end #task :extensions
 
     task :emulator => "config:android" do
-      $emuversion = $app_config["android"]["AndroidVersionInEmulator"] unless $app_config["android"].nil?
-      $emuversion = $app_config["android"]["android_version_in_emulator"] if $emuversion.nil? and !$app_config["android"].nil?
+      $emuversion = $app_config["android"]["android_version_in_emulator"] unless $app_config["android"].nil?
+      $emuversion = $app_config["android"]["AndroidVersionInEmulator"] if $emuversion.nil? and !$app_config["android"].nil?
 
       if $emuversion.nil? and $app_config["android"] and $app_config["android"]["version"]
-        warningMsg =  "\n==========================================================\n" +
-                      "= Param \"version\" is deprecated                        =\n" +
-                      "= Please, use \"AndroidVersionInEmulator\" for select     =\n" +
-                      "= android version in emulator                            =\n" +
-                      "=========================================================="
-        $logger.warn warningMsg
 
         $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
         $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
       end
-
-# TODO: check this block
-      if OS.windows?
-        $emulator = #"cmd /c " +
-            File.join($androidsdkpath, "tools", "emulator.exe")
-      else
-        $emulator = File.join($androidsdkpath, "tools", "emulator")
-      end
-# #####################
 
       $emuversion = AndroidTools.get_market_version($target_sdk_level) if $emuversion.nil?
       $emuversion = AndroidTools.get_market_version(AndroidTools.get_installed_api_levels[-1]) if $emuversion.nil? #last chance
@@ -1396,6 +1375,13 @@ namespace "config" do
       $logger.info "Configuring emulator for version: #{$emuversion}"
 
       $emuversion = $emuversion.to_s
+
+      if OS.windows?
+        $emulator = File.join($androidsdkpath, "emulator", "emulator.exe")
+      else
+        $emulator = File.join($androidsdkpath, "emulator", "emulator")
+      end
+
 
       $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
       $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
