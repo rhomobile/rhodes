@@ -422,14 +422,6 @@ def find_suitable_avd_image( apilevel, abis, use_google_apis )
 end
 module_function :find_suitable_avd_image
 
-def is_emulator_version_set_in_config?
-  return true if $app_config['android'] and $app_config['android']['android_version_in_emulator']
-  return true if $app_config['android'] and $app_config['android']['version']
-  return false
-end
-module_function :is_emulator_version_set_in_config?
-
-
 def check_avd_directory(avdname)
   avd_directory = avd_path(avdname)
   if File.directory?(avd_directory)

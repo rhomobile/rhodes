@@ -139,10 +139,10 @@ android:
   - arm
   - aarch64
   
-  #specifies compile SDK version ( 9 corresponds to API 28). If not specified then latest available API level will be used.  
-  #version: 9 
+  # targetSDK: 36
 
-  #targetSDK: 28
+  # This parameter specifies the Android version that will be installed and used by the new emulator during its creation.
+  # android_version_in_emulator: 16
 
   ## set to true if you want to setup your app as system home app (launcher)
   ## also recommended add this into manifest also: android:launchMode='singleTask'
