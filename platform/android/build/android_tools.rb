@@ -290,7 +290,16 @@ module_function :patch_avd_config
 def create_avd( avdname, apilevel, abi, use_google_apis )
   @@logger.info "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
   @@logger.info "Emulator params: #{$androidtargets[apilevel].inspect}"
-  s_apis = use_google_apis ? "google_apis_playstore" : "default"
+
+  if use_google_apis
+    if File.exist?( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", 'google_apis_playstore', abi ) )
+      s_apis = "google_apis_playstore"
+    elsif File.exist?( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", 'google_apis', abi ) )
+      s_apis = "google_apis"
+    else
+      s_apis = "default"
+    end
+  end
 
   @@logger.info "------------------------------------------"
   @@logger.info "Trying to make an emulator in a modern way"
@@ -352,6 +361,16 @@ def get_avd_image_real_abi( apilevel, abi, use_google_apis)
     targetabi = File.basename(dir)
     return targetabi if targetabi =~ /#{abi}/
   }
+
+  if use_google_apis
+    s_apis = "google_apis"
+    @@logger.debug "get_avd_image_real_abi: #{apilevel}, #{abi}, google_apis"
+    Dir.glob( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", s_apis, '*' ) ) { |dir|
+      @@logger.debug "looking at: #{dir}"
+      targetabi = File.basename(dir)
+      return targetabi if targetabi =~ /#{abi}/
+    }
+  end
   nil
 end
 module_function :get_avd_image_real_abi
@@ -376,7 +395,7 @@ def find_suitable_avd_image( apilevel, abis, use_google_apis )
 
   if apilevel
     realabi, use_google = get_avd_image( apilevel, abis, use_google_apis )
-    return apilevel, realabi if realabi
+    return apilevel, realabi, use_google if realabi
   end
 
   @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
