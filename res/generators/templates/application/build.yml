@@ -7,7 +7,6 @@ vendor: rhomobile
 ## Note: rho_app_id send to RhoConnect server for identify application (used in multi-push configuration only)
 ## we recommend make it same with BundleIdentifier
 rho_app_id: com.rhomobile.<%=@app_name_cleared%>
-build: debug
 applog: rholog.txt
 
 # enable encrypt of database

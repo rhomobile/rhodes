@@ -2014,14 +2014,29 @@ namespace "config" do
     extpaths << File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version']+"/libs")
     $app_config["extpaths"] = extpaths
 
-    if $app_config["build"] and $app_config["build"].casecmp("release") == 0
+    cli_tasks = []
+    begin
+      cli_tasks = Rake.application.top_level_tasks
+    rescue
+      cli_tasks = ARGV
+    end
+    cli_tasks_str = cli_tasks.map { |t| t.to_s.downcase }.join(':')
+
+    if cli_tasks_str =~ /\b(release|production)\b/
       $debug = false
-    elsif $app_config["build"] and $app_config["build"].casecmp("debug") == 0
-      $debug = true
     else
-      puts "\n\n\n\n\nYou must choose configuration manually in build.yml file. Type 'build: release' or 'build: debug' in root section!\n\n\n\n"
       $debug = true
     end
+
+    if $app_config["build"]
+      BuildOutput.warning('In your build.yml, the build parameter is specified, but it is no longer used since the build type is now determined by the rake command (production for production builds, and anything else for debug). To avoid confusion, we recommend removing the build parameter from build.yml.','The build parameter in build.yml is deprecated.')
+      if $app_config["build"].casecmp("release") == 0 and $debug
+        raise 'You started a debug build, but build.yml contains build: release. Please change the build value to debug or simply remove this line from build.yml.'
+      elsif $app_config["build"].casecmp("debug") == 0 and !$debug
+        raise 'You started a production build, but build.yml contains build: debug. Please change the build value to release or simply remove this line from build.yml.'
+      end
+    end
+
     # merge extensions from platform list to global one
     $app_config['extensions'] = [] unless $app_config['extensions'] and $app_config['extensions'].is_a? Array
     if $app_config[$config['platform']] and $app_config[$config['platform']]['extensions'] and $app_config[$config['platform']]['extensions'].is_a? Array
