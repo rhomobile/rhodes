@@ -246,9 +246,9 @@ artifacts:
 deploy:
   - provider: S3
     access_key_id:  
-      secure: j0N6vl5f9UckCbJkHmZiXNuFphMI3cud+NDTCQm/I2c=
+      secure: ""
     secret_access_key:
-      secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
+      secure: ""
     bucket: tau-autobuilds
     region: eu-central-1
     folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/$(target_os)-$(app_name)'
