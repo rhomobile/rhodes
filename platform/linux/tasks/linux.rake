@@ -81,6 +81,9 @@ namespace "config" do
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
 			puts "Current system is Ubuntu"
+		elsif name_out.downcase().include? "mint"
+			$ubuntu = true
+			puts "Current system is Linux Mint"
 		elsif name_out.downcase().include? "astra"
 			$astra = true
 			puts "Current system is Astra Linux"
@@ -255,10 +258,10 @@ namespace "build" do
 		target_app_name = File.join($target_path, $appname)
 		if !File.exist?(target_app_name)
 			if $qmake_addition_args != nil and $qmake_addition_args != ''
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + 
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' +
 					$qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
 			else
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', 
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro',
 					$qt_project_dir)
 			end
 			Jake.run3('make clean', $qt_project_dir)
@@ -383,11 +386,11 @@ namespace "device" do
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
-                
+
                 lint_exceptions_template = File.read File.join( $startdir, "platform", "linux", "tasks", "linter_exceptions.erb")
 				erb = ERB.new lint_exceptions_template
 				File.open(File.join($buildroot, "SOURCES", "#{$appname}.rpmlintrc"), 'w' ) { |f| f.write erb.result binding }
-                
+
 
 				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb rpm.spec", $buildroot)
 
@@ -411,11 +414,11 @@ namespace "device" do
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif $altlinux
 				$create_buildroot = true
-				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui",
 				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $redos
-				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine",
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
