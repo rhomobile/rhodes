@@ -360,10 +360,11 @@ debug_host = "127.0.0.1"
 
 if debug_host_env
   # Normalize and validate the host
-  normalized_host = debug_host_env.strip.downcase
+  stripped_host = debug_host_env.strip
+  normalized_host = stripped_host.downcase
 
   if DAPSecurity::ALLOWED_DEBUG_HOSTS.include?(normalized_host)
-    debug_host = debug_host_env.strip
+    debug_host = stripped_host
   else
     warn "[SECURITY WARNING] DEBUG_HOST '#{debug_host_env}' is not allowed for security reasons."
     warn "[SECURITY WARNING] Only localhost addresses (127.0.0.1, localhost, ::1) are permitted."
