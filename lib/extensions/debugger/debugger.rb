@@ -11,6 +11,7 @@ class DAPServer
     @next_var_ref = 1
     @variables_map = {} # variablesReference => [binding, :local | :instance | :global]
     @step_mode = nil
+    @trace_enabled = false
     @server = TCPServer.new(host, port)
     puts "DAP server listening on #{host}:#{port}"
   end
@@ -163,7 +164,12 @@ class DAPServer
     @root_path = File.expand_path(args["appRoot"] || Dir.pwd)
     puts "APP ROOT: #{@root_path}"
 
-    set_trace_func method(:trace_callback).to_proc
+    unless @trace_enabled
+      set_trace_func method(:trace_callback).to_proc
+      @trace_enabled = true
+      puts "Trace callback registered"
+    end
+    
     send_response(req)
   end
 
