@@ -20,6 +20,16 @@ class DAPServer
       @client = @server.accept
       Thread.new { handle_client() }
     end
+  rescue => e
+    puts "[DAP Server Error] #{e.message}"
+    puts e.backtrace.join("\n")
+  end
+
+  def shutdown
+    puts "Shutting down DAP server..."
+    @server&.close
+  rescue => e
+    puts "[DAP Server Shutdown Error] #{e.message}"
   end
 
   def handle_client()
@@ -353,6 +363,20 @@ end
 debug_host = ENV["DEBUG_HOST"] || "127.0.0.1"
 debug_port = (ENV["DEBUG_PORT"] || 9000).to_i
 
-Thread.new do
-  DAPServer.new(debug_host, debug_port).start
+$dap_server = DAPServer.new(debug_host, debug_port)
+
+$dap_server_thread = Thread.new do
+  begin
+    $dap_server.start
+  rescue => e
+    puts "[DAP Server Thread Error] #{e.message}"
+    puts e.backtrace.join("\n")
+  end
+end
+
+at_exit do
+  if $dap_server
+    $dap_server.shutdown
+    $dap_server_thread&.join(5) # Wait up to 5 seconds for graceful shutdown
+  end
 end
