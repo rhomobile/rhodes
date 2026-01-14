@@ -169,7 +169,7 @@ class DAPServer
       @trace_enabled = true
       puts "Trace callback registered"
     end
-    
+
     send_response(req)
   end
 
@@ -208,6 +208,8 @@ class DAPServer
   end
 
   def handle_disconnect(req)
+    set_trace_func(nil)
+    @trace_enabled = false
     send_response(req)
     # Доп. логика: остановить обработку, закрыть соединение и т. д.
   end
