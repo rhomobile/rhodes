@@ -228,11 +228,14 @@ class DAPServer
     @frame_bindings = {}
 
     filtered = []
+    debugger_file = File.expand_path(__FILE__)
 
-    # Обрезаем стек выше trace_callback
+    # Filter out frames from the debugger itself
+    # Use exact path comparison to avoid incorrectly filtering application code
+    # that might have similar paths
     locations.each do |loc|
       path = File.expand_path(loc.path)
-      next if path.include?(__FILE__) # пропускаем вызовы из этого файла (DAP-сервер)
+      next if path == debugger_file
       filtered << loc
     end
 
