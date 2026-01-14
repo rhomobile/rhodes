@@ -11,6 +11,7 @@ class DAPServer
     @next_var_ref = 1
     @variables_map = {} # variablesReference => [binding, :local | :instance | :global]
     @step_mode = nil
+    @debugger_file = File.expand_path(__FILE__)  # Cache debugger file path for stack filtering
     @server = TCPServer.new(host, port)
     puts "DAP server listening on #{host}:#{port}"
   end
@@ -228,14 +229,14 @@ class DAPServer
     @frame_bindings = {}
 
     filtered = []
-    debugger_file = File.expand_path(__FILE__)
 
     # Filter out frames from the debugger itself
     # Use exact path comparison to avoid incorrectly filtering application code
-    # that might have similar paths
+    # whose file path might contain the debugger file path as a substring
+    # (e.g., app file "/path/debugger.rb_utils.rb" vs debugger "/lib/debugger.rb")
     locations.each do |loc|
       path = File.expand_path(loc.path)
-      next if path == debugger_file
+      next if path == @debugger_file
       filtered << loc
     end
 
